@@ -3,6 +3,7 @@ package restaurant.gui;
 import restaurant.CustomerAgent;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 /**
@@ -27,6 +28,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JPanel infoPanel;
     private JLabel infoLabel; //part of infoPanel
     private JCheckBox stateCB;//part of infoLabel
+    
+    private JPanel brianPanel;
+    private JLabel brianLabel;
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
@@ -36,8 +40,8 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 450;
-        int WINDOWY = 350;
+        int WINDOWX = 450; //450
+        int WINDOWY = 350; //350
 
         animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
@@ -45,18 +49,22 @@ public class RestaurantGui extends JFrame implements ActionListener {
     	animationFrame.add(animationPanel); 
     	
     	setBounds(50, 50, WINDOWX, WINDOWY);
-
-        setLayout(new BoxLayout((Container) getContentPane(), 
-        		BoxLayout.Y_AXIS));
+    	
+        //setLayout(new BoxLayout((Container) getContentPane(), //****
+        		//BoxLayout.Y_AXIS)); //******
+    	setLayout(new BorderLayout(1,1));
 
         Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
+    	//Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
-        add(restPanel);
+        //add(restPanel);
+        add(restPanel,BorderLayout.PAGE_START);
         
         // Now, setup the info panel
-        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .25));
+        //Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .25));
+        Dimension infoDim = new Dimension(WINDOWX, (int)(WINDOWY * .1));
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
@@ -73,9 +81,36 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
-        add(infoPanel);
+        //add(infoPanel);
+        add(infoPanel, BorderLayout.CENTER);
+        
+        //My name
+        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
+        brianPanel = new JPanel();
+        brianPanel.setPreferredSize(brianDim);
+        brianPanel.setMinimumSize(brianDim);
+        brianPanel.setMaximumSize(brianDim);
+        brianPanel.setBorder(BorderFactory.createTitledBorder("Information"));
+        
+        brianLabel = new JLabel(); 
+        brianLabel.setText("<html><pre><i>Hi I'm Brian!</i></pre></html>");
+        
+        ImageIcon icon = new ImageIcon("C:/Users/Brian/Documents/School/usc2013Fall/restaurant_brianych/src/Mario-icon.png");
+        brianLabel.setIcon(icon);
+        add(brianLabel, BorderLayout.PAGE_END);
+      
+        
+        
     }
-    /**
+    private void add(ImageIcon icon, String pageEnd) {
+		// TODO Auto-generated method stub
+		
+	}
+	private ImageIcon createImageIcon(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/**
      * updateInfoPanel() takes the given customer (or, for v3, Host) object and
      * changes the information panel to hold that person's info.
      *

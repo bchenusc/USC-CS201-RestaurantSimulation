@@ -4,6 +4,7 @@ import restaurant.CustomerAgent;
 import restaurant.HostAgent;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -24,6 +25,8 @@ public class ListPanel extends JPanel implements ActionListener {
 
     private RestaurantPanel restPanel;
     private String type;
+    
+    private JCheckBox hungryBox; //hungry box
 
     /**
      * Constructor for ListPanel.  Sets up all the gui
@@ -40,6 +43,9 @@ public class ListPanel extends JPanel implements ActionListener {
 
         addPersonB.addActionListener(this);
         add(addPersonB);
+        
+        //add the checkbox
+        hungryBox.setText("Hungry?");
 
         view.setLayout(new BoxLayout((Container) view, BoxLayout.Y_AXIS));
         pane.setViewportView(view);
