@@ -13,11 +13,11 @@ public class HostGui implements Gui {
     private int xPos = -20, yPos = -20;//default waiter position
     private int xDestination = -20, yDestination = -20;//default start position
 
-    public static final int xTable = 200;
-    public static final int yTable = 250;
+    private int xTable = 200;
+    private int yTable = 250;
     
-    private static final int hostWidth = 20;
-    private static final int hostHeight = 20;
+    private  int hostWidth = 20;
+    private  int hostHeight = 20;
     
     private static final int movementOffset = 20;
 
@@ -40,6 +40,12 @@ public class HostGui implements Gui {
         		& (xDestination == xTable + movementOffset) & (yDestination == yTable - movementOffset)) {
            agent.msgAtTable();
         }
+        
+        //if left the screen
+        if (agent.getState() != HostAgent.HostState.DoingNothing && xPos <=-20 && yPos <= -20){
+        	System.out.println(agent.getState());
+        	agent.setDoNothing();
+        }
     }
 
     public void draw(Graphics2D g) {
@@ -51,9 +57,21 @@ public class HostGui implements Gui {
         return true;
     }
 
-    public void DoBringToTable(CustomerAgent customer) {
-        xDestination = xTable + movementOffset;
-        yDestination = yTable - movementOffset;
+    public void DoBringToTable(CustomerAgent customer, int tableNumber) {
+    	
+    	
+    	
+    	for (HostAgent.Table myTable : HostAgent.tables){
+    		if (myTable.getTableNumber() == tableNumber){
+    			xTable = myTable.getPosX();
+    	    	yTable = myTable.getPosY();
+    			
+    			xDestination = xTable + movementOffset;
+    			yDestination = xTable - movementOffset;
+    		}
+    	}
+    	
+        
     }
 
     public void DoLeaveCustomer() {

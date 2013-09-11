@@ -2,6 +2,8 @@ package restaurant.gui;
 
 import javax.swing.*;
 
+import restaurant.HostAgent;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,8 +46,21 @@ public class AnimationPanel extends JPanel implements ActionListener {
         g2.fillRect(0, 0, WINDOWX, WINDOWY );
 
         //Here is the table
+        //g2.setColor(Color.ORANGE);
+       //g2.fillRect(CustomerGui.xTable, CustomerGui.yTable, TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
+        
+        for (HostAgent.Table myTable : HostAgent.tables){
+        	//Here is the table
+            g2.setColor(Color.ORANGE);
+            g2.fillRect(myTable.getPosX(), myTable.getPosY(), TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
+        }
+        
+       /* g2.setColor(Color.ORANGE);
+        g2.fillRect(CustomerGui.xTable, CustomerGui.yTable, TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
+        
         g2.setColor(Color.ORANGE);
         g2.fillRect(CustomerGui.xTable, CustomerGui.yTable, TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
+        */
 
 
         for(Gui gui : guis) {

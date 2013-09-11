@@ -119,7 +119,7 @@ public class RestaurantPanel extends JPanel {
     		c.setHost(host);
     		c.setGui(g);
     		
-    		System.out.println(isHungry);
+    		//System.out.println(isHungry);
     		
     		if (isHungry){
     			c.getGui().setHungry();;

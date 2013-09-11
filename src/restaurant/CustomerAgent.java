@@ -12,7 +12,8 @@ import java.util.TimerTask;
  */
 public class CustomerAgent extends Agent {
 	
-	private final int timerLength = 5000;
+	//private final int timerLength = 5000;
+	private final int timerLength = 10000;
 	
 	private String name;
 	private int hungerLevel = 5;        // determines length of meal
@@ -21,6 +22,8 @@ public class CustomerAgent extends Agent {
 
 	// agent correspondents
 	private HostAgent host;
+	
+	private int tableToSitAt;
 
 	//    private boolean isHungry = false; //hack for gui
 	public enum AgentState
@@ -60,9 +63,10 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgSitAtTable() {
+	public void msgSitAtTable(int table) {
 		print("Received msgSitAtTable");
 		event = AgentEvent.followHost;
+		tableToSitAt = table;
 		stateChanged();
 	}
 
@@ -121,7 +125,7 @@ public class CustomerAgent extends Agent {
 
 	private void SitDown() {
 		Do("Being seated. Going to table");
-		customerGui.DoGoToSeat(1);//hack; only one table
+		customerGui.DoGoToSeat(tableToSitAt);//hack; only one table
 	}
 
 	private void EatFood() {

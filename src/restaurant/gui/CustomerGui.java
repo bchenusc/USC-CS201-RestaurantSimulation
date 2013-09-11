@@ -19,11 +19,11 @@ public class CustomerGui implements Gui{
 	private enum Command {noCommand, GoToSeat, LeaveRestaurant};
 	private Command command=Command.noCommand;
 
-	public static final int xTable = 200;
-	public static final int yTable = 250;
+	private int xTable = 200;
+	private int yTable = 250;
 	
-	public static final int customerWidth = 20;
-	public static final int customerHeight = 20;
+	private int customerWidth = 20;
+	private int customerHeight = 20;
 
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){ //HostAgent m) {
 		agent = c;
@@ -80,9 +80,14 @@ public class CustomerGui implements Gui{
 	}
 
 	public void DoGoToSeat(int seatnumber) {//later you will map seatnumber to table coordinates.
-		xDestination = xTable;
-		yDestination = yTable;
-		command = Command.GoToSeat;
+		for(HostAgent.Table myTable : HostAgent.tables){
+			if(myTable.getTableNumber() == seatnumber){
+				xDestination = myTable.getPosX();
+				yDestination = myTable.getPosY();
+				command = Command.GoToSeat;
+			}
+		}
+		
 	}
 
 	public void DoExitRestaurant() {

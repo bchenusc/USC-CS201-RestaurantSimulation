@@ -1,6 +1,8 @@
 package restaurant;
 
 import agent.Agent;
+import restaurant.CustomerAgent.AgentEvent;
+import restaurant.CustomerAgent.AgentState;
 import restaurant.gui.HostGui;
 
 import java.util.*;
@@ -14,19 +16,28 @@ import java.util.concurrent.Semaphore;
 //the HostAgent. A Host is the manager of a restaurant who sees that all
 //is proceeded as he wishes.
 public class HostAgent extends Agent {
-	static final int NTABLES = 1;//a global for the number of tables.
+	static final int NTABLES = 4;//a global for the number of tables.
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
 	public List<CustomerAgent> waitingCustomers
 	= new ArrayList<CustomerAgent>();
-	public Collection<Table> tables;
+	public static  Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
 
 	private String name;
 	private Semaphore atTable = new Semaphore(0,true);
+	
+	private final int tableLocX = 200;
+	private final int tableLocY = 250;
+	private final int tableWidth = 60;
+	private final int tableHeight = 60;
 
 	public HostGui hostGui = null;
+	
+	public enum HostState
+	{DoingNothing, Seating, Returning};
+	private HostState state = HostState.DoingNothing;//The start state
 
 	public HostAgent(String name) {
 		super();
@@ -34,8 +45,8 @@ public class HostAgent extends Agent {
 		this.name = name;
 		// make some tables
 		tables = new ArrayList<Table>(NTABLES);
-		for (int ix = 1; ix <= NTABLES; ix++) {
-			tables.add(new Table(ix));//how you add to a collections
+		for (int ix = 0; ix < NTABLES; ix++) {
+			tables.add(new Table(ix, tableLocX+ix*tableWidth, tableLocY));//how you add to a collections
 		}
 	}
 
@@ -86,11 +97,15 @@ public class HostAgent extends Agent {
             so that table is unoccupied and customer is waiting.
             If so seat him at the table.
 		 */
-		for (Table table : tables) {
-			if (!table.isOccupied()) {
-				if (!waitingCustomers.isEmpty()) {
-					seatCustomer(waitingCustomers.get(0), table);//the action
-					return true;//return true to the abstract agent to reinvoke the scheduler.
+		//System.out.println("doingshit");
+		if (state == HostState.DoingNothing){
+			System.out.println(state);
+			for (Table table : tables) {
+				if (!table.isOccupied()) {
+					if (!waitingCustomers.isEmpty()) {
+						seatCustomer(waitingCustomers.get(0), table);//the action
+						return true;//return true to the abstract agent to reinvoke the scheduler.
+					}
 				}
 			}
 		}
@@ -104,7 +119,12 @@ public class HostAgent extends Agent {
 	// Actions
 
 	private void seatCustomer(CustomerAgent customer, Table table) {
-		customer.msgSitAtTable();
+		//State change
+		System.out.println("kSEATING");
+		state = HostState.Seating;
+		stateChanged();
+		
+		customer.msgSitAtTable(table.getTableNumber());
 		DoSeatCustomer(customer, table);
 		try {
 			atTable.acquire();
@@ -115,6 +135,18 @@ public class HostAgent extends Agent {
 		table.setOccupant(customer);
 		waitingCustomers.remove(customer);
 		hostGui.DoLeaveCustomer();
+		
+	}
+	
+	public void setDoNothing(){
+		state = HostState.DoingNothing;
+		stateChanged();
+	
+	}
+	
+	public HostState getState(){
+		
+		return state;
 	}
 
 	// The animation DoXYZ() routines
@@ -122,8 +154,7 @@ public class HostAgent extends Agent {
 		//Notice how we print "customer" directly. It's toString method will do it.
 		//Same with "table"
 		print("Seating " + customer + " at " + table);
-		hostGui.DoBringToTable(customer); 
-
+		hostGui.DoBringToTable(customer , table.getTableNumber());
 	}
 
 	//utilities
@@ -136,16 +167,37 @@ public class HostAgent extends Agent {
 		return hostGui;
 	}
 
-	private class Table {
+	public class Table {
 		CustomerAgent occupiedBy;
 		int tableNumber;
+		int guiPosX;
+		int guiPosY;
 
 		Table(int tableNumber) {
 			this.tableNumber = tableNumber;
 		}
+		
+		Table(int tableNumber, int posX, int posY) {
+			this.tableNumber = tableNumber;
+			guiPosX = posX;
+			guiPosY = posY;
+		}
 
 		void setOccupant(CustomerAgent cust) {
 			occupiedBy = cust;
+		}
+		
+		public int getTableNumber(){
+			return tableNumber;
+		
+		}
+		public int getPosX(){
+			return guiPosX;
+		}
+		
+		public int getPosY(){
+			return guiPosY;
+		
 		}
 
 		void setUnoccupied() {
