@@ -104,13 +104,27 @@ public class RestaurantGui extends JFrame implements ActionListener {
         add(brianLabel, BorderLayout.PAGE_END);
         */
         
-        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
+        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * 0.2));
+        Dimension txtDim = new Dimension((int)(WINDOWX*0.2), (int)(WINDOWY * 0.1));
         brianPanel = new JPanel();
         brianPanel.setPreferredSize(brianDim);
         brianPanel.setMinimumSize(brianDim);
         brianPanel.setMaximumSize(brianDim);
-        private JButton addPersonB = new JButton("Add");
-
+        
+         JLabel xyLabel = new JLabel("Position");
+         brianPanel.add(xyLabel);
+         JTextField posField = new JTextField("0,0");
+         brianPanel.add(posField);
+         posField.setPreferredSize(txtDim);
+         posField.setMinimumSize(txtDim);
+         posField.setMaximumSize(txtDim);
+         JButton addTable = new JButton("Add Table");
+         brianPanel.add(addTable);
+         add (brianPanel, BorderLayout.PAGE_END);
+         
+         
+         
+         
         
         
       
