@@ -64,10 +64,10 @@ public class HostGui implements Gui {
     	for (HostAgent.Table myTable : HostAgent.tables){
     		if (myTable.getTableNumber() == tableNumber){
     			xTable = myTable.getPosX();
-    	    	yTable = myTable.getPosY();
+    			yTable = myTable.getPosY();
     			
     			xDestination = xTable + movementOffset;
-    			yDestination = xTable - movementOffset;
+    			yDestination = yTable - movementOffset;
     		}
     	}
     	

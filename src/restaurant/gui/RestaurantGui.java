@@ -1,6 +1,8 @@
 package restaurant.gui;
 
 import restaurant.CustomerAgent;
+import restaurant.HostAgent;
+import restaurant.HostAgent.Table;
 
 import javax.swing.*;
 
@@ -31,6 +33,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
     
     private JPanel brianPanel;
     private JLabel brianLabel;
+    
+    private JButton addTable;
+    private JTextField posField;
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
@@ -113,24 +118,17 @@ public class RestaurantGui extends JFrame implements ActionListener {
         
          JLabel xyLabel = new JLabel("Position");
          brianPanel.add(xyLabel);
-         JTextField posField = new JTextField("0,0");
+          posField = new JTextField("0,0");
          brianPanel.add(posField);
          posField.setPreferredSize(txtDim);
          posField.setMinimumSize(txtDim);
          posField.setMaximumSize(txtDim);
-         JButton addTable = new JButton("Add Table");
+         addTable = new JButton("Add Table");
          brianPanel.add(addTable);
          add (brianPanel, BorderLayout.PAGE_END);
-         
-         
-         
-         
-        
-        
-      
-        
         
     }
+    
     private void add(ImageIcon icon, String pageEnd) {
 		// TODO Auto-generated method stub
 		
@@ -168,6 +166,18 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * For v3, it will propose a break for the waiter.
      */
     public void actionPerformed(ActionEvent e) {
+    	if(e.getSource() == addTable){
+    		String myCoords = posField.getText();
+    		
+    		int xTablePos = Integer.parseInt(myCoords.substring(0));
+    		
+    		int yTablePos = Integer.parseInt(myCoords.substring(2));
+    		
+    		//HostAgent.tables.add(new HostAgent.Table(HostAgent.tables.size(), xTablePos, yTablePos));
+    		
+    	}
+    	
+    	
         if (e.getSource() == stateCB) {
             if (currentPerson instanceof CustomerAgent) {
                 CustomerAgent c = (CustomerAgent) currentPerson;

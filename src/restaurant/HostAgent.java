@@ -81,6 +81,10 @@ public class HostAgent extends Agent {
 			}
 		}
 	}
+	
+	 void addTable(int xz, int yz){
+		tables.add(new Table(tables.size(), xz, yz));
+	}
 
 	public void msgAtTable() {//from animation
 		//print("msgAtTable() called");

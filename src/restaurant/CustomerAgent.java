@@ -13,7 +13,7 @@ import java.util.TimerTask;
 public class CustomerAgent extends Agent {
 	
 	//private final int timerLength = 5000;
-	private final int timerLength = 10000;
+	private final int timerLength = 20000;
 	
 	private String name;
 	private int hungerLevel = 5;        // determines length of meal
