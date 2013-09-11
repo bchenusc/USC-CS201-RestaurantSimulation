@@ -34,6 +34,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
+    
+    private final int boundsPosX = 50;
+    private final int boundsPosY = 50;
+    
 
     /**
      * Constructor for RestaurantGui class.
@@ -48,7 +52,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         animationFrame.setVisible(true);
     	animationFrame.add(animationPanel); 
     	
-    	setBounds(50, 50, WINDOWX, WINDOWY);
+    	setBounds(boundsPosX, boundsPosY, WINDOWX, WINDOWY);
     	
         //setLayout(new BoxLayout((Container) getContentPane(), //****
         		//BoxLayout.Y_AXIS)); //******

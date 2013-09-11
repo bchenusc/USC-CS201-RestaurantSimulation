@@ -26,7 +26,11 @@ public class ListPanel extends JPanel implements ActionListener {
     private RestaurantPanel restPanel;
     private String type;
     
+    final JTextField nameField;
     private JCheckBox hungryBox; //hungry box
+    
+    private final int nameFieldDimesionWidth = 150;
+    private final int nameFieldDimensionHeight = 25;
 
     /**
      * Constructor for ListPanel.  Sets up all the gui
@@ -39,13 +43,34 @@ public class ListPanel extends JPanel implements ActionListener {
         this.type = type;
 
         setLayout(new BoxLayout((Container) this, BoxLayout.Y_AXIS));
-        add(new JLabel("<html><pre> <u>" + type + "</u><br></pre></html>"));
-
-        addPersonB.addActionListener(this);
-        add(addPersonB);
         
-        //add the checkbox
-        hungryBox.setText("Hungry?");
+       JLabel nameLabel = new JLabel("<html><pre> <u>" + type + "</u><br></pre></html>");
+       nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(nameLabel);
+        
+        nameField = new JTextField("New Customer");
+        nameField.addMouseListener(new MouseAdapter(){
+        	@Override
+        	public void mouseClicked(MouseEvent e){
+        		nameField.setText("");
+        	}
+        });
+        nameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(nameField);
+        Dimension nameDim = new Dimension(nameFieldDimesionWidth,nameFieldDimensionHeight);
+        nameField.setPreferredSize(nameDim);
+        nameField.setMinimumSize(nameDim);
+        nameField.setMaximumSize(nameDim);
+        
+        hungryBox = new JCheckBox("Hungry?");
+        hungryBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(hungryBox);
+        
+
+        //addPersonB.addActionListener(this);
+        addPersonB.addActionListener(this);
+        addPersonB.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(addPersonB);
 
         view.setLayout(new BoxLayout((Container) view, BoxLayout.Y_AXIS));
         pane.setViewportView(view);
@@ -59,12 +84,19 @@ public class ListPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addPersonB) {
         	// Chapter 2.19 describes showInputDialog()
-            addPerson(JOptionPane.showInputDialog("Please enter a name:"));
+        	
+            String msg = "Please enter a name:";
+            
+            //Add the person
+           // addPerson(JOptionPane.showInputDialog(msg));
+            
+            addPerson(nameField.getText(), hungryBox.isSelected()); 
+            
         }
         else {
         	// Isn't the second for loop more beautiful?
-            /*for (int i = 0; i < list.size(); i++) {
-                JButton temp = list.get(i);*/
+            //for (int i = 0; i < list.size(); i++) {
+                /*JButton temp = list.get(i);*/
         	for (JButton temp:list){
                 if (e.getSource() == temp)
                     restPanel.showInfo(type, temp.getText());
@@ -81,6 +113,18 @@ public class ListPanel extends JPanel implements ActionListener {
      */
     public void addPerson(String name) {
         if (name != null) {
+        	
+            //hungryBox = new JCheckBox();
+            //hungryBox.setText("Hungry?");
+            //JCheckBox notHungryBox = new JCheckBox();
+            //notHungryBox.setText("Not Hungry");
+            
+            //Object[] objects = {hungryBox, notHungryBox};
+            
+            //int boolChecked = JOptionPane.showConfirmDialog(null, objects);
+            
+            //System.out.println(boolChecked);
+        	
             JButton button = new JButton(name);
             button.setBackground(Color.white);
 
@@ -93,7 +137,41 @@ public class ListPanel extends JPanel implements ActionListener {
             button.addActionListener(this);
             list.add(button);
             view.add(button);
-            restPanel.addPerson(type, name);//puts customer on list
+            restPanel.addPerson(type, name);
+            //restPanel.addPerson(type, name, boolChecked);//puts customer on list
+            restPanel.showInfo(type, name);//puts hungry button on panel
+            validate();
+        }
+    }
+    
+    public void addPerson(String name, boolean isHungry) {
+        if (name != null) {
+        	
+            //hungryBox = new JCheckBox();
+            //hungryBox.setText("Hungry?");
+            //JCheckBox notHungryBox = new JCheckBox();
+            //notHungryBox.setText("Not Hungry");
+            
+            //Object[] objects = {hungryBox, notHungryBox};
+            
+            //int boolChecked = JOptionPane.showConfirmDialog(null, objects);
+            
+            //System.out.println(boolChecked);
+        	
+            JButton button = new JButton(name);
+            button.setBackground(Color.white);
+
+            Dimension paneSize = pane.getSize();
+            Dimension buttonSize = new Dimension(paneSize.width - 20,
+                    (int) (paneSize.height / 7));
+            button.setPreferredSize(buttonSize);
+            button.setMinimumSize(buttonSize);
+            button.setMaximumSize(buttonSize);
+            button.addActionListener(this);
+            list.add(button);
+            view.add(button);
+            restPanel.addPerson(type, name, isHungry);
+            //restPanel.addPerson(type, name, boolChecked);//puts customer on list
             restPanel.showInfo(type, name);//puts hungry button on panel
             validate();
         }

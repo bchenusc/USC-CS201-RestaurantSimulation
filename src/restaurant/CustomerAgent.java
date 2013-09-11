@@ -11,6 +11,9 @@ import java.util.TimerTask;
  * Restaurant customer agent.
  */
 public class CustomerAgent extends Agent {
+	
+	private final int timerLength = 5000;
+	
 	private String name;
 	private int hungerLevel = 5;        // determines length of meal
 	Timer timer = new Timer();
@@ -140,7 +143,7 @@ public class CustomerAgent extends Agent {
 				stateChanged();
 			}
 		},
-		5000);//getHungerLevel() * 1000);//how long to wait before running task
+		timerLength);//getHungerLevel() * 1000);//how long to wait before running task
 	}
 
 	private void leaveTable() {

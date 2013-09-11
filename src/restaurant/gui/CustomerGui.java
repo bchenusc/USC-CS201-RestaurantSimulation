@@ -21,6 +21,9 @@ public class CustomerGui implements Gui{
 
 	public static final int xTable = 200;
 	public static final int yTable = 250;
+	
+	public static final int customerWidth = 20;
+	public static final int customerHeight = 20;
 
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){ //HostAgent m) {
 		agent = c;
@@ -57,7 +60,7 @@ public class CustomerGui implements Gui{
 
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
-		g.fillRect(xPos, yPos, 20, 20);
+		g.fillRect(xPos, yPos, customerWidth, customerHeight);
 	}
 
 	public boolean isPresent() {

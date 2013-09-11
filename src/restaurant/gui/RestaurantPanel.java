@@ -25,6 +25,12 @@ public class RestaurantPanel extends JPanel {
     private JPanel group = new JPanel();
 
     private RestaurantGui gui; //reference to main gui
+    
+    private final int gridXPos = 1;
+    private final int gridYPos = 2;
+    private final int gridXWidth = 20;
+    private final int gridYWidth = 20;
+    
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
@@ -33,8 +39,8 @@ public class RestaurantPanel extends JPanel {
         gui.animationPanel.addGui(hostGui);
         host.startThread();
 
-        setLayout(new GridLayout(1, 2, 20, 20));
-        group.setLayout(new GridLayout(1, 2, 10, 10));
+        setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth, gridYWidth));
+        group.setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth/2, gridYWidth/2));
 
         group.add(customerPanel);
 
@@ -99,5 +105,32 @@ public class RestaurantPanel extends JPanel {
     		c.startThread();
     	}
     }
+    
+
+    
+    public void addPerson(String type, String name, boolean isHungry) {
+
+    	if (type.equals("Customers")) {
+    		CustomerAgent c = new CustomerAgent(name);	
+    		CustomerGui g = new CustomerGui(c, gui);
+
+    		gui.animationPanel.addGui(g);// dw
+ 
+    		c.setHost(host);
+    		c.setGui(g);
+    		
+    		System.out.println(isHungry);
+    		
+    		if (isHungry){
+    			c.getGui().setHungry();;
+    		}
+    		
+    		customers.add(c);
+    		
+    		c.startThread();	
+    		
+    	}
+    }
+    
 
 }
