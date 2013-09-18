@@ -13,12 +13,11 @@ public class Waiter extends Agent {
 
 	// This is to distribute the waiting customers evenly among waiters.
 	enum WaiterState {idle, busy;}
+	enum MyCustomerState {waiting, seated, readyToOrder, ordered;}
 	
 	
 	
-	
-	
-	//Scheduler
+//##########  Scheduler  ##############
 	protected boolean pickAndExecuteAnAction(){
 		
 		return false;
@@ -26,10 +25,12 @@ public class Waiter extends Agent {
 
 	
 	
+	
+//#### Inner Class ####	
 	private class MyCustomer {
 		   CustomerAgent customer;
 		   Table table;
 		   Order order;
-		   enum CustomerState {waiting, seated, readyToOrder, ordered;}
+		   MyCustomerState state = MyCustomerState.waiting;
 	};	
 }

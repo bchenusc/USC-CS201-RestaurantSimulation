@@ -21,7 +21,8 @@ public class HostAgent extends Agent {
 	//with List semantics.
 	public List<CustomerAgent> waitingCustomers
 	= new ArrayList<CustomerAgent>();
-	public static  Collection<Table> tables;
+	
+	public  Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
 
@@ -221,4 +222,5 @@ public class HostAgent extends Agent {
 		}
 	}
 }
+
 
