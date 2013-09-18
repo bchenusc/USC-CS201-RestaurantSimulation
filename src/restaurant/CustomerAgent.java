@@ -19,14 +19,12 @@ public class CustomerAgent extends Agent {
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
 
-	// agent correspondents
+	//Necessary links.
 	private HostAgent host;
 	private Waiter waiter;
 	private String choice;
 	private Menu menu;
-	private int tableToSitAt;
 
-	//    private boolean isHungry = false; //hack for gui
 	public enum AgentState
 	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving};
 	private AgentState state = AgentState.DoingNothing;//The start state
@@ -67,9 +65,9 @@ public class CustomerAgent extends Agent {
 		CustomerEvent = followHost;
 	}
 //Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
-WhatWouldYouLike(){
-     //do something with the menu
-}
+	public void WhatWouldYouLike(){
+		//do something with the menu
+	}
 
 	/*public void gotHungry() {//from animation
 		print("I'm hungry");

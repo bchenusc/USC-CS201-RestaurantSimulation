@@ -19,12 +19,6 @@ public class CustomerGui implements Gui{
 	private enum Command {noCommand, GoToSeat, LeaveRestaurant};
 	private Command command=Command.noCommand;
 
-	private int xTable = 200;
-	private int yTable = 250;
-	
-	private int customerWidth = 20;
-	private int customerHeight = 20;
-
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){ //HostAgent m) {
 		agent = c;
 		xPos = -40;

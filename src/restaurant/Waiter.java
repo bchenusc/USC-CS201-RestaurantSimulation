@@ -17,7 +17,7 @@ public class Waiter extends Agent {
 	enum MyCustomerState {waiting, seated, readyToOrder, ordered;}
 	
 	//Animation stuff - To implement in 2c
-	private Semaphore atTable = new Semaphore(0,true);
+	private Semaphore atTargetLocation = new Semaphore(0,true);
 
 // ######## Messages ################
 	public void SeatAtTable(CustomerAgent remove, Table t) {
