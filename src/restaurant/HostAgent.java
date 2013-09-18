@@ -81,7 +81,6 @@ public class HostAgent extends Agent {
 	
 
 
-
 //########### Scheduler ##############
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.

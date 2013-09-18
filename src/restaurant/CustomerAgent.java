@@ -12,7 +12,6 @@ import java.util.TimerTask;
  */
 public class CustomerAgent extends Agent {
 	
-	//private final int timerLength = 5000;
 	private final int timerLength = 20000;
 	
 	private String name;
@@ -22,7 +21,9 @@ public class CustomerAgent extends Agent {
 
 	// agent correspondents
 	private HostAgent host;
-	
+	private Waiter waiter;
+	private String choice;
+	private Menu menu;
 	private int tableToSitAt;
 
 	//    private boolean isHungry = false; //hack for gui
@@ -55,9 +56,22 @@ public class CustomerAgent extends Agent {
 	public String getCustomerName() {
 		return name;
 	}
-	// Messages
+// ##################### Messages #################
+	
+	public void IsHungry(){ 
+		//DoIsHungry();
+		CustomerEvent = gotHungry; 
+    }
+	public void FollowMe(Menu m){
+		menu = m;
+		CustomerEvent = followHost;
+	}
+//Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
+WhatWouldYouLike(){
+     //do something with the menu
+}
 
-	public void gotHungry() {//from animation
+	/*public void gotHungry() {//from animation
 		print("I'm hungry");
 		event = AgentEvent.gotHungry;
 		stateChanged();
@@ -80,6 +94,7 @@ public class CustomerAgent extends Agent {
 		event = AgentEvent.doneLeaving;
 		stateChanged();
 	}
+	*/
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
@@ -152,7 +167,7 @@ public class CustomerAgent extends Agent {
 
 	private void leaveTable() {
 		Do("Leaving.");
-		host.msgLeavingTable(this);
+		waiter.msgLeavingTable(this);
 		customerGui.DoExitRestaurant();
 	}
 

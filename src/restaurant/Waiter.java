@@ -13,6 +13,7 @@ public class Waiter extends Agent {
 
 	// This is to distribute the waiting customers evenly among waiters.
 	enum WaiterState {idle, busy;}
+	private WaiterState state = WaiterState.idle;
 	enum MyCustomerState {waiting, seated, readyToOrder, ordered;}
 	
 	//Animation stuff - To implement in 2c
@@ -24,9 +25,59 @@ public class Waiter extends Agent {
 		// myCustomers.add(new MyCustomer(c, t));
 	};	
 	
+	public void ReadyToOrder(CustomerAgent c){  
+		/*foreach MyCustomer mc in myCustomer{
+		      if (mc == c){
+		           WaiterState = busy;
+		          mc.CustomerState = readyToOrder;
+		      } 
+		 }
+		 */
+	}
+	public void HeresMyChoice(String c){ 
+		/*foreach MyCustomer mc in myCustomer{
+		      if (mc == c){
+		           WaiterState = busy;
+		           mc.order = new Order(c);
+		           mc.CustomerState = ordered;
+		      } 
+		   }
+		   */
+	}
+	public void OrderIsReady(Order o){ 
+		/*foreach MyCustomer mc in myCustomer{
+		      if (mc == c){
+		           WaiterState = busy;
+		           GiveFoodToCustomer(mc);
+		      } 
+		  }
+		  */
+	}
+	public void ImDone(CustomerAgent c){ 
+		/*foreach MyCustomer mc in myCustomer{
+		     if (mc == c){
+		           WaiterState = busy;
+		           CustomerLeaving(mc);
+		      } 
+	    }
+	    */
+	}
+
+	
 	
 //##########  Scheduler  ##############
 	protected boolean pickAndExecuteAnAction(){
+		
+		/*
+		 * if  there exists a MyCustomer mc such that mc.CustomerState == waiting
+   				then SeatCustomer(mc);
+
+
+			if  there exists a MyCustomer mc such that mc.CustomerState == readyToOrder
+   				then TakeOrder(mc);
+
+		 * 
+		 */
 		
 		return false;
 	}
@@ -39,6 +90,35 @@ public class Waiter extends Agent {
 		    mc.CustomerState = seated;
 		    WaiterState = idle;*/
 	}
+	
+	public void TakeOrder(MyCustomer mc){
+	   /*DoTakeOrder();
+	   mc.customer.WhatWouldYouLike();  
+	   WaiterState = idle;
+	   */
+	}
+	 
+	public void GiveOrderToCook(MyCustomer mc){
+	   /*DoGiveOrderToCook();
+	   cook.HeresAnOrder(mc.order);
+	   WaiterState = idle;
+	   */
+	}
+
+	public void GiveFoodToCustomer(MyCustomer mc){
+	   /*DoGiveFoodToCustomer();
+	   mc.customer.HeresYourOrder(mc.order.choice);
+	   WaiterState = idle;
+	   */
+	}
+
+	public void CustomerLeaving(MyCustomer c){
+	   /*DoCustomerLeaving();
+	   host.TableIsClear(c.table);
+	   WaiterState = idle;
+	   */
+	}
+
 
 //#####    GUI STUFF DEAL WITH LATER   ####
 	public void msgAtTable() {//from animation
