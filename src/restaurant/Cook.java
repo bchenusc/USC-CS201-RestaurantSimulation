@@ -43,7 +43,7 @@ public class Cook extends Agent {
 	}
 		
 	//########## Messages  ###############
-	public void HeresAnOrder(Order o)
+	public void msgHeresAnOrder(Order o)
 	{
 		 pendingOrders.add(o);
 	}

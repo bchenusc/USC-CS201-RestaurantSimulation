@@ -15,6 +15,14 @@ public class Waiter extends Agent {
 	enum WaiterState {idle, busy;}
 	enum MyCustomerState {waiting, seated, readyToOrder, ordered;}
 	
+	//Animation stuff - To implement in 2c
+	private Semaphore atTable = new Semaphore(0,true);
+
+// ######## Messages ################
+	public void SeatAtTable(CustomerAgent remove, Table t) {
+		//WaiterState = busy;
+		// myCustomers.add(new MyCustomer(c, t));
+	};	
 	
 	
 //##########  Scheduler  ##############
@@ -22,9 +30,22 @@ public class Waiter extends Agent {
 		
 		return false;
 	}
+	
+//############ Action ################
+	public void SeatCustomer(Table t, MyCustomer mc) {
+		/*
+		    mc.customer.FollowMe(new Menu());
+		    DoSeatCustomer(); //GUI
+		    mc.CustomerState = seated;
+		    WaiterState = idle;*/
+	}
 
-	
-	
+//#####    GUI STUFF DEAL WITH LATER   ####
+	public void msgAtTable() {//from animation
+			//print("msgAtTable() called");
+			atTable.release();// = true;
+			stateChanged();
+	}
 	
 //#### Inner Class ####	
 	private class MyCustomer {
@@ -32,5 +53,6 @@ public class Waiter extends Agent {
 		   Table table;
 		   Order order;
 		   MyCustomerState state = MyCustomerState.waiting;
-	};	
+	}
+
 }
