@@ -123,7 +123,7 @@ public class Waiter extends Agent {
 //#####    GUI STUFF DEAL WITH LATER   ####
 	public void msgAtTable() {//from animation
 			//print("msgAtTable() called");
-			atTable.release();// = true;
+			atTargetLocation.release();// = true;
 			stateChanged();
 	}
 	
