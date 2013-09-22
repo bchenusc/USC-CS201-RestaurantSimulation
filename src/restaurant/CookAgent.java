@@ -1,51 +1,38 @@
 package restaurant;
 
-import javax.swing.*;
+//import javax.swing.*;
 
 import agent.Agent;
 import restaurant.Order;
 
+import restaurant.Order.OrderState;
+
 //import restaurant.HostAgent.HostState;
 //import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 import java.util.List;
 //import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Cook extends Agent {
+public class CookAgent extends Agent {
 	
 	//A list of ALL orders that the cook is attending to.
-	List<Order> pendingOrders;
+	List<Order> orders;
 
-	//Timer for the cook to know when he's busy or not busy.
-	Timer cookTimer; 
-	
 	//A map containing all the foods and their cook times. Implement in Constructor pls!
 	Map<String, Integer> foodDictionary = new TreeMap<String, Integer>(); 
-	
-	//The state of the cook
-	private enum CookState {idle, cooking;}
-	private CookState state = CookState.idle; //The start state
 
 	//Constructor
-	public Cook(){
-	  cookTimer = 	new Timer(0, new ActionListener() {
-		   public void actionPerformed(ActionEvent e){
-		      /* if and  an Order o in pendingOrder  o.OrderState == cooking
-			then o.OrderState = cooked;
-		              o.waiter.OrderIsReady(o);
-			     */
-		   }
-	
-		});	
+	public CookAgent(){
+	  
 	}
 		
 	//########## Messages  ###############
 	public void msgHeresAnOrder(Order o)
 	{
-		 pendingOrders.add(o);
+		 orders.add(o);
 	}
 	
 	
@@ -54,15 +41,36 @@ public class Cook extends Agent {
 	protected boolean pickAndExecuteAnAction() {
 		// if State == idle and there exists an Order o in pendingOrder such that o.OrderState == pending
 		//then CookOrder(o);
+		if (orders.size() > 0){
+			
+			//Look for all pending orders.
+			for(Order o : orders){
+				
+				if (o.getState() == OrderState.pending){
+					CookOrder(o);
+				}
+				
+			}
+			
+			for (Order o: orders){
+				
+				if (o.getState() == OrderState.cooked){
+					o.waiter.msgOrderIsReady(o);
+				}
+				
+			}
+			
+			
+			return true;
+		}
+			
 		return false;
 	}
 		
 		//########## Actions ###############
 	public void CookOrder(Order o){
 		  //DoCookOrder(); //GUI
-		  state = CookState.cooking;
-		  cookTimer.setDelay(foodDictionary.get(o.choice));
-		  cookTimer.start();
+		  o.setTimer(foodDictionary.get(o.choice));
 	}
 
 //######################## End of Class #############################

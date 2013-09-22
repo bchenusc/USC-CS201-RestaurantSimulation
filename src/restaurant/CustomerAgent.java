@@ -24,16 +24,16 @@ public class CustomerAgent extends Agent {
 
 	//Necessary links.
 	private HostAgent host;
-	private Waiter waiter;
+	private WaiterAgent waiter;
 	private String choice;
 	private Menu menu;
 
 	public enum CustomerState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, ReadingMenu, Ordering, Eating, DoneEating, Leaving};
+	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Ordering, Eating, DoneEating, Leaving};
 	private CustomerState state = CustomerState.DoingNothing;//The start state
 
 	public enum CustomerEvent 
-	{none, gotHungry, followWaiter, seated, readyToOrder, doneEating, doneLeaving};
+	{none, gotHungry, followWaiter, seated, readyToOrder, ordered, doneEating, doneLeaving};
 	CustomerEvent event = CustomerEvent.none;
 
 	/**
@@ -47,7 +47,8 @@ public class CustomerAgent extends Agent {
 		this.name = name;
 		eatingTimer = new Timer(eatingTime, new ActionListener() {
 			   public void actionPerformed(ActionEvent e){
-			      
+			      event = CustomerEvent.doneEating;
+			      stateChanged();
 			   }
 			});
 		eatingTimer = new Timer(readingMenuTime, new ActionListener() {
@@ -59,9 +60,6 @@ public class CustomerAgent extends Agent {
 			});	
 	}
 
-	/**
-	 * hack to establish connection to Host agent.
-	 */
 	public void setHost(HostAgent host) {
 		this.host = host;
 	}
@@ -114,29 +112,36 @@ public class CustomerAgent extends Agent {
 
 		if (state == CustomerState.DoingNothing && event == CustomerEvent.gotHungry ){
 			state = CustomerState .WaitingInRestaurant;
+			stateChanged();
 			goToRestaurant();
 			return true;
 		}
 		if (state == CustomerState.WaitingInRestaurant && event == CustomerEvent.followWaiter ){
 			state = CustomerState.BeingSeated;
+			stateChanged();
 			return true;
 		}
 		if (state == CustomerState.BeingSeated && event == CustomerEvent.seated){
 			state = CustomerState.Eating;
+			stateChanged();
 			EatFood();
 			return true;
 		}
-		if (state == CustomerState.ReadingMenu && event == CustomerEvent.readyToOrder){
+		if (state == CustomerState.Seated && event == CustomerEvent.readyToOrder){
 			state = CustomerState.Ordering;
+			stateChanged();
 			CallWaiter();
+			return true;
 		}
 		if (state == CustomerState.Eating && event == CustomerEvent.doneEating){
 			state = CustomerState.Leaving;
+			stateChanged();
 			leaveTable();
 			return true;
 		}
 		if (state == CustomerState.Leaving && event == CustomerEvent.doneLeaving){
 			state = CustomerState.DoingNothing;
+			stateChanged();
 			//no action
 			return true;
 		}
@@ -147,22 +152,28 @@ public class CustomerAgent extends Agent {
 
 	private void goToRestaurant() {
 		//Do("Going to restaurant");
-		host.IWantToEat(this);//send our instance, so he can respond to us
+		host.msgIWantToEat(this);//send our instance, so he can respond to us
 	}
 	
 	private void CallWaiter(){
 		//DoCallWaiter();
-		waiter.ReadyToOrder(this);
+		waiter.msgReadyToOrder(this);
 	}
 	
 	private void ChooseFood(){
-		readMenuTimer.star
-	
+		readMenuTimer.restart();
+		readMenuTimer.start();
 	}
 
 	private void SitDown() {
 		Do("Being seated. Going to table");
-		customerGui.DoGoToSeat(tableToSitAt);//hack; only one table
+		//customerGui.DoGoToSeat(tableToSitAt);//hack; only one table
+	}
+	
+	private void TellWaiterMyChoice(){
+		waiter.msgHeresMyChoice(choice);
+		event = CustomerEvent.ordered;
+		stateChanged();
 	}
 
 	private void EatFood() {
@@ -175,22 +186,15 @@ public class CustomerAgent extends Agent {
 		//Since Java does not all us to pass functions, only objects.
 		//So, we use Java syntactic mechanism to create an
 		//anonymous inner class that has the public method run() in it.
-		timer.schedule(new TimerTask() {
-			Object cookie = 1;
-			public void run() {
-				print("Done eating, cookie=" + cookie);
-				event = AgentEvent.doneEating;
-				//isHungry = false;
-				stateChanged();
-			}
-		},
-		timerLength);//getHungerLevel() * 1000);//how long to wait before running task
+		eatingTimer.restart();
+		eatingTimer.start();
 	}
 
 	private void leaveTable() {
-		Do("Leaving.");
-		waiter.msgLeavingTable(this);
-		customerGui.DoExitRestaurant();
+		//Do("Leaving.");
+		waiter.msgImDone(this);
+		state = CustomerState.Leaving;
+		//customerGui.DoExitRestaurant(); //set done leaving here.
 	}
 
 	// Accessors, etc.
@@ -198,20 +202,17 @@ public class CustomerAgent extends Agent {
 	public String getName() {
 		return name;
 	}
-	
-	public int getHungerLevel() {
-		return hungerLevel;
-	}
-
-	public void setHungerLevel(int hungerLevel) {
-		this.hungerLevel = hungerLevel;
-		//could be a state change. Maybe you don't
-		//need to eat until hunger lever is > 5?
-	}
 
 	public String toString() {
 		return "customer " + getName();
 	}
+	
+	
+	//########## UTILITIES ###########
+	private void RandomChoice(Menu menu){
+		menu.RandomChoice();
+	}
+	
 
 	public void setGui(CustomerGui g) {
 		customerGui = g;

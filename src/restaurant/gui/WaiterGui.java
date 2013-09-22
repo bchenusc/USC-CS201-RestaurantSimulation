@@ -6,7 +6,7 @@ import restaurant.HostAgent;
 
 import java.awt.*;
 
-public class HostGui implements Gui {
+public class WaiterGui implements Gui {
 
     private HostAgent agent = null;
 
@@ -21,7 +21,7 @@ public class HostGui implements Gui {
     
     private static final int movementOffset = 20;
 
-    public HostGui(HostAgent agent) {
+    public WaiterGui(HostAgent agent) {
         this.agent = agent;
     }
 

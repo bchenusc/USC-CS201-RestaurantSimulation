@@ -1,12 +1,10 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.CustomerAgent.AgentEvent;
-import restaurant.CustomerAgent.AgentState;
-import restaurant.gui.HostGui;
+import restaurant.WaiterAgent.WaiterState;
+import restaurant.gui.WaiterGui;
 
 import java.util.*;
-import java.util.concurrent.Semaphore;
 
 /**
  * Restaurant Host Agent
@@ -22,7 +20,7 @@ public class HostAgent extends Agent {
 	public List<CustomerAgent> waitingCustomers = new ArrayList<CustomerAgent>();
 	
 	//List of waiters
-	public List<Waiter> waiters = new ArrayList<Waiter>();
+	public List<WaiterAgent> waiters = new ArrayList<WaiterAgent>();
 	
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
@@ -30,7 +28,7 @@ public class HostAgent extends Agent {
 
 	private String name;
 
-	public HostGui hostGui = null;
+	public WaiterGui hostGui = null;
 
 	public HostAgent(String name) {
 		super();
@@ -47,17 +45,8 @@ public class HostAgent extends Agent {
 		return name;
 	}
 
-	public List getWaitingCustomers() {
-		return waitingCustomers;
-	}
-
 //########### Messages #####################
 
-	/*public void msgIWantFood(CustomerAgent cust) {
-		waitingCustomers.add(cust);
-		stateChanged();
-	}
-	*/
 	public void msgIWantToEat(CustomerAgent c){
 		waitingCustomers.add(c);
 		stateChanged();
@@ -68,19 +57,6 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 
-	/*public void msgLeavingTable(CustomerAgent cust) {
-		for (Table table : tables) {
-			if (table.getOccupant() == cust) {
-				print(cust + " leaving " + table);
-				table.setUnoccupied();
-				stateChanged();
-			}
-		}
-	}
-	*/
-	
-
-
 //########### Scheduler ##############
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
@@ -89,6 +65,20 @@ public class HostAgent extends Agent {
 		/*if !waitingCustomer.empty() there exists a Table t in tables such that t.occupiedBy == null 
 		 * and  there exists a Waiter w in waiters such that w.State == idle
 		 * 			then notifyWaiter(t, w);*/
+		if (!waitingCustomers.isEmpty()){
+			for (Table t : tables){
+				if (t.occupiedBy == null){
+					for (WaiterAgent w: waiters){
+						if (w.state == WaiterState.idle){
+							notifyWaiter(t, w);
+							return true;
+						}
+					}
+					return true;
+				}
+			}
+			return true;
+		}
 
 
 		return false;
@@ -98,9 +88,9 @@ public class HostAgent extends Agent {
 	}
 
 // ######################   Actions  ##################
-	private void notifyWaiter(Table t, Waiter w){
+	private void notifyWaiter(Table t, WaiterAgent w){
 		  // DoNotifyWaiter();
-		   w.SeatAtTable(waitingCustomers.remove(0), t);
+		   w.msgSeatAtTable(waitingCustomers.remove(0), t);
 		}
 
 
@@ -123,18 +113,6 @@ public class HostAgent extends Agent {
 		
 	}*/
 	
-	/*public void setDoNothing(){
-		state = HostState.DoingNothing;
-		stateChanged();
-	
-	}*/
-	
-	/*public HostState getState(){
-		
-		return state;
-	}
-	*/
-
 	// The animation DoXYZ() routines
 	/*private void DoSeatCustomer(CustomerAgent customer, Table table) {
 		//Notice how we print "customer" directly. It's toString method will do it.
@@ -146,11 +124,11 @@ public class HostAgent extends Agent {
 
 	//utilities
 
-	public void setGui(HostGui gui) {
+	public void setGui(WaiterGui gui) {
 		hostGui = gui;
 	}
 
-	public HostGui getGui() {
+	public WaiterGui getGui() {
 		return hostGui;
 	}
 

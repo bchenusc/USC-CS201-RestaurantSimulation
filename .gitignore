@@ -9,6 +9,7 @@
 # Editor Temporary Files
 .*.sw[a-z]
 *~
+~*
 \#*\#
 *.tmp
 *.bak

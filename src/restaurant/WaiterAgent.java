@@ -1,31 +1,31 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.gui.HostGui;
+import restaurant.gui.WaiterGui;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
-public class Waiter extends Agent {
+public class WaiterAgent extends Agent {
 	List<MyCustomer> myCustomers;
-	Cook cook;
+	CookAgent cook;
 	HostAgent host;
 
 	// This is to distribute the waiting customers evenly among waiters.
-	enum WaiterState {idle, busy;}
-	private WaiterState state = WaiterState.idle;
+	public enum WaiterState {idle, busy;}
+	public WaiterState state = WaiterState.idle;
 	enum MyCustomerState {waiting, seated, readyToOrder, ordered;}
 	
 	//Animation stuff - To implement in 2c
 	private Semaphore atTargetLocation = new Semaphore(0,true);
 
 // ######## Messages ################
-	public void SeatAtTable(CustomerAgent remove, Table t) {
+	public void msgSeatAtTable(CustomerAgent remove, Table t) {
 		//WaiterState = busy;
 		// myCustomers.add(new MyCustomer(c, t));
 	};	
 	
-	public void ReadyToOrder(CustomerAgent c){  
+	public void msgReadyToOrder(CustomerAgent c){  
 		/*foreach MyCustomer mc in myCustomer{
 		      if (mc == c){
 		           WaiterState = busy;
@@ -34,17 +34,17 @@ public class Waiter extends Agent {
 		 }
 		 */
 	}
-	public void HeresMyChoice(String c){ 
+	public void msgHeresMyChoice(String c){ 
 		/*foreach MyCustomer mc in myCustomer{
 		      if (mc == c){
 		           WaiterState = busy;
-		           mc.order = new Order(c);
+		           mc.order = new Order(c, this. mc.table.tableNumber);
 		           mc.CustomerState = ordered;
 		      } 
 		   }
 		   */
 	}
-	public void OrderIsReady(Order o){ 
+	public void msgOrderIsReady(Order o){ 
 		/*foreach MyCustomer mc in myCustomer{
 		      if (mc == c){
 		           WaiterState = busy;
@@ -53,7 +53,7 @@ public class Waiter extends Agent {
 		  }
 		  */
 	}
-	public void ImDone(CustomerAgent c){ 
+	public void msgImDone(CustomerAgent c){ 
 		/*foreach MyCustomer mc in myCustomer{
 		     if (mc == c){
 		           WaiterState = busy;
