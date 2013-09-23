@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 
 public class WaiterAgent extends Agent {
-	List<MyCustomer> myCustomers;
+	List<MyCustomer> myCustomers = new ArrayList<MyCustomer>();
 	CookAgent cook;
 	HostAgent host;
 		public HostAgent getHost(){
@@ -34,12 +34,19 @@ public class WaiterAgent extends Agent {
 	
 	public WaiterAgent(String name) {
 		this.name = name;
+		
 	}
 
 // ######## Messages ################
-	public void msgSeatAtTable(CustomerAgent remove, Table t) {
+	public void msgSeatAtTable(CustomerAgent c, Table t) {
 		//WaiterState = busy;
 		// myCustomers.add(new MyCustomer(c, t));
+		
+		state = WaiterState.busy;
+		myCustomers.add(new MyCustomer(c,t));
+		
+		stateChanged();
+
 	};	
 	
 	public void msgReadyToOrder(CustomerAgent c){  
@@ -50,6 +57,14 @@ public class WaiterAgent extends Agent {
 		      } 
 		 }
 		 */
+		
+		for (MyCustomer mc : myCustomers){
+			if (mc.customer == c){
+				state = WaiterState.busy;
+				mc.state = MyCustomerState.readyToOrder;
+				stateChanged();
+			}
+		}
 	}
 	public void msgHeresMyChoice(String c){ 
 		/*foreach MyCustomer mc in myCustomer{
@@ -60,6 +75,12 @@ public class WaiterAgent extends Agent {
 		      } 
 		   }
 		   */
+		for (MyCustomer mc: myCustomers){
+			if (mc.order.choice == c){
+				state = WaiterState.busy;
+				stateChanged();
+			}
+		}
 	}
 	public void msgOrderIsReady(Order o){ 
 		/*foreach MyCustomer mc in myCustomer{
@@ -69,6 +90,13 @@ public class WaiterAgent extends Agent {
 		      } 
 		  }
 		  */
+		for (MyCustomer mc : myCustomers){
+			if (mc.order == o){
+				state = WaiterState.busy;
+				GiveFoodToCustomer(mc);
+				stateChanged();
+			}
+		}
 	}
 	public void msgImDone(CustomerAgent c){ 
 		/*foreach MyCustomer mc in myCustomer{
@@ -78,6 +106,13 @@ public class WaiterAgent extends Agent {
 		      } 
 	    }
 	    */
+		for (MyCustomer mc: myCustomers){
+			if (mc.customer == c){
+				state = WaiterState.busy;
+				stateChanged();
+				CustomerLeaving(mc);
+			}
+		}
 	}
 
 	
@@ -95,6 +130,22 @@ public class WaiterAgent extends Agent {
 
 		 * 
 		 */
+		if (!myCustomers.isEmpty()){
+			for (MyCustomer mc : myCustomers){
+				if (mc.state == MyCustomerState.waiting){
+					SeatCustomer(mc.table, mc);
+					return true;
+				}
+			}
+			
+			for (MyCustomer mc: myCustomers){
+				if (mc.state == MyCustomerState.readyToOrder){
+					TakeOrder(mc);
+					return true;
+				}
+			}
+			return true;
+		}
 		
 		return false;
 	}
@@ -106,6 +157,11 @@ public class WaiterAgent extends Agent {
 		    DoSeatCustomer(); //GUI
 		    mc.CustomerState = seated;
 		    WaiterState = idle;*/
+		Do(name + " is seating " + mc.customer.getName());
+		mc.customer.FollowMe(new Menu());
+		mc.state = MyCustomerState.seated;
+		state = WaiterState.idle;
+		stateChanged();
 	}
 	
 	public void TakeOrder(MyCustomer mc){
@@ -113,6 +169,10 @@ public class WaiterAgent extends Agent {
 	   mc.customer.WhatWouldYouLike();  
 	   WaiterState = idle;
 	   */
+		Do(name + " is taking " + mc.customer.getName()+ "'s order.");
+		mc.customer.WhatWouldYouLike();
+		state = WaiterState.idle;
+		stateChanged();
 	}
 	 
 	public void GiveOrderToCook(MyCustomer mc){
@@ -120,6 +180,10 @@ public class WaiterAgent extends Agent {
 	   cook.HeresAnOrder(mc.order);
 	   WaiterState = idle;
 	   */
+		Do(name + " gives an order to the cook.");
+		cook.msgHeresAnOrder(mc.order);
+		state = WaiterState.idle;
+		stateChanged();
 	}
 
 	public void GiveFoodToCustomer(MyCustomer mc){
@@ -127,6 +191,10 @@ public class WaiterAgent extends Agent {
 	   mc.customer.HeresYourOrder(mc.order.choice);
 	   WaiterState = idle;
 	   */
+		Do(name + " is giving food to " + mc.customer.getName());
+		mc.customer.HeresYourOrder(mc.order.choice);
+		state = WaiterState.idle;
+		stateChanged();
 	}
 
 	public void CustomerLeaving(MyCustomer c){
@@ -134,22 +202,32 @@ public class WaiterAgent extends Agent {
 	   host.TableIsClear(c.table);
 	   WaiterState = idle;
 	   */
+		Do(c.customer.getName() + " is leaving the restaurant.");
+		host.msgTableIsClear(c.table);
+		state = WaiterState.idle;
+		stateChanged();
 	}
 
 
 //#####    GUI STUFF DEAL WITH LATER   ####
-	public void msgAtTable() {//from animation
+	/*public void msgAtTable() {//from animation
 			//print("msgAtTable() called");
 			atTargetLocation.release();// = true;
 			stateChanged();
 	}
+	*/
 	
 //#### Inner Class ####	
 	private class MyCustomer {
-		   CustomerAgent customer;
+		CustomerAgent customer;
 		   Table table;
 		   Order order;
 		   MyCustomerState state = MyCustomerState.waiting;
+		   
+		   public MyCustomer(CustomerAgent c, Table t) {
+				customer = c;
+				table = t;
+			}
 	}
 
 }

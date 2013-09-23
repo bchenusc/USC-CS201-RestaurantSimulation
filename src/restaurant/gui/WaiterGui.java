@@ -41,7 +41,7 @@ public class WaiterGui implements Gui {
 
         if (xPos == xDestination && yPos == yDestination
         		& (xDestination == xTable + movementOffset) & (yDestination == yTable - movementOffset)) {
-           agent.msgAtTable();
+           //agent.msgAtTable();
         }
         
         //if left the screen

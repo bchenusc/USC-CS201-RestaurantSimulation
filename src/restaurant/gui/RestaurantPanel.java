@@ -43,6 +43,8 @@ public class RestaurantPanel extends JPanel {
 
         gui.animationPanel.addGui(hostGui);
         host.startThread();
+        cook.startThread();
+        waiter.startThread();
 
         setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth, gridYWidth));
         group.setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth/2, gridYWidth/2));

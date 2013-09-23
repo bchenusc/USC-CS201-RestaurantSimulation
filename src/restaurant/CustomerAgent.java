@@ -31,7 +31,7 @@ public class CustomerAgent extends Agent {
 	private Menu menu;
 
 	public enum CustomerState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Ordering, Eating, DoneEating, Leaving};
+	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Ordering, Eating, DoneEating, Leaving, ReadingMenu};
 	private CustomerState state = CustomerState.DoingNothing;//The start state
 
 	public enum CustomerEvent 
@@ -53,7 +53,7 @@ public class CustomerAgent extends Agent {
 			      stateChanged();
 			   }
 			});
-		eatingTimer = new Timer(readingMenuTime, new ActionListener() {
+		readMenuTimer = new Timer(readingMenuTime, new ActionListener() {
 			   public void actionPerformed(ActionEvent e){
 			      choice = RandomChoice(menu);
 			      event = CustomerEvent.readyToOrder;
@@ -79,6 +79,10 @@ public class CustomerAgent extends Agent {
 	public void FollowMe(Menu m){
 		menu = m;
 		event = CustomerEvent.followWaiter;
+	
+		//**Temporary hack to check if this works. Skips the gui part
+		event = CustomerEvent.seated;
+		state = CustomerState.BeingSeated;
 		stateChanged();
 	}
 //Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
@@ -125,10 +129,11 @@ public class CustomerAgent extends Agent {
 			stateChanged();
 			return true;
 		}
+		
 		if (state == CustomerState.BeingSeated && event == CustomerEvent.seated){
-			state = CustomerState.Eating;
+			state = CustomerState.ReadingMenu;
+			ChooseFood();
 			stateChanged();
-			EatFood();
 			return true;
 		}
 		if (state == CustomerState.Seated && event == CustomerEvent.readyToOrder){

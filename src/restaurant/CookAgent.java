@@ -4,9 +4,10 @@ package restaurant;
 
 import agent.Agent;
 import restaurant.Order;
-
 import restaurant.Order.OrderState;
 
+
+import java.util.ArrayList;
 //import restaurant.HostAgent.HostState;
 //import java.awt.*;
 //import java.awt.event.ActionEvent;
@@ -29,6 +30,7 @@ public class CookAgent extends Agent {
 	//Constructor
 	public CookAgent(String name){
 	  this.name = name;
+	  orders = new ArrayList<Order>();
 	}
 		
 //########## Messages  ###############
