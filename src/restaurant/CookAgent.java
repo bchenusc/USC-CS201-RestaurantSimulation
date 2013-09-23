@@ -18,6 +18,8 @@ import java.util.TreeMap;
 
 public class CookAgent extends Agent {
 	
+	String name;
+	
 	//A list of ALL orders that the cook is attending to.
 	List<Order> orders;
 
@@ -25,19 +27,19 @@ public class CookAgent extends Agent {
 	Map<String, Integer> foodDictionary = new TreeMap<String, Integer>(); 
 
 	//Constructor
-	public CookAgent(){
-	  
+	public CookAgent(String name){
+	  this.name = name;
 	}
 		
-	//########## Messages  ###############
+//########## Messages  ###############
 	public void msgHeresAnOrder(Order o)
 	{
 		 orders.add(o);
 	}
 	
 	
-	//##########  Scheduler  ##############
-		@Override
+//##########  Scheduler  ##############
+@Override
 	protected boolean pickAndExecuteAnAction() {
 		// if State == idle and there exists an Order o in pendingOrder such that o.OrderState == pending
 		//then CookOrder(o);
@@ -67,10 +69,15 @@ public class CookAgent extends Agent {
 		return false;
 	}
 		
-		//########## Actions ###############
+//########## Actions ###############
 	public void CookOrder(Order o){
-		  //DoCookOrder(); //GUI
+		  DoCookOrder(o); //GUI
 		  o.setTimer(foodDictionary.get(o.choice));
+	}
+	
+//################    GUI     ##################
+	public void DoCookOrder(Order o){
+		System.out.println("Cook " + name + " is cooking " + o.choice + ".");
 	}
 
 //######################## End of Class #############################

@@ -1,5 +1,6 @@
 package restaurant.gui;
 
+import restaurant.CookAgent;
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
 import restaurant.WaiterAgent;
@@ -18,8 +19,9 @@ public class RestaurantPanel extends JPanel {
 
     //Host, cook, waiters and customers
     private HostAgent host = new HostAgent("Sarah");
-    private WaiterAgent waiter = new WaiterAgent("Brian");
+    private WaiterAgent waiter = new WaiterAgent("Matt");
     private WaiterGui hostGui = new WaiterGui(waiter);
+    private CookAgent cook = new CookAgent("Brian");
 
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
 

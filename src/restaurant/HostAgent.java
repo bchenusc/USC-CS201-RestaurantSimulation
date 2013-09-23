@@ -93,7 +93,7 @@ public class HostAgent extends Agent {
 
 // ######################   Actions  ##################
 	private void notifyWaiter(Table t, WaiterAgent w){
-		  // DoNotifyWaiter();
+		  Do("Host: " + name + " is notifying waiter "+ w.name);
 		   w.msgSeatAtTable(waitingCustomers.remove(0), t);
 		}
 

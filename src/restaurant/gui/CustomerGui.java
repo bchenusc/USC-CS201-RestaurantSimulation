@@ -47,7 +47,7 @@ public class CustomerGui implements Gui{
 		else if (yPos > yDestination)
 			yPos--;
 
-		if (xPos == xDestination && yPos == yDestination) {
+		/*if (xPos == xDestination && yPos == yDestination) {
 			if (command==Command.GoToSeat) agent.msgAnimationFinishedGoToSeat();
 			else if (command==Command.LeaveRestaurant) {
 				agent.msgAnimationFinishedLeaveRestaurant();
@@ -56,7 +56,7 @@ public class CustomerGui implements Gui{
 				gui.setCustomerEnabled(agent);
 			}
 			command=Command.noCommand;
-		}
+		}*/
 	}
 
 	public void draw(Graphics2D g) {

@@ -95,7 +95,7 @@ public class CustomerAgent extends Agent {
 		EatFood();
 	}
 
-	public void msgAnimationFinishedGoToSeat() {
+	/*public void msgAnimationFinishedGoToSeat() {
 		//from animation
 		event = CustomerEvent.seated;
 		stateChanged();
@@ -105,6 +105,7 @@ public class CustomerAgent extends Agent {
 		event = CustomerEvent.doneLeaving;
 		stateChanged();
 	}
+	*/
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
@@ -120,6 +121,7 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == CustomerState.WaitingInRestaurant && event == CustomerEvent.followWaiter ){
 			state = CustomerState.BeingSeated;
+			followWaiter();
 			stateChanged();
 			return true;
 		}
@@ -153,33 +155,40 @@ public class CustomerAgent extends Agent {
 // ################# ACTIONS ####################
 
 	private void goToRestaurant() {
-		//Do("Going to restaurant");
+		Do(name + " is going to restaurant.");
 		host.msgIWantToEat(this);//send our instance, so he can respond to us
 	}
 	
+	private void followWaiter(){
+		Do (name + " is following waiter.");
+		//call the gui to follow the waiter.
+	}
+	
 	private void CallWaiter(){
-		//DoCallWaiter();
+		Do(name + " is calling Waiter.");
 		waiter.msgReadyToOrder(this);
 	}
 	
 	private void ChooseFood(){
+		Do(name + " is choosing food.");
 		readMenuTimer.restart();
 		readMenuTimer.start();
 	}
 
 	private void SitDown() {
-		Do("Being seated. Going to table");
+		Do(name + " is being seated.");
 		//customerGui.DoGoToSeat(tableToSitAt);//hack; only one table
 	}
 	
 	private void TellWaiterMyChoice(){
 		waiter.msgHeresMyChoice(choice);
+		Do(name + " tells the waiter he wants " + choice + ".");
 		event = CustomerEvent.ordered;
 		stateChanged();
 	}
 
 	private void EatFood() {
-		Do("Eating Food");
+		Do(name + "is eating food.");
 		//This next complicated line creates and starts a timer thread.
 		//We schedule a deadline of getHungerLevel()*1000 milliseconds.
 		//When that time elapses, it will call back to the run routine
@@ -193,9 +202,10 @@ public class CustomerAgent extends Agent {
 	}
 
 	private void leaveTable() {
-		//Do("Leaving.");
+		Do(name + "is leaving.");
 		waiter.msgImDone(this);
 		state = CustomerState.Leaving;
+		stateChanged();
 		//customerGui.DoExitRestaurant(); //set done leaving here.
 	}
 
@@ -208,6 +218,9 @@ public class CustomerAgent extends Agent {
 	public String toString() {
 		return "customer " + getName();
 	}
+	
+	//######### GUI ###########
+	
 	
 	
 	//########## UTILITIES ###########
