@@ -2,7 +2,6 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
-import restaurant.HostAgent.Table;
 
 import javax.swing.*;
 
@@ -51,7 +50,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
     public RestaurantGui() {
         int WINDOWX = 450; //450
         int WINDOWY = 350; //350
+        //----------------------- *Finds the host. ------------------ Important step: Caching the host in the AnimationPanel
+        animationPanel.setHost(restPanel.getHost());
 
+        //----------------------
         animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
         animationFrame.setVisible(true);

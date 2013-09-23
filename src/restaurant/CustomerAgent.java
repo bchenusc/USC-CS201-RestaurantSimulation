@@ -6,6 +6,8 @@ import agent.Agent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+
 import javax.swing.Timer;
 
 /**
@@ -209,8 +211,9 @@ public class CustomerAgent extends Agent {
 	
 	
 	//########## UTILITIES ###########
-	private void RandomChoice(Menu menu){
-		menu.RandomChoice();
+	private String RandomChoice(Menu menu){
+		int random = (int)(Math.random() * ((menu.getSize()))+1);
+		return menu.choice(random);
 	}
 	
 

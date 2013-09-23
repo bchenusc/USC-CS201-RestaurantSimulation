@@ -14,6 +14,10 @@ import java.util.*;
 //the HostAgent. A Host is the manager of a restaurant who sees that all
 //is proceeded as he wishes.
 public class HostAgent extends Agent {
+	
+	private final int WINDOWX = 450;
+	private final int WINDOWY = 350;
+	
 	static final int NTABLES = 4;//a global for the number of tables.
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
@@ -36,8 +40,8 @@ public class HostAgent extends Agent {
 		this.name = name;
 		// make some tables
 		tables = new ArrayList<Table>(NTABLES);
-		for (int ix = 0; ix < NTABLES; ix++) {
-			//tables.add(new Table(ix, tableLocX+ix*tableWidth, tableLocY));// animation for later
+		for (int ix = 1; ix <= NTABLES; ix++) {
+			tables.add(new Table(ix, WINDOWX/NTABLES * ix, WINDOWY/2)); // animation for later
 		}
 	}
 
@@ -69,7 +73,7 @@ public class HostAgent extends Agent {
 			for (Table t : tables){
 				if (t.occupiedBy == null){
 					for (WaiterAgent w: waiters){
-						if (w.state == WaiterState.idle){
+						if (w.getState() == WaiterState.idle){
 							notifyWaiter(t, w);
 							return true;
 						}

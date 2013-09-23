@@ -13,20 +13,27 @@ public class CustomerGui implements Gui{
 
 	//private HostAgent host;
 	RestaurantGui gui;
+	
+	//GUI Customer Stats
+	private final int sizeX = 20;
+	private final int sizeY = 20;
 
 	private int xPos, yPos;
 	private int xDestination, yDestination;
 	private enum Command {noCommand, GoToSeat, LeaveRestaurant};
-	private Command command=Command.noCommand;
+	private Command command = Command.noCommand;
+	
+	//Cache the host so we have access to table locations.
+	HostAgent host; //We only cache the host so that we can ask for the table location.
 
-	public CustomerGui(CustomerAgent c, RestaurantGui gui){ //HostAgent m) {
+	public CustomerGui(CustomerAgent c, RestaurantGui gui, HostAgent host){ //HostAgent m) {
 		agent = c;
 		xPos = -40;
 		yPos = -40;
 		xDestination = -40;
 		yDestination = -40;
-		//maitreD = m;
 		this.gui = gui;
+		this.host = host;
 	}
 
 	public void updatePosition() {
@@ -54,7 +61,7 @@ public class CustomerGui implements Gui{
 
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
-		g.fillRect(xPos, yPos, customerWidth, customerHeight);
+		g.fillRect(xPos, yPos, sizeX, sizeY);
 	}
 
 	public boolean isPresent() {
@@ -62,7 +69,7 @@ public class CustomerGui implements Gui{
 	}
 	public void setHungry() {
 		isHungry = true;
-		agent.gotHungry();
+		agent.IsHungry();
 		setPresent(true);
 	}
 	public boolean isHungry() {
@@ -74,7 +81,7 @@ public class CustomerGui implements Gui{
 	}
 
 	public void DoGoToSeat(int seatnumber) {//later you will map seatnumber to table coordinates.
-		for(HostAgent.Table myTable : HostAgent.tables){
+		for(restaurant.Table myTable : host.tables){
 			if(myTable.getTableNumber() == seatnumber){
 				xDestination = myTable.getPosX();
 				yDestination = myTable.getPosY();

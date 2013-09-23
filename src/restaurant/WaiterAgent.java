@@ -10,14 +10,31 @@ public class WaiterAgent extends Agent {
 	List<MyCustomer> myCustomers;
 	CookAgent cook;
 	HostAgent host;
+		public HostAgent getHost(){
+			return host;
+		}
+	String name;
+		public String getName(){
+			return name;
+		}
 
 	// This is to distribute the waiting customers evenly among waiters.
 	public enum WaiterState {idle, busy;}
-	public WaiterState state = WaiterState.idle;
+	private WaiterState state = WaiterState.idle;
+		public WaiterState getState(){
+			return state;
+		}
+		public void setState(WaiterState state){
+			this.state = state;
+		}
 	enum MyCustomerState {waiting, seated, readyToOrder, ordered;}
 	
 	//Animation stuff - To implement in 2c
 	private Semaphore atTargetLocation = new Semaphore(0,true);
+	
+	public WaiterAgent(String name) {
+		this.name = name;
+	}
 
 // ######## Messages ################
 	public void msgSeatAtTable(CustomerAgent remove, Table t) {

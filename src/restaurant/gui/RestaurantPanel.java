@@ -2,8 +2,10 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
+import restaurant.WaiterAgent;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
@@ -16,7 +18,8 @@ public class RestaurantPanel extends JPanel {
 
     //Host, cook, waiters and customers
     private HostAgent host = new HostAgent("Sarah");
-    private WaiterGui hostGui = new WaiterGui(host);
+    private WaiterAgent waiter = new WaiterAgent("Brian");
+    private WaiterGui hostGui = new WaiterGui(waiter);
 
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
 
@@ -47,6 +50,10 @@ public class RestaurantPanel extends JPanel {
         initRestLabel();
         add(restLabel);
         add(group);
+    }
+    
+    public HostAgent getHost(){
+    	return host;
     }
 
     /**
@@ -92,11 +99,12 @@ public class RestaurantPanel extends JPanel {
      * @param type indicates whether the person is a customer or waiter (later)
      * @param name name of person
      */
+    
     public void addPerson(String type, String name) {
 
     	if (type.equals("Customers")) {
     		CustomerAgent c = new CustomerAgent(name);	
-    		CustomerGui g = new CustomerGui(c, gui);
+    		CustomerGui g = new CustomerGui(c, gui, host);
 
     		gui.animationPanel.addGui(g);// dw
     		c.setHost(host);
@@ -105,21 +113,18 @@ public class RestaurantPanel extends JPanel {
     		c.startThread();
     	}
     }
-    
 
     
     public void addPerson(String type, String name, boolean isHungry) {
 
     	if (type.equals("Customers")) {
     		CustomerAgent c = new CustomerAgent(name);	
-    		CustomerGui g = new CustomerGui(c, gui);
+    		CustomerGui g = new CustomerGui(c, gui, host);
 
     		gui.animationPanel.addGui(g);// dw
  
     		c.setHost(host);
     		c.setGui(g);
-    		
-    		//System.out.println(isHungry);
     		
     		if (isHungry){
     			c.getGui().setHungry();;

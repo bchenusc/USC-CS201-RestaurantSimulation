@@ -3,12 +3,14 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
+import restaurant.WaiterAgent;
+import restaurant.WaiterAgent.WaiterState;
 
 import java.awt.*;
 
 public class WaiterGui implements Gui {
 
-    private HostAgent agent = null;
+    private WaiterAgent agent = null;
 
     private int xPos = -20, yPos = -20;//default waiter position
     private int xDestination = -20, yDestination = -20;//default start position
@@ -19,9 +21,10 @@ public class WaiterGui implements Gui {
     private  int hostWidth = 20;
     private  int hostHeight = 20;
     
+    
     private static final int movementOffset = 20;
 
-    public WaiterGui(HostAgent agent) {
+    public WaiterGui(WaiterAgent agent) {
         this.agent = agent;
     }
 
@@ -42,9 +45,8 @@ public class WaiterGui implements Gui {
         }
         
         //if left the screen
-        if (agent.getState() != HostAgent.HostState.DoingNothing && xPos <=-20 && yPos <= -20){
-        	System.out.println(agent.getState());
-        	agent.setDoNothing();
+        if (agent.getState() == WaiterState.busy && xPos <=-20 && yPos <= -20){
+        	agent.setState(WaiterState.idle);
         }
     }
 
@@ -58,10 +60,7 @@ public class WaiterGui implements Gui {
     }
 
     public void DoBringToTable(CustomerAgent customer, int tableNumber) {
-    	
-    	
-    	
-    	for (HostAgent.Table myTable : HostAgent.tables){
+    	for (restaurant.Table myTable : agent.getHost().tables){
     		if (myTable.getTableNumber() == tableNumber){
     			xTable = myTable.getPosX();
     			yTable = myTable.getPosY();

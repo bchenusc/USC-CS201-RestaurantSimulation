@@ -17,14 +17,17 @@ public class AnimationPanel extends JPanel implements ActionListener {
     private Image bufferImage;
     private Dimension bufferSize;
     
-    private final int TABLELOCX = 200;
-    private final int TABLELOCY = 250;
     private final int TABLEWIDTH = 50;
     private final int TABLEHEIGHT = 50;
     
     private final int timerint = 3;
 
     private List<Gui> guis = new ArrayList<Gui>();
+    
+    private HostAgent host;
+    public void setHost(HostAgent host){
+    	this.host = host;
+    }
 
     public AnimationPanel() {
     	setSize(WINDOWX, WINDOWY);
@@ -46,24 +49,12 @@ public class AnimationPanel extends JPanel implements ActionListener {
         //Clear the screen by painting a rectangle the size of the frame
         g2.setColor(getBackground());
         g2.fillRect(0, 0, WINDOWX, WINDOWY );
-
-        //Here is the table
-        //g2.setColor(Color.ORANGE);
-       //g2.fillRect(CustomerGui.xTable, CustomerGui.yTable, TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
         
-        for (HostAgent.Table myTable : HostAgent.tables){
+        for (restaurant.Table t : host.tables){
         	//Here is the table
             g2.setColor(Color.ORANGE);
-            g2.fillRect(myTable.getPosX(), myTable.getPosY(), TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
+            g2.fillRect(t.getPosX(), t.getPosY(), TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
         }
-        
-       /* g2.setColor(Color.ORANGE);
-        g2.fillRect(CustomerGui.xTable, CustomerGui.yTable, TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
-        
-        g2.setColor(Color.ORANGE);
-        g2.fillRect(CustomerGui.xTable, CustomerGui.yTable, TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
-        */
-
 
         for(Gui gui : guis) {
             if (gui.isPresent()) {

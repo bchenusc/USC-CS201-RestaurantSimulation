@@ -8,6 +8,8 @@ public class Table {
 
 	Table(int tableNumber) {
 		this.tableNumber = tableNumber;
+		guiPosX = 0;
+		guiPosY = 0;
 	}
 	
 	Table(int tableNumber, int posX, int posY) {
