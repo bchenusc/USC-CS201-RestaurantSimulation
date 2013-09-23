@@ -113,18 +113,7 @@ public class ListPanel extends JPanel implements ActionListener {
      */
     public void addPerson(String name) {
         if (name != null) {
-        	
-            //hungryBox = new JCheckBox();
-            //hungryBox.setText("Hungry?");
-            //JCheckBox notHungryBox = new JCheckBox();
-            //notHungryBox.setText("Not Hungry");
-            
-            //Object[] objects = {hungryBox, notHungryBox};
-            
-            //int boolChecked = JOptionPane.showConfirmDialog(null, objects);
-            
-            //System.out.println(boolChecked);
-        	
+
             JButton button = new JButton(name);
             button.setBackground(Color.white);
 

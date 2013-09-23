@@ -50,6 +50,9 @@ public class RestaurantPanel extends JPanel {
         initRestLabel();
         add(restLabel);
         add(group);
+        
+        //Add the waiter agent to the Host list waiter agent
+        host.waiters.add(waiter);
     }
     
     public HostAgent getHost(){

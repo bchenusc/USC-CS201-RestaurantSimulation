@@ -96,7 +96,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         add(infoPanel, BorderLayout.CENTER);
         
         //My name
-        /*Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
+        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
         brianPanel = new JPanel();
         brianPanel.setPreferredSize(brianDim);
         brianPanel.setMinimumSize(brianDim);
@@ -109,9 +109,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
         ImageIcon icon = new ImageIcon("C:/Users/Brian/Documents/School/usc2013Fall/restaurant_brianych/src/Mario-icon.png");
         brianLabel.setIcon(icon);
         add(brianLabel, BorderLayout.PAGE_END);
-        */
         
-        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * 0.2));
+        
+        /*Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * 0.2));
         Dimension txtDim = new Dimension((int)(WINDOWX*0.2), (int)(WINDOWY * 0.1));
         brianPanel = new JPanel();
         brianPanel.setPreferredSize(brianDim);
@@ -128,6 +128,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
          addTable = new JButton("Add Table");
          brianPanel.add(addTable);
          add (brianPanel, BorderLayout.PAGE_END);
+         */
         
     }
     
