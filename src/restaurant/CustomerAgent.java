@@ -15,8 +15,8 @@ import javax.swing.Timer;
  */
 public class CustomerAgent extends Agent {
 	
-	private final int eatingTime = 10000;
-	private final int readingMenuTime = 5000;
+	private final int eatingTime = 1000;
+	private final int readingMenuTime = 1000;
 	
 	private String name;
 	//private int hungerLevel = 5;        // determines length of meal
@@ -25,8 +25,8 @@ public class CustomerAgent extends Agent {
 	private CustomerGui customerGui;
 
 	//Necessary links.
-	private HostAgent host;
-	private WaiterAgent waiter;
+	public HostAgent host;
+	public WaiterAgent waiter;
 	private String choice;
 	private Menu menu;
 
@@ -51,13 +51,20 @@ public class CustomerAgent extends Agent {
 			   public void actionPerformed(ActionEvent e){
 			      event = CustomerEvent.doneEating;
 			      stateChanged();
+			      eatingTimer.stop();
 			   }
 			});
 		readMenuTimer = new Timer(readingMenuTime, new ActionListener() {
 			   public void actionPerformed(ActionEvent e){
 			      choice = RandomChoice(menu);
 			      event = CustomerEvent.readyToOrder;
+			      
+			    //**Hack for gui to make this code work
+			      state = CustomerState.Seated;
+			      
 			      stateChanged();
+			      
+			      readMenuTimer.stop();
 			   }
 			});	
 	}
@@ -92,11 +99,11 @@ public class CustomerAgent extends Agent {
 	
 	public void HeresYourOrder(String order){
 		if (order!= choice){
-			System.out.println("Wrong Order!!!");
+			Do("Wrong Order!!!");
 		}
 		state = CustomerState.Eating;
-		stateChanged();
 		EatFood();
+		stateChanged();
 	}
 
 	/*public void msgAnimationFinishedGoToSeat() {
@@ -119,8 +126,8 @@ public class CustomerAgent extends Agent {
 
 		if (state == CustomerState.DoingNothing && event == CustomerEvent.gotHungry ){
 			state = CustomerState .WaitingInRestaurant;
-			stateChanged();
 			goToRestaurant();
+			stateChanged();
 			return true;
 		}
 		if (state == CustomerState.WaitingInRestaurant && event == CustomerEvent.followWaiter ){
@@ -138,14 +145,14 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == CustomerState.Seated && event == CustomerEvent.readyToOrder){
 			state = CustomerState.Ordering;
-			stateChanged();
 			CallWaiter();
+			stateChanged();
 			return true;
 		}
 		if (state == CustomerState.Eating && event == CustomerEvent.doneEating){
 			state = CustomerState.Leaving;
-			stateChanged();
 			leaveTable();
+			stateChanged();
 			return true;
 		}
 		if (state == CustomerState.Leaving && event == CustomerEvent.doneLeaving){
@@ -186,8 +193,8 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void TellWaiterMyChoice(){
-		waiter.msgHeresMyChoice(choice);
 		Do(name + " tells the waiter he wants " + choice + ".");
+		waiter.msgHeresMyChoice(this,choice);
 		event = CustomerEvent.ordered;
 		stateChanged();
 	}
@@ -230,7 +237,7 @@ public class CustomerAgent extends Agent {
 	
 	//########## UTILITIES ###########
 	private String RandomChoice(Menu menu){
-		int random = (int)(Math.random() * ((menu.getSize()))+1);
+		int random = (int)(Math.random() * ((menu.getSize())));
 		return menu.choice(random);
 	}
 	

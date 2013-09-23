@@ -27,14 +27,15 @@ public class WaiterAgent extends Agent {
 		public void setState(WaiterState state){
 			this.state = state;
 		}
-	enum MyCustomerState {waiting, seated, readyToOrder, ordered;}
+	enum MyCustomerState {waiting, seated, readyToOrder, ordered, eating;}
 	
 	//Animation stuff - To implement in 2c
 	private Semaphore atTargetLocation = new Semaphore(0,true);
 	
-	public WaiterAgent(String name) {
+	public WaiterAgent(String name, HostAgent h, CookAgent c) {
 		this.name = name;
-		
+		host = h;
+		cook = c;
 	}
 
 // ######## Messages ################
@@ -43,6 +44,7 @@ public class WaiterAgent extends Agent {
 		// myCustomers.add(new MyCustomer(c, t));
 		
 		state = WaiterState.busy;
+		c.waiter = this;
 		myCustomers.add(new MyCustomer(c,t));
 		
 		stateChanged();
@@ -66,7 +68,7 @@ public class WaiterAgent extends Agent {
 			}
 		}
 	}
-	public void msgHeresMyChoice(String c){ 
+	public void msgHeresMyChoice(CustomerAgent ca, String c){ 
 		/*foreach MyCustomer mc in myCustomer{
 		      if (mc == c){
 		           WaiterState = busy;
@@ -75,10 +77,14 @@ public class WaiterAgent extends Agent {
 		      } 
 		   }
 		   */
-		for (MyCustomer mc: myCustomers){
-			if (mc.order.choice == c){
+		for (MyCustomer mc : myCustomers){
+			if (mc.customer == ca){
 				state = WaiterState.busy;
+				mc.order = new Order(c, this, mc.table.tableNumber);
+				GiveOrderToCook(mc);
 				stateChanged();
+			    
+			    return;
 			}
 		}
 	}
@@ -90,9 +96,11 @@ public class WaiterAgent extends Agent {
 		      } 
 		  }
 		  */
+		
 		for (MyCustomer mc : myCustomers){
 			if (mc.order == o){
 				state = WaiterState.busy;
+				mc.state = MyCustomerState.eating;
 				GiveFoodToCustomer(mc);
 				stateChanged();
 			}
@@ -109,8 +117,8 @@ public class WaiterAgent extends Agent {
 		for (MyCustomer mc: myCustomers){
 			if (mc.customer == c){
 				state = WaiterState.busy;
-				stateChanged();
 				CustomerLeaving(mc);
+				stateChanged();
 			}
 		}
 	}
@@ -171,6 +179,7 @@ public class WaiterAgent extends Agent {
 	   */
 		Do(name + " is taking " + mc.customer.getName()+ "'s order.");
 		mc.customer.WhatWouldYouLike();
+		mc.state = MyCustomerState.ordered;
 		state = WaiterState.idle;
 		stateChanged();
 	}
@@ -192,7 +201,9 @@ public class WaiterAgent extends Agent {
 	   WaiterState = idle;
 	   */
 		Do(name + " is giving food to " + mc.customer.getName());
+		
 		mc.customer.HeresYourOrder(mc.order.choice);
+		mc.state = MyCustomerState.eating;
 		state = WaiterState.idle;
 		stateChanged();
 	}

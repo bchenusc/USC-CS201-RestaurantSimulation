@@ -31,12 +31,20 @@ public class CookAgent extends Agent {
 	public CookAgent(String name){
 	  this.name = name;
 	  orders = new ArrayList<Order>();
+	  
+	  //Tree map
+	  foodDictionary.put("Filet", 1000);
+	  foodDictionary.put("Hamburger", 1000);
+	  foodDictionary.put("Salmon", 1000);
+	  foodDictionary.put("JellyFish", 1500);
+	  
 	}
 		
 //########## Messages  ###############
 	public void msgHeresAnOrder(Order o)
 	{
 		 orders.add(o);
+		 stateChanged();
 	}
 	
 	
@@ -56,10 +64,12 @@ public class CookAgent extends Agent {
 				
 			}
 			
-			for (Order o: orders){
+			for (int i=0; i<orders.size();i++){
 				
-				if (o.getState() == OrderState.cooked){
-					o.waiter.msgOrderIsReady(o);
+				if (orders.get(i).getState() == OrderState.cooked){
+					tellWaiterOrderIsReady(orders.get(i));
+					orders.remove(i);
+					i--;
 				}
 				
 			}
@@ -67,20 +77,23 @@ public class CookAgent extends Agent {
 			
 			return true;
 		}
-			
 		return false;
 	}
 		
 //########## Actions ###############
-	public void CookOrder(Order o){
-		  DoCookOrder(o); //GUI
+	private void CookOrder(Order o){
+		  Do("Cook " + name + " is cooking " + o.choice + ".");
 		  o.setTimer(foodDictionary.get(o.choice));
+		  stateChanged();
+	}
+	
+	private void tellWaiterOrderIsReady(Order o){
+		o.waiter.msgOrderIsReady(o);
+		o.setState(OrderState.notified);
+		//orders.remove(o);
 	}
 	
 //################    GUI     ##################
-	public void DoCookOrder(Order o){
-		System.out.println("Cook " + name + " is cooking " + o.choice + ".");
-	}
 
 //######################## End of Class #############################
 }

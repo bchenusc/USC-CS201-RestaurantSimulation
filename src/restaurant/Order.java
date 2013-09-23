@@ -13,7 +13,7 @@ public class Order {
 	  int tableNumber;
 	  Timer timer;
 	  int orderTime;
-	  public enum OrderState { pending, cooking, cooked;}
+	  public enum OrderState { pending, cooking, cooked, notified;}
 	  private OrderState state = OrderState.pending;
 	  
 	  public Order(String c, WaiterAgent w, int tableNumber){
@@ -27,11 +27,17 @@ public class Order {
 		  timer = new Timer(time, new ActionListener() {
 			   public void actionPerformed(ActionEvent e){
 			      state = OrderState.cooked;
+			      
+			      timer.stop();
 			   }
 			});
+		  timer.start();
 	  }
 	  public OrderState getState(){
 		  return state;
+	  }
+	  public void setState(OrderState state){
+		  this.state = state;
 	  }
 	  
 }
