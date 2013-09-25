@@ -12,10 +12,9 @@ import java.util.ArrayList;
 
 public class AnimationPanel extends JPanel implements ActionListener {
 
-    private final int WINDOWX = 450;
-    private final int WINDOWY = 350;
-    private Image bufferImage;
-    private Dimension bufferSize;
+    private final int WINDOWX = 600;
+    private final int WINDOWY = 450;
+    
     
     private final int TABLEWIDTH = 50;
     private final int TABLEHEIGHT = 50;
@@ -32,8 +31,6 @@ public class AnimationPanel extends JPanel implements ActionListener {
     public AnimationPanel() {
     	setSize(WINDOWX, WINDOWY);
         setVisible(true);
-        
-        bufferSize = this.getSize();
  
     	Timer timer = new Timer(timerint, this );
     	timer.start();

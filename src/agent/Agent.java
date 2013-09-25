@@ -23,11 +23,9 @@ public abstract class Agent {
     public void Pause(){
     	
     	if (paused){
-    		paused = false;
     		agentThread.Resume();
     	}
     	else {
-    		paused = true;
     		agentThread.Pause();
     	}
     	
@@ -128,8 +126,9 @@ public abstract class Agent {
         }
         
         public void Resume(){
-        	paused = false;
+        	
         	pause.release();
+        	paused = false;
         }
 
         public void run() {

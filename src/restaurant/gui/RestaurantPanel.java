@@ -129,22 +129,6 @@ public class RestaurantPanel extends JPanel {
      * @param name name of person
      */
     
-    /*public void addPerson(String type, String name) {
-
-    	if (type.equals("Customers")) {
-    		CustomerAgent c = new CustomerAgent(name);	
-    		CustomerGui g = new CustomerGui(c, gui, host);
-
-    		gui.animationPanel.addGui(g);// dw
-    		c.setHost(host);
-    		c.setGui(g);
-    		customers.add(c);
-    		c.startThread();
-    	}
-    }
-    */
-
-    
     public void addPerson(String type, String name, boolean isHungry) {
 
     	if (type.equals("Customers")) {

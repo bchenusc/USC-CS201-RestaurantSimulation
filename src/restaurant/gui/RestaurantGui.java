@@ -1,8 +1,6 @@
 package restaurant.gui;
 
 import restaurant.CustomerAgent;
-import restaurant.HostAgent;
-
 import javax.swing.*;
 
 import java.awt.*;
@@ -25,10 +23,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
      */    
     private RestaurantPanel restPanel = new RestaurantPanel(this);
     
-    private final int WINDOWX = 1200; //450
-    private final int WINDOWY = 450; //350
-    
-    
+    private final int WINDOWX = 1200; 
+    private final int WINDOWY = 450; 
+    private final int bigBoundX = 50;
+    private final int bigBoundY = 50;
+  
     private JPanel bigRestaurantPanel = new JPanel();
     private JPanel bigAnimationPanel = new JPanel();
     
@@ -38,16 +37,12 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JCheckBox stateCB;//part of infoLabel
     
     private JPanel bottomPanel = new JPanel();
-    
     private JLabel brianLabel;
-
-    
     private JButton pauseButton = new JButton("Pause");
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
-    
-
+   
     /**
      * Constructor for RestaurantGui class.
      * Sets up all the gui components.
@@ -58,7 +53,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         animationPanel.setHost(restPanel.getHost());
    
         //-------------------------------
-        setBounds(50,50,WINDOWX , WINDOWY);
+        setBounds(bigBoundX,bigBoundY,WINDOWX , WINDOWY);
         setLayout(new BoxLayout((Container) getContentPane(), BoxLayout.X_AXIS));
         bigRestaurantPanel.setLayout(new BoxLayout(bigRestaurantPanel, BoxLayout.Y_AXIS));
         bigAnimationPanel.setLayout(new BoxLayout(bigAnimationPanel, BoxLayout.Y_AXIS));
@@ -66,54 +61,15 @@ public class RestaurantGui extends JFrame implements ActionListener {
         //Sets all the dimensions of the panels.
         initializePanels();
         
-        bigRestaurantPanel.setBorder(BorderFactory.createTitledBorder("Restaurant"));
-        bigAnimationPanel.setBorder(BorderFactory.createTitledBorder("Animation"));
-        
-        //Setup the animation panel.
-        animationPanel.setBounds(WINDOWX/2, 50, WINDOWX/2, WINDOWY);
-        bigAnimationPanel.add(animationPanel);
-        
-        //Restaurant Panel
-       
-        bigRestaurantPanel.add(restPanel);
-        
-        //Info Panel
-        
-        infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
-        
-        stateCB = new JCheckBox();
-        stateCB.setVisible(false);
-        stateCB.addActionListener(this);
-
-        infoPanel.setLayout(new GridLayout(1, 2, 30, 0));
-        
-        infoLabel = new JLabel(); 
-        infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
-        infoPanel.add(infoLabel);
-        infoPanel.add(stateCB);
-        
-        bigRestaurantPanel.add(infoPanel);
-
-        //My name
-        
-        
-        brianLabel = new JLabel("<html><pre><i>Hi I'm Brian!</i></pre></html>"); 
-        //brianLabel.setText();
-        
-        ImageIcon icon = new ImageIcon("C:/Users/Brian/Documents/School/usc2013Fall/restaurant_brianych/src/Mario-icon.png");
-        brianLabel.setIcon(icon);
-        
-        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
-        
-        //Add the different buttons to appropriate panels.
-        bottomPanel.add(brianLabel);
-        
-        //Fix up the pause button to work.
-        initializePauseButton();
-        bottomPanel.add(pauseButton);
-        
-        bigRestaurantPanel.add(bottomPanel);
-        
+        //All adds below
+        addTo(animationPanel, bigAnimationPanel);
+        addTo(restPanel, bigRestaurantPanel);
+        addTo(infoLabel, infoPanel);
+        addTo(stateCB, infoPanel);
+        addTo (infoPanel, bigRestaurantPanel);
+        addTo(brianLabel, bottomPanel);
+        addTo(pauseButton, bottomPanel);
+        addTo(bottomPanel, bigRestaurantPanel);
         add(bigRestaurantPanel);
         add(bigAnimationPanel);
     }
@@ -142,8 +98,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoPanel.validate();
     }
     
-    //Initialization helper functions
+    private void addTo(JComponent c, JComponent d){
+    	d.add(c);
+    }
     
+    //Initialization helper functions
     private void initializePanels(){
     	//Big panel sizes
         Dimension bigDim = new Dimension(WINDOWX/2, (int) (WINDOWY-20));
@@ -153,9 +112,12 @@ public class RestaurantGui extends JFrame implements ActionListener {
         bigAnimationPanel.setPreferredSize(bigDim);
         bigAnimationPanel.setMinimumSize(bigDim);
         bigAnimationPanel.setMaximumSize(bigDim);
+        
+        //Animation Panel
         animationPanel.setPreferredSize(bigDim);
         animationPanel.setMinimumSize(bigDim);
         animationPanel.setMaximumSize(bigDim);
+        animationPanel.setBounds(WINDOWX/2, 50, WINDOWX/2, WINDOWY);
         
         //Restaurant panel size
         Dimension restDim = new Dimension(WINDOWX/2, (int) (WINDOWY*.5));
@@ -169,12 +131,35 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
         infoPanel.setMaximumSize(infoDim);
+        infoPanel.setLayout(new GridLayout(1, 2, 30, 0));
         
         //Bottom panel dimensions.
         Dimension bottomDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .1));
         bottomPanel.setPreferredSize(bottomDim);
         bottomPanel.setMinimumSize(bottomDim);
         bottomPanel.setMaximumSize(bottomDim);
+        
+        //Initialize checkbox.
+        stateCB = new JCheckBox();
+        stateCB.setVisible(false);
+        stateCB.addActionListener(this);
+        //Initialize information label "Add to make customers"
+        infoLabel = new JLabel(); 
+        infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
+        
+        //My name panel (belongs in the bottom panel
+        brianLabel = new JLabel("<html><pre><i>Hi I'm Brian!</i></pre></html>");   
+        ImageIcon icon = new ImageIcon("C:/Users/Brian/Documents/School/usc2013Fall/restaurant_brianych/src/Mario-icon.png");
+        brianLabel.setIcon(icon);
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+        
+        //Pause Button
+        initializePauseButton();
+        
+      //Make all the borders.
+        bigRestaurantPanel.setBorder(BorderFactory.createTitledBorder("Restaurant"));
+        bigAnimationPanel.setBorder(BorderFactory.createTitledBorder("Animation"));
+        infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
     }
     
     private void initializePauseButton(){
