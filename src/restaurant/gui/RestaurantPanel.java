@@ -10,7 +10,7 @@ import javax.swing.*;
 import agent.Agent;
 
 import java.awt.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 import java.util.Vector;
 
 /**
@@ -25,8 +25,10 @@ public class RestaurantPanel extends JPanel {
     private WaiterAgent waiter = new WaiterAgent("Matt", host, cook);
     private WaiterGui hostGui = new WaiterGui(waiter);
     
+    //List of Agents for pausing.
     private Vector<Agent> agents = new Vector<Agent>();
-
+    
+    //List of Waiting customers.
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
 
     private JPanel restLabel = new JPanel();
@@ -40,15 +42,25 @@ public class RestaurantPanel extends JPanel {
     private final int gridXWidth = 20;
     private final int gridYWidth = 20;
     
+    
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
         host.setGui(hostGui);
 
         gui.animationPanel.addGui(hostGui);
-        host.startThread();
-        cook.startThread();
+        
+        host.startThread(); //Hack only one host.
+        cook.startThread(); //Hack only one cook.
+        
+        //Temporary hack for having only one waiter.
         waiter.startThread();
+        
+        
+        agents.add(host); //Hack for only having one cook.
+        agents.add(cook); //Hack for only having one cook.
+        //Temporary hack for having only one waiter.
+        agents.add(waiter);
 
         setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth, gridYWidth));
         group.setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth/2, gridYWidth/2));
@@ -103,6 +115,12 @@ public class RestaurantPanel extends JPanel {
             }
         }
     }
+    
+    public void Pause(){
+    	for(Agent a : agents){
+    		a.Pause();
+    	}
+    }
 
     /**
      * Adds a customer or waiter to the appropriate list
@@ -111,7 +129,7 @@ public class RestaurantPanel extends JPanel {
      * @param name name of person
      */
     
-    public void addPerson(String type, String name) {
+    /*public void addPerson(String type, String name) {
 
     	if (type.equals("Customers")) {
     		CustomerAgent c = new CustomerAgent(name);	
@@ -124,6 +142,7 @@ public class RestaurantPanel extends JPanel {
     		c.startThread();
     	}
     }
+    */
 
     
     public void addPerson(String type, String name, boolean isHungry) {
@@ -141,7 +160,10 @@ public class RestaurantPanel extends JPanel {
     			c.getGui().setHungry();;
     		}
     		
+    		//Add the newly created customer to the list of customers
     		customers.add(c);
+    		//Add the newly created customer to the list of agents (for pausing)
+    		agents.add(c);
     		
     		c.startThread();	
     		

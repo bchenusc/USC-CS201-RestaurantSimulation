@@ -111,7 +111,7 @@ public class ListPanel extends JPanel implements ActionListener {
      *
      * @param name name of new person
      */
-    public void addPerson(String name) {
+    /*public void addPerson(String name) {
         if (name != null) {
 
             JButton button = new JButton(name);
@@ -131,6 +131,7 @@ public class ListPanel extends JPanel implements ActionListener {
             validate();
         }
     }
+    */
     
     
     public void addPerson(String name, boolean isHungry) {

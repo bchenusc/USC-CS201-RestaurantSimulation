@@ -20,15 +20,15 @@ public abstract class Agent {
     }
     
     
-    private void Pause(){
+    public void Pause(){
     	
     	if (paused){
     		paused = false;
-    		agentThread.Pause();
+    		agentThread.Resume();
     	}
     	else {
     		paused = true;
-    		agentThread.Resume();
+    		agentThread.Pause();
     	}
     	
     }
@@ -139,7 +139,7 @@ public abstract class Agent {
 
             while (goOn) {
                 try {
-                	if (paused) {
+                	while (paused) {
                 		pause.acquire();
                 	}
                     // The agent sleeps here until someone calls, stateChanged(),

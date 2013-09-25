@@ -25,6 +25,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
      */    
     private RestaurantPanel restPanel = new RestaurantPanel(this);
     
+    private final int WINDOWX = 1200; //450
+    private final int WINDOWY = 450; //350
+    
+    
     private JPanel bigRestaurantPanel = new JPanel();
     private JPanel bigAnimationPanel = new JPanel();
     
@@ -35,7 +39,6 @@ public class RestaurantGui extends JFrame implements ActionListener {
     
     private JPanel bottomPanel = new JPanel();
     
-    private JPanel brianPanel;
     private JLabel brianLabel;
 
     
@@ -50,29 +53,18 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 1200; //450
-        int WINDOWY = 450; //350
+        
         //----------------------- *Finds the host. ------------------ Important step: Caching the host in the AnimationPanel
         animationPanel.setHost(restPanel.getHost());
    
         //-------------------------------
         setBounds(50,50,WINDOWX , WINDOWY);
         setLayout(new BoxLayout((Container) getContentPane(), BoxLayout.X_AXIS));
-        
         bigRestaurantPanel.setLayout(new BoxLayout(bigRestaurantPanel, BoxLayout.Y_AXIS));
         bigAnimationPanel.setLayout(new BoxLayout(bigAnimationPanel, BoxLayout.Y_AXIS));
         
-        //Big panel sizes
-        Dimension bigDim = new Dimension(WINDOWX/2, (int) (WINDOWY-20));
-        bigRestaurantPanel.setPreferredSize(bigDim);
-        bigRestaurantPanel.setMinimumSize(bigDim);
-        bigRestaurantPanel.setMaximumSize(bigDim);
-        bigAnimationPanel.setPreferredSize(bigDim);
-        bigAnimationPanel.setMinimumSize(bigDim);
-        bigAnimationPanel.setMaximumSize(bigDim);
-        animationPanel.setPreferredSize(bigDim);
-        animationPanel.setMinimumSize(bigDim);
-        animationPanel.setMaximumSize(bigDim);
+        //Sets all the dimensions of the panels.
+        initializePanels();
         
         bigRestaurantPanel.setBorder(BorderFactory.createTitledBorder("Restaurant"));
         bigAnimationPanel.setBorder(BorderFactory.createTitledBorder("Animation"));
@@ -82,18 +74,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
         bigAnimationPanel.add(animationPanel);
         
         //Restaurant Panel
-        Dimension restDim = new Dimension(WINDOWX/2, (int) (WINDOWY*.5));
-        restPanel.setPreferredSize(restDim);
-        restPanel.setMinimumSize(restDim);
-        restPanel.setMaximumSize(restDim);
+       
         bigRestaurantPanel.add(restPanel);
         
         //Info Panel
-        Dimension infoDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
-        infoPanel = new JPanel();
-        infoPanel.setPreferredSize(infoDim);
-        infoPanel.setMinimumSize(infoDim);
-        infoPanel.setMaximumSize(infoDim);
+        
         infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
         
         stateCB = new JCheckBox();
@@ -108,16 +93,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoPanel.add(stateCB);
         
         bigRestaurantPanel.add(infoPanel);
-        
-        
-        
-        
-        //My name
-        Dimension brianDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .1));
 
-        bottomPanel.setPreferredSize(brianDim);
-        bottomPanel.setMinimumSize(brianDim);
-        bottomPanel.setMaximumSize(brianDim);
+        //My name
+        
         
         brianLabel = new JLabel("<html><pre><i>Hi I'm Brian!</i></pre></html>"); 
         //brianLabel.setText();
@@ -126,7 +104,12 @@ public class RestaurantGui extends JFrame implements ActionListener {
         brianLabel.setIcon(icon);
         
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+        
+        //Add the different buttons to appropriate panels.
         bottomPanel.add(brianLabel);
+        
+        //Fix up the pause button to work.
+        initializePauseButton();
         bottomPanel.add(pauseButton);
         
         bigRestaurantPanel.add(bottomPanel);
@@ -134,16 +117,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         add(bigRestaurantPanel);
         add(bigAnimationPanel);
     }
-    
-    
-    private void add(ImageIcon icon, String pageEnd) {
-		// TODO Auto-generated method stub
-		
-	}
-	private ImageIcon createImageIcon(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   
 	/**
      * updateInfoPanel() takes the given customer (or, for v3, Host) object and
      * changes the information panel to hold that person's info.
@@ -167,14 +141,71 @@ public class RestaurantGui extends JFrame implements ActionListener {
         }
         infoPanel.validate();
     }
+    
+    //Initialization helper functions
+    
+    private void initializePanels(){
+    	//Big panel sizes
+        Dimension bigDim = new Dimension(WINDOWX/2, (int) (WINDOWY-20));
+        bigRestaurantPanel.setPreferredSize(bigDim);
+        bigRestaurantPanel.setMinimumSize(bigDim);
+        bigRestaurantPanel.setMaximumSize(bigDim);
+        bigAnimationPanel.setPreferredSize(bigDim);
+        bigAnimationPanel.setMinimumSize(bigDim);
+        bigAnimationPanel.setMaximumSize(bigDim);
+        animationPanel.setPreferredSize(bigDim);
+        animationPanel.setMinimumSize(bigDim);
+        animationPanel.setMaximumSize(bigDim);
+        
+        //Restaurant panel size
+        Dimension restDim = new Dimension(WINDOWX/2, (int) (WINDOWY*.5));
+        restPanel.setPreferredSize(restDim);
+        restPanel.setMinimumSize(restDim);
+        restPanel.setMaximumSize(restDim);
+        
+        //Information panel size
+        Dimension infoDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
+        infoPanel = new JPanel();
+        infoPanel.setPreferredSize(infoDim);
+        infoPanel.setMinimumSize(infoDim);
+        infoPanel.setMaximumSize(infoDim);
+        
+        //Bottom panel dimensions.
+        Dimension bottomDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .1));
+        bottomPanel.setPreferredSize(bottomDim);
+        bottomPanel.setMinimumSize(bottomDim);
+        bottomPanel.setMaximumSize(bottomDim);
+    }
+    
+    private void initializePauseButton(){
+    	pauseButton.addActionListener(new ActionListener() 
+    	{ 
+    		public void actionPerformed(ActionEvent e) {
+    			if (e.getSource() == pauseButton){
+    	    		if (pauseButton.getText() == "Pause"){
+    	    			pauseButton.setText("Resume");
+    	    			
+    	    		}
+    	    		else
+    	    		{
+    	    			pauseButton.setText("Pause");
+    	    			
+    	    		}
+    	    		restPanel.Pause();
+    	    		
+    	    	}
+    		}
+    	
+    	}
+    );
+    }
+    
     /**
      * Action listener method that reacts to the checkbox being clicked;
      * If it's the customer's checkbox, it will make him hungry
      * For v3, it will propose a break for the waiter.
      */
     public void actionPerformed(ActionEvent e) {
-    	
-    	
     	
         if (e.getSource() == stateCB) {
             if (currentPerson instanceof CustomerAgent) {
