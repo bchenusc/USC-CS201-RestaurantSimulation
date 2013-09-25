@@ -7,6 +7,8 @@ import restaurant.WaiterAgent;
 
 import javax.swing.*;
 
+import agent.Agent;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
@@ -23,6 +25,7 @@ public class RestaurantPanel extends JPanel {
     private WaiterAgent waiter = new WaiterAgent("Matt", host, cook);
     private WaiterGui hostGui = new WaiterGui(waiter);
     
+    private Vector<Agent> agents = new Vector<Agent>();
 
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
 

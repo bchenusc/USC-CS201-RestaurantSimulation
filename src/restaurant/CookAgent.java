@@ -54,28 +54,28 @@ public class CookAgent extends Agent {
 		// if State == idle and there exists an Order o in pendingOrder such that o.OrderState == pending
 		//then CookOrder(o);
 		if (orders.size() > 0){
-			
-			//Look for all pending orders.
-			for(Order o : orders){
-				
-				if (o.getState() == OrderState.pending){
-					CookOrder(o);
+			try{
+				//Look for all pending orders.
+				for(Order o : orders){
+					
+					if (o.getState() == OrderState.pending){
+						CookOrder(o);
+					}
+					
 				}
 				
-			}
-			
-			for (int i=0; i<orders.size();i++){
-				
-				if (orders.get(i).getState() == OrderState.cooked){
-					tellWaiterOrderIsReady(orders.get(i));
-					orders.remove(i);
-					i--;
+				for (int i=0; i<orders.size();i++){
+					
+					if (orders.get(i).getState() == OrderState.cooked){
+						tellWaiterOrderIsReady(orders.get(i));
+						orders.remove(i);
+						i--;
+					}
+					
 				}
-				
+				return true;
 			}
-			
-			
-			return true;
+			catch(Exception e){}
 		}
 		return false;
 	}
@@ -84,13 +84,11 @@ public class CookAgent extends Agent {
 	private void CookOrder(Order o){
 		  Do("Cook " + name + " is cooking " + o.choice + ".");
 		  o.setTimer(foodDictionary.get(o.choice));
-		  stateChanged();
 	}
 	
 	private void tellWaiterOrderIsReady(Order o){
 		o.waiter.msgOrderIsReady(o);
 		o.setState(OrderState.notified);
-		//orders.remove(o);
 	}
 	
 //################    GUI     ##################

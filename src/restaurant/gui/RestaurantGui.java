@@ -15,7 +15,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
     /* The GUI has two frames, the control frame (in variable gui) 
      * and the animation frame, (in variable animationFrame within gui)
      */
-	JFrame animationFrame = new JFrame("Restaurant Animation");
+	//JFrame animationFrame = new JFrame("Restaurant Animation");
 	AnimationPanel animationPanel = new AnimationPanel();
 	
     /* restPanel holds 2 panels
@@ -25,6 +25,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
      */    
     private RestaurantPanel restPanel = new RestaurantPanel(this);
     
+    private JPanel bigRestaurantPanel = new JPanel();
+    private JPanel bigAnimationPanel = new JPanel();
+    
     /* infoPanel holds information about the clicked customer, if there is one*/
     private JPanel infoPanel;
     private JLabel infoLabel; //part of infoPanel
@@ -32,15 +35,12 @@ public class RestaurantGui extends JFrame implements ActionListener {
     
     private JPanel brianPanel;
     private JLabel brianLabel;
+
     
-    private JButton addTable;
-    private JTextField posField;
+    private JButton pauseButton;
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
-    
-    private final int boundsPosX = 50;
-    private final int boundsPosY = 50;
     
 
     /**
@@ -48,40 +48,52 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 450; //450
-        int WINDOWY = 350; //350
+        int WINDOWX = 1000; //450
+        int WINDOWY = 450; //350
         //----------------------- *Finds the host. ------------------ Important step: Caching the host in the AnimationPanel
         animationPanel.setHost(restPanel.getHost());
-
-        //----------------------
-        animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
-        animationFrame.setVisible(true);
-    	animationFrame.add(animationPanel); 
-    	
-    	setBounds(boundsPosX, boundsPosY, WINDOWX, WINDOWY);
-    	
-        //setLayout(new BoxLayout((Container) getContentPane(), //****
-        		//BoxLayout.Y_AXIS)); //******
-    	setLayout(new BorderLayout(1,1));
-
-        Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
-    	//Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY));
+   
+        //-------------------------------
+        setBounds(50,50,WINDOWX , WINDOWY);
+        setLayout(new BoxLayout((Container) getContentPane(), BoxLayout.X_AXIS));
+        
+        bigRestaurantPanel.setLayout(new BoxLayout(bigRestaurantPanel, BoxLayout.Y_AXIS));
+        bigAnimationPanel.setLayout(new BoxLayout(bigAnimationPanel, BoxLayout.Y_AXIS));
+        
+        //Big panel sizes
+        Dimension bigDim = new Dimension(WINDOWX/2, (int) (WINDOWY-20));
+        bigRestaurantPanel.setPreferredSize(bigDim);
+        bigRestaurantPanel.setMinimumSize(bigDim);
+        bigRestaurantPanel.setMaximumSize(bigDim);
+        bigAnimationPanel.setPreferredSize(bigDim);
+        bigAnimationPanel.setMinimumSize(bigDim);
+        bigAnimationPanel.setMaximumSize(bigDim);
+        animationPanel.setPreferredSize(bigDim);
+        animationPanel.setMinimumSize(bigDim);
+        animationPanel.setMaximumSize(bigDim);
+        
+        bigRestaurantPanel.setBorder(BorderFactory.createTitledBorder("Restaurant"));
+        bigAnimationPanel.setBorder(BorderFactory.createTitledBorder("Animation"));
+        
+        //Setup the animation panel.
+        animationPanel.setBounds(WINDOWX/2, 50, WINDOWX/2, WINDOWY);
+        bigAnimationPanel.add(animationPanel);
+        
+        //Restaurant Panel
+        Dimension restDim = new Dimension(WINDOWX/2, (int) (WINDOWY*.6));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
-        //add(restPanel);
-        add(restPanel,BorderLayout.PAGE_START);
+        bigRestaurantPanel.add(restPanel);
         
-        // Now, setup the info panel
-        //Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .25));
-        Dimension infoDim = new Dimension(WINDOWX, (int)(WINDOWY * .1));
+        //Info Panel
+        Dimension infoDim = new Dimension(WINDOWX, (int)(WINDOWY * .25));
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
         infoPanel.setMaximumSize(infoDim);
         infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
-
+        
         stateCB = new JCheckBox();
         stateCB.setVisible(false);
         stateCB.addActionListener(this);
@@ -92,11 +104,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
-        //add(infoPanel);
-        add(infoPanel, BorderLayout.CENTER);
+        
+        bigRestaurantPanel.add(infoPanel);
         
         //My name
-        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
+        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * .2));
         brianPanel = new JPanel();
         brianPanel.setPreferredSize(brianDim);
         brianPanel.setMinimumSize(brianDim);
@@ -108,29 +120,13 @@ public class RestaurantGui extends JFrame implements ActionListener {
         
         ImageIcon icon = new ImageIcon("C:/Users/Brian/Documents/School/usc2013Fall/restaurant_brianych/src/Mario-icon.png");
         brianLabel.setIcon(icon);
-        add(brianLabel, BorderLayout.PAGE_END);
         
+        bigRestaurantPanel.add(brianLabel);
         
-        /*Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * 0.2));
-        Dimension txtDim = new Dimension((int)(WINDOWX*0.2), (int)(WINDOWY * 0.1));
-        brianPanel = new JPanel();
-        brianPanel.setPreferredSize(brianDim);
-        brianPanel.setMinimumSize(brianDim);
-        brianPanel.setMaximumSize(brianDim);
-        
-         JLabel xyLabel = new JLabel("Position");
-         brianPanel.add(xyLabel);
-          posField = new JTextField("0,0");
-         brianPanel.add(posField);
-         posField.setPreferredSize(txtDim);
-         posField.setMinimumSize(txtDim);
-         posField.setMaximumSize(txtDim);
-         addTable = new JButton("Add Table");
-         brianPanel.add(addTable);
-         add (brianPanel, BorderLayout.PAGE_END);
-         */
-        
+        add(bigRestaurantPanel);
+        add(bigAnimationPanel);
     }
+    
     
     private void add(ImageIcon icon, String pageEnd) {
 		// TODO Auto-generated method stub

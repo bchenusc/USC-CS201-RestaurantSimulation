@@ -139,6 +139,7 @@ public class WaiterAgent extends Agent {
 		 * 
 		 */
 		if (!myCustomers.isEmpty()){
+			try{
 			for (MyCustomer mc : myCustomers){
 				if (mc.state == MyCustomerState.waiting){
 					SeatCustomer(mc.table, mc);
@@ -153,6 +154,8 @@ public class WaiterAgent extends Agent {
 				}
 			}
 			return true;
+			}
+			catch(Exception e){}
 		}
 		
 		return false;
