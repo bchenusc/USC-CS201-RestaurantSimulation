@@ -91,7 +91,10 @@ public class CookAgent extends Agent {
 		o.setState(OrderState.notified);
 	}
 	
-//################    GUI     ##################
+//################    Utility     ##################
+	public String toString(){
+		return "Cook";
+	}
 
 //######################## End of Class #############################
 }

@@ -33,11 +33,13 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JLabel infoLabel; //part of infoPanel
     private JCheckBox stateCB;//part of infoLabel
     
+    private JPanel bottomPanel = new JPanel();
+    
     private JPanel brianPanel;
     private JLabel brianLabel;
 
     
-    private JButton pauseButton;
+    private JButton pauseButton = new JButton("Pause");
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
@@ -48,7 +50,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 1000; //450
+        int WINDOWX = 1200; //450
         int WINDOWY = 450; //350
         //----------------------- *Finds the host. ------------------ Important step: Caching the host in the AnimationPanel
         animationPanel.setHost(restPanel.getHost());
@@ -80,14 +82,14 @@ public class RestaurantGui extends JFrame implements ActionListener {
         bigAnimationPanel.add(animationPanel);
         
         //Restaurant Panel
-        Dimension restDim = new Dimension(WINDOWX/2, (int) (WINDOWY*.6));
+        Dimension restDim = new Dimension(WINDOWX/2, (int) (WINDOWY*.5));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
         bigRestaurantPanel.add(restPanel);
         
         //Info Panel
-        Dimension infoDim = new Dimension(WINDOWX, (int)(WINDOWY * .25));
+        Dimension infoDim = new Dimension(WINDOWX, (int)(WINDOWY * .3));
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
@@ -107,21 +109,27 @@ public class RestaurantGui extends JFrame implements ActionListener {
         
         bigRestaurantPanel.add(infoPanel);
         
-        //My name
-        Dimension brianDim = new Dimension(WINDOWX, (int)(WINDOWY * .2));
-        brianPanel = new JPanel();
-        brianPanel.setPreferredSize(brianDim);
-        brianPanel.setMinimumSize(brianDim);
-        brianPanel.setMaximumSize(brianDim);
-        brianPanel.setBorder(BorderFactory.createTitledBorder("Information"));
         
-        brianLabel = new JLabel(); 
-        brianLabel.setText("<html><pre><i>Hi I'm Brian!</i></pre></html>");
+        
+        
+        //My name
+        Dimension brianDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .1));
+
+        bottomPanel.setPreferredSize(brianDim);
+        bottomPanel.setMinimumSize(brianDim);
+        bottomPanel.setMaximumSize(brianDim);
+        
+        brianLabel = new JLabel("<html><pre><i>Hi I'm Brian!</i></pre></html>"); 
+        //brianLabel.setText();
         
         ImageIcon icon = new ImageIcon("C:/Users/Brian/Documents/School/usc2013Fall/restaurant_brianych/src/Mario-icon.png");
         brianLabel.setIcon(icon);
         
-        bigRestaurantPanel.add(brianLabel);
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+        bottomPanel.add(brianLabel);
+        bottomPanel.add(pauseButton);
+        
+        bigRestaurantPanel.add(bottomPanel);
         
         add(bigRestaurantPanel);
         add(bigAnimationPanel);
@@ -165,16 +173,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * For v3, it will propose a break for the waiter.
      */
     public void actionPerformed(ActionEvent e) {
-    	if(e.getSource() == addTable){
-    		String myCoords = posField.getText();
-    		
-    		int xTablePos = Integer.parseInt(myCoords.substring(0));
-    		
-    		int yTablePos = Integer.parseInt(myCoords.substring(2));
-    		
-    		//HostAgent.tables.add(new HostAgent.Table(HostAgent.tables.size(), xTablePos, yTablePos));
-    		
-    	}
+    	
     	
     	
         if (e.getSource() == stateCB) {
