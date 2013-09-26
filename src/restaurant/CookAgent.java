@@ -33,10 +33,10 @@ public class CookAgent extends Agent {
 	  orders = new ArrayList<Order>();
 	  
 	  //Tree map
-	  foodDictionary.put("Filet", 1000);
-	  foodDictionary.put("Hamburger", 1000);
-	  foodDictionary.put("Salmon", 1000);
-	  foodDictionary.put("JellyFish", 1500);
+	  foodDictionary.put("Filet", 13000);
+	  foodDictionary.put("Hamburger", 8000);
+	  foodDictionary.put("Salmon", 15000);
+	  foodDictionary.put("JellyFish", 6000);
 	  
 	}
 		
@@ -82,7 +82,7 @@ public class CookAgent extends Agent {
 		
 //########## Actions ###############
 	private void CookOrder(Order o){
-		  Do("Cook " + name + " is cooking " + o.choice + ".");
+		  Do("is cooking " + o.choice + ".");
 		  o.setTimer(foodDictionary.get(o.choice));
 	}
 	
@@ -93,7 +93,7 @@ public class CookAgent extends Agent {
 	
 //################    Utility     ##################
 	public String toString(){
-		return "Cook";
+		return "Cook " + name;
 	}
 
 //######################## End of Class #############################

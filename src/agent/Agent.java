@@ -138,12 +138,13 @@ public abstract class Agent {
 
             while (goOn) {
                 try {
-                	while (paused) {
-                		pause.acquire();
-                	}
+                	
                     // The agent sleeps here until someone calls, stateChanged(),
                     // which causes a call to stateChange.give(), which wakes up agent.
                     stateChange.acquire();
+                    while (paused) {
+                		pause.acquire();
+                	}
                     //The next while clause is the key to the control flow.
                     //When the agent wakes up it will call respondToStateChange()
                     //repeatedly until it returns FALSE.

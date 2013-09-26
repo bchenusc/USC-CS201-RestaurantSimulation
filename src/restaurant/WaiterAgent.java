@@ -19,15 +19,8 @@ public class WaiterAgent extends Agent {
 		}
 
 	// This is to distribute the waiting customers evenly among waiters.
-	public enum WaiterState {idle, busy;}
-	private WaiterState state = WaiterState.idle;
-		public WaiterState getState(){
-			return state;
-		}
-		public void setState(WaiterState state){
-			this.state = state;
-		}
-	enum MyCustomerState {waiting, seated, readyToOrder, ordered, eating;}
+	public int numberOfCustomers;
+	enum MyCustomerState {waiting, seated, readyToOrder, ordering, ordered, orderCooking, orderReady, eating, doneEating;}
 	
 	//Animation stuff - To implement in 2c
 	private Semaphore atTargetLocation = new Semaphore(0,true);
@@ -40,84 +33,45 @@ public class WaiterAgent extends Agent {
 
 // ######## Messages ################
 	public void msgSeatAtTable(CustomerAgent c, Table t) {
-		//WaiterState = busy;
-		// myCustomers.add(new MyCustomer(c, t));
-		
-		state = WaiterState.busy;
 		c.waiter = this;
-		myCustomers.add(new MyCustomer(c,t));
-		
+		MyCustomer mc = new MyCustomer(c,t);
+		mc.state = MyCustomerState.waiting;
+		myCustomers.add(mc);
+		numberOfCustomers++;
 		stateChanged();
-
 	};	
 	
-	public void msgReadyToOrder(CustomerAgent c){  
-		/*foreach MyCustomer mc in myCustomer{
-		      if (mc == c){
-		           WaiterState = busy;
-		          mc.CustomerState = readyToOrder;
-		      } 
-		 }
-		 */
-		
+	public void msgReadyToOrder(CustomerAgent c){  		
 		for (MyCustomer mc : myCustomers){
 			if (mc.customer == c){
-				state = WaiterState.busy;
 				mc.state = MyCustomerState.readyToOrder;
 				stateChanged();
 			}
 		}
 	}
 	public void msgHeresMyChoice(CustomerAgent ca, String c){ 
-		/*foreach MyCustomer mc in myCustomer{
-		      if (mc == c){
-		           WaiterState = busy;
-		           mc.order = new Order(c, this. mc.table.tableNumber);
-		           mc.CustomerState = ordered;
-		      } 
-		   }
-		   */
 		for (MyCustomer mc : myCustomers){
 			if (mc.customer == ca){
-				state = WaiterState.busy;
 				mc.order = new Order(c, this, mc.table.tableNumber);
-				GiveOrderToCook(mc);
+				mc.state = MyCustomerState.ordering;
 				stateChanged();
 			    
 			    return;
 			}
 		}
 	}
-	public void msgOrderIsReady(Order o){ 
-		/*foreach MyCustomer mc in myCustomer{
-		      if (mc == c){
-		           WaiterState = busy;
-		           GiveFoodToCustomer(mc);
-		      } 
-		  }
-		  */
-		
+	public void msgOrderIsReady(Order o){ 		
 		for (MyCustomer mc : myCustomers){
 			if (mc.order == o){
-				state = WaiterState.busy;
-				mc.state = MyCustomerState.eating;
-				GiveFoodToCustomer(mc);
+				mc.state = MyCustomerState.orderReady;
 				stateChanged();
 			}
 		}
 	}
 	public void msgImDone(CustomerAgent c){ 
-		/*foreach MyCustomer mc in myCustomer{
-		     if (mc == c){
-		           WaiterState = busy;
-		           CustomerLeaving(mc);
-		      } 
-	    }
-	    */
 		for (MyCustomer mc: myCustomers){
 			if (mc.customer == c){
-				state = WaiterState.busy;
-				CustomerLeaving(mc);
+				mc.state = MyCustomerState.doneEating;
 				stateChanged();
 			}
 		}
@@ -127,17 +81,6 @@ public class WaiterAgent extends Agent {
 	
 //##########  Scheduler  ##############
 	protected boolean pickAndExecuteAnAction(){
-		
-		/*
-		 * if  there exists a MyCustomer mc such that mc.CustomerState == waiting
-   				then SeatCustomer(mc);
-
-
-			if  there exists a MyCustomer mc such that mc.CustomerState == readyToOrder
-   				then TakeOrder(mc);
-
-		 * 
-		 */
 		if (!myCustomers.isEmpty()){
 			try{
 			for (MyCustomer mc : myCustomers){
@@ -153,6 +96,28 @@ public class WaiterAgent extends Agent {
 					return true;
 				}
 			}
+			
+			for (MyCustomer mc: myCustomers){
+				if (mc.state == MyCustomerState.ordering){
+					GiveOrderToCook(mc);
+					return true;
+				}
+			}
+			
+			for (MyCustomer mc: myCustomers){
+				if (mc.state == MyCustomerState.orderReady){
+					GiveFoodToCustomer(mc);
+					return true;
+				}
+			}
+			
+			for (MyCustomer mc: myCustomers){
+				if (mc.state == MyCustomerState.doneEating){
+					CustomerLeaving(mc);
+					return true;
+				}
+			}
+
 			return true;
 			}
 			catch(Exception e){}
@@ -163,65 +128,39 @@ public class WaiterAgent extends Agent {
 	
 //############ Action ################
 	public void SeatCustomer(Table t, MyCustomer mc) {
-		/*
-		    mc.customer.FollowMe(new Menu());
-		    DoSeatCustomer(); //GUI
-		    mc.CustomerState = seated;
-		    WaiterState = idle;*/
-		Do(name + " is seating " + mc.customer.getName());
-		mc.customer.FollowMe(new Menu());
+		Do("is seating " + mc.customer.getName());
+		DoSeatCustomer(t.getTableNumber(), mc);
 		mc.state = MyCustomerState.seated;
-		state = WaiterState.idle;
-		stateChanged();
+		mc.customer.msgFollowMe(new Menu());
 	}
 	
 	public void TakeOrder(MyCustomer mc){
-	   /*DoTakeOrder();
-	   mc.customer.WhatWouldYouLike();  
-	   WaiterState = idle;
-	   */
-		Do(name + " is taking " + mc.customer.getName()+ "'s order.");
+		Do("is taking " + mc.customer.getName()+ "'s order.");
 		mc.customer.WhatWouldYouLike();
-		mc.state = MyCustomerState.ordered;
-		state = WaiterState.idle;
-		stateChanged();
 	}
 	 
 	public void GiveOrderToCook(MyCustomer mc){
-	   /*DoGiveOrderToCook();
-	   cook.HeresAnOrder(mc.order);
-	   WaiterState = idle;
-	   */
-		Do(name + " gives an order to the cook.");
+		Do("gives an order to the cook.");
+		mc.state = MyCustomerState.orderCooking;
 		cook.msgHeresAnOrder(mc.order);
-		state = WaiterState.idle;
-		stateChanged();
 	}
 
 	public void GiveFoodToCustomer(MyCustomer mc){
-	   /*DoGiveFoodToCustomer();
-	   mc.customer.HeresYourOrder(mc.order.choice);
-	   WaiterState = idle;
-	   */
-		Do(name + " is giving food to " + mc.customer.getName());
-		
-		mc.customer.HeresYourOrder(mc.order.choice);
+		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
-		state = WaiterState.idle;
-		stateChanged();
+		mc.customer.HeresYourOrder(mc.order.choice);
 	}
 
 	public void CustomerLeaving(MyCustomer c){
-	   /*DoCustomerLeaving();
-	   host.TableIsClear(c.table);
-	   WaiterState = idle;
-	   */
-		Do(c.customer.getName() + " is leaving the restaurant.");
+		Do(c.customer.getName() + "is leaving the restaurant.");
 		host.msgTableIsClear(c.table);
-		state = WaiterState.idle;
-		stateChanged();
+		myCustomers.remove(c);
 	}
 
+	//##GUI ACTIONS###
+	private void DoSeatCustomer(int tableNum, MyCustomer mc){
+		mc.customer.getGui().DoGoToSeat(tableNum);
+	}
 
 //#####    GUI STUFF DEAL WITH LATER   ####
 	/*public void msgAtTable() {//from animation

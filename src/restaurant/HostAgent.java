@@ -1,7 +1,6 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.WaiterAgent.WaiterState;
 import restaurant.gui.WaiterGui;
 
 import java.util.*;
@@ -72,19 +71,13 @@ public class HostAgent extends Agent {
 		if (!waitingCustomers.isEmpty()){
 			for (Table t : tables){
 				if (t.occupiedBy == null){
-					for (WaiterAgent w: waiters){
-						if (w.getState() == WaiterState.idle){
-							notifyWaiter(t, w);
-							return true;
-						}
-					}
+					WaiterAgent w = findWaiterWithLowestCust();
+					notifyWaiter(t, w);
 					return true;
 				}
 			}
 			return true;
 		}
-
-
 		return false;
 		//we have tried all our rules and found
 		//nothing to do. So return false to main loop of abstract agent
@@ -93,7 +86,7 @@ public class HostAgent extends Agent {
 
 // ######################   Actions  ##################
 	private void notifyWaiter(Table t, WaiterAgent w){
-		  Do("Host: " + name + " is notifying waiter "+ w.name);
+		  Do("is notifying waiter "+ w.name);
 		   w.msgSeatAtTable(waitingCustomers.remove(0), t);
 		}
 
@@ -127,7 +120,21 @@ public class HostAgent extends Agent {
 	*/
 
 	//utilities
-
+	public WaiterAgent findWaiterWithLowestCust(){
+		
+		int index = 0;
+		int lowest = waiters.get(0).numberOfCustomers;
+		
+		for (int i=0; i<waiters.size(); i++){
+			if (waiters.get(i).numberOfCustomers < lowest){
+				lowest = waiters.get(i).numberOfCustomers;
+				index = i;
+			}
+		}
+		return waiters.get(index);
+		
+	}
+	
 	public void setGui(WaiterGui gui) {
 		hostGui = gui;
 	}

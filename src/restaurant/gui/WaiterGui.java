@@ -4,7 +4,6 @@ package restaurant.gui;
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
 import restaurant.WaiterAgent;
-import restaurant.WaiterAgent.WaiterState;
 
 import java.awt.*;
 
@@ -44,10 +43,6 @@ public class WaiterGui implements Gui {
            //agent.msgAtTable();
         }
         
-        //if left the screen
-        if (agent.getState() == WaiterState.busy && xPos <=-20 && yPos <= -20){
-        	agent.setState(WaiterState.idle);
-        }
     }
 
     public void draw(Graphics2D g) {

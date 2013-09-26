@@ -2,6 +2,7 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
+import restaurant.Table;
 
 import java.awt.*;
 
@@ -23,6 +24,8 @@ public class CustomerGui implements Gui{
 	private enum Command {noCommand, GoToSeat, LeaveRestaurant};
 	private Command command = Command.noCommand;
 	
+	private boolean receivedCoordinates;
+	
 	//Cache the host so we have access to table locations.
 	HostAgent host; //We only cache the host so that we can ask for the table location.
 
@@ -34,29 +37,47 @@ public class CustomerGui implements Gui{
 		yDestination = -40;
 		this.gui = gui;
 		this.host = host;
+		
+		receivedCoordinates = false;
 	}
 
 	public void updatePosition() {
-		if (xPos < xDestination)
-			xPos++;
-		else if (xPos > xDestination)
-			xPos--;
-
-		if (yPos < yDestination)
-			yPos++;
-		else if (yPos > yDestination)
-			yPos--;
-
-		/*if (xPos == xDestination && yPos == yDestination) {
-			if (command==Command.GoToSeat) agent.msgAnimationFinishedGoToSeat();
-			else if (command==Command.LeaveRestaurant) {
-				agent.msgAnimationFinishedLeaveRestaurant();
-				System.out.println("about to call gui.setCustomerEnabled(agent);");
-				isHungry = false;
-				gui.setCustomerEnabled(agent);
+		if (receivedCoordinates){
+			if (xPos < xDestination)
+				xPos++;
+			else if (xPos > xDestination)
+				xPos--;
+	
+			if (yPos < yDestination)
+				yPos++;
+			else if (yPos > yDestination)
+				yPos--;
+	
+			if (xPos == xDestination && yPos == yDestination) {
+				if (command==Command.GoToSeat) {
+					agent.msgAnimationFinishedGoToSeat();
+				}
+				else if (command==Command.LeaveRestaurant) {
+					agent.msgAnimationFinishedLeaveRestaurant();
+					System.out.println("about to call gui.setCustomerEnabled(agent);");
+					isHungry = false;
+					gui.setCustomerEnabled(agent);
+				}
+				receivedCoordinates = false;
+				command=Command.noCommand;
 			}
-			command=Command.noCommand;
-		}*/
+		}
+	}
+	
+	public void DoGoToSeat(int tableNumber){
+		for(Table t : host.tables){
+			if (t.getTableNumber() == tableNumber){
+				xDestination = t.getPosX();
+				yDestination = t.getPosY();
+			}
+		}
+		command = Command.GoToSeat;
+		receivedCoordinates = true;
 	}
 
 	public void draw(Graphics2D g) {
@@ -69,7 +90,7 @@ public class CustomerGui implements Gui{
 	}
 	public void setHungry() {
 		isHungry = true;
-		agent.IsHungry();
+		agent.msgIsHungry();
 		setPresent(true);
 	}
 	public boolean isHungry() {
@@ -80,7 +101,7 @@ public class CustomerGui implements Gui{
 		isPresent = p;
 	}
 
-	public void DoGoToSeat(int seatnumber) {//later you will map seatnumber to table coordinates.
+	/*public void DoGoToSeat(int seatnumber) {//later you will map seatnumber to table coordinates.
 		for(restaurant.Table myTable : host.tables){
 			if(myTable.getTableNumber() == seatnumber){
 				xDestination = myTable.getPosX();
@@ -90,6 +111,7 @@ public class CustomerGui implements Gui{
 		}
 		
 	}
+	*/
 
 	public void DoExitRestaurant() {
 		xDestination = -40;
