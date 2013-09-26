@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 
 public class WaiterAgent extends Agent {
+	WaiterGui gui;
 	List<MyCustomer> myCustomers = new ArrayList<MyCustomer>();
 	CookAgent cook;
 	HostAgent host;
@@ -53,10 +54,8 @@ public class WaiterAgent extends Agent {
 		for (MyCustomer mc : myCustomers){
 			if (mc.customer == ca){
 				mc.order = new Order(c, this, mc.table.tableNumber);
-				mc.state = MyCustomerState.ordering;
+				mc.state = MyCustomerState.ordered;
 				stateChanged();
-			    
-			    return;
 			}
 		}
 	}
@@ -98,7 +97,7 @@ public class WaiterAgent extends Agent {
 			}
 			
 			for (MyCustomer mc: myCustomers){
-				if (mc.state == MyCustomerState.ordering){
+				if (mc.state == MyCustomerState.ordered){
 					GiveOrderToCook(mc);
 					return true;
 				}
@@ -132,11 +131,13 @@ public class WaiterAgent extends Agent {
 		DoSeatCustomer(t.getTableNumber(), mc);
 		mc.state = MyCustomerState.seated;
 		mc.customer.msgFollowMe(new Menu());
+		
 	}
 	
 	public void TakeOrder(MyCustomer mc){
 		Do("is taking " + mc.customer.getName()+ "'s order.");
 		mc.customer.WhatWouldYouLike();
+		mc.state = MyCustomerState.ordering;
 	}
 	 
 	public void GiveOrderToCook(MyCustomer mc){
@@ -159,16 +160,28 @@ public class WaiterAgent extends Agent {
 
 	//##GUI ACTIONS###
 	private void DoSeatCustomer(int tableNum, MyCustomer mc){
+		gui.DoBringToTable(mc.customer, tableNum);
 		mc.customer.getGui().DoGoToSeat(tableNum);
+		
+		try {
+			atTargetLocation.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 //#####    GUI STUFF DEAL WITH LATER   ####
-	/*public void msgAtTable() {//from animation
-			//print("msgAtTable() called");
+	public void msgAtTable() {//from animation
+			print("msgAtTable() called");
 			atTargetLocation.release();// = true;
 			stateChanged();
 	}
-	*/
+	
+	 public void setGUI(WaiterGui wg){
+	    	gui = wg;
+	    	
+	    }
 	
 //#### Inner Class ####	
 	private class MyCustomer {

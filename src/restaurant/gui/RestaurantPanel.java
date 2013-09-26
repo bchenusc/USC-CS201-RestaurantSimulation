@@ -23,7 +23,7 @@ public class RestaurantPanel extends JPanel {
     private HostAgent host = new HostAgent("Sarah");
     private CookAgent cook = new CookAgent("Brian");
     private WaiterAgent waiter = new WaiterAgent("Matt", host, cook);
-    private WaiterGui hostGui = new WaiterGui(waiter);
+    private WaiterGui waitergui = new WaiterGui(waiter);
     
     //List of Agents for pausing.
     private Vector<Agent> agents = new Vector<Agent>();
@@ -46,9 +46,9 @@ public class RestaurantPanel extends JPanel {
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
-        host.setGui(hostGui);
+        waiter.setGUI(waitergui);
 
-        gui.animationPanel.addGui(hostGui);
+        gui.animationPanel.addGui(waitergui);
         
         host.startThread(); //Hack only one host.
         cook.startThread(); //Hack only one cook.

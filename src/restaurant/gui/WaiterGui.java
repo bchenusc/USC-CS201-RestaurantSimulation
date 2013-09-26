@@ -20,28 +20,34 @@ public class WaiterGui implements Gui {
     private  int hostWidth = 20;
     private  int hostHeight = 20;
     
+    private boolean receivedAction;
     
     private static final int movementOffset = 20;
 
     public WaiterGui(WaiterAgent agent) {
         this.agent = agent;
+        receivedAction = false;
     }
 
     public void updatePosition() {
-        if (xPos < xDestination)
-            xPos++;
-        else if (xPos > xDestination)
-            xPos--;
-
-        if (yPos < yDestination)
-            yPos++;
-        else if (yPos > yDestination)
-            yPos--;
-
-        if (xPos == xDestination && yPos == yDestination
-        		& (xDestination == xTable + movementOffset) & (yDestination == yTable - movementOffset)) {
-           //agent.msgAtTable();
-        }
+    	if (receivedAction){
+	        if (xPos < xDestination)
+	            xPos++;
+	        else if (xPos > xDestination)
+	            xPos--;
+	
+	        if (yPos < yDestination)
+	            yPos++;
+	        else if (yPos > yDestination)
+	            yPos--;
+	
+	        if (xPos == xDestination && yPos == yDestination
+	        		& (xDestination == xTable + movementOffset) & (yDestination == yTable - movementOffset)) {
+	            receivedAction = false;
+	        	agent.msgAtTable();
+	           
+	        }
+    	}
         
     }
 
@@ -55,6 +61,7 @@ public class WaiterGui implements Gui {
     }
 
     public void DoBringToTable(CustomerAgent customer, int tableNumber) {
+    	receivedAction = true;
     	for (restaurant.Table myTable : agent.getHost().tables){
     		if (myTable.getTableNumber() == tableNumber){
     			xTable = myTable.getPosX();
@@ -80,4 +87,5 @@ public class WaiterGui implements Gui {
     public int getYPos() {
         return yPos;
     }
+   
 }

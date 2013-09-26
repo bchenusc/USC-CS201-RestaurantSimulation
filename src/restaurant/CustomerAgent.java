@@ -59,9 +59,6 @@ public class CustomerAgent extends Agent {
 			      choice = RandomChoice(menu);
 			      event = CustomerEvent.readyToOrder;
 			      
-			    //**Hack for gui to make this code work
-			      state = CustomerState.Seated;
-			      
 			      stateChanged();
 			      
 			      readMenuTimer.stop();
@@ -93,7 +90,7 @@ public class CustomerAgent extends Agent {
 	}
 //Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
 	public void WhatWouldYouLike(){
-		event = CustomerEvent.gotMenu;
+		event = CustomerEvent.ordered;
 		stateChanged();
 	}
 	
@@ -117,16 +114,11 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == CustomerState.WaitingInRestaurant && event == CustomerEvent.followWaiter ){
-			state = CustomerState.BeingSeated;
+			state = CustomerState.Seated;
 			
 			followWaiter();
 			return true;
 		}
-		if (state == CustomerState.BeingSeated && event == CustomerEvent.seated){
-			state = CustomerState.Seated;
-			return true;
-		}
-		
 		if (state == CustomerState.Seated && event == CustomerEvent.gotMenu){
 			state = CustomerState.ReadingMenu;
 			ChooseFood();
@@ -226,7 +218,8 @@ public class CustomerAgent extends Agent {
 	// ###### GUI Messaging ########
 	public void msgAnimationFinishedGoToSeat() {
 		//from animation
-		event = CustomerEvent.seated;
+		Do("is seated.");
+		event = CustomerEvent.gotMenu;
 		stateChanged();
 	}
 	public void msgAnimationFinishedLeaveRestaurant() {
@@ -237,7 +230,7 @@ public class CustomerAgent extends Agent {
 	
 	//######### GUI Action###########
 	private void DoFollowWaiter() {
-		Do("is being seated.");
+		Do("is following the waiter.");
 	}
 	
 	
