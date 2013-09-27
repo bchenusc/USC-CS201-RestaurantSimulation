@@ -33,10 +33,10 @@ public class CookAgent extends Agent {
 	  orders = new ArrayList<Order>();
 	  
 	  //Tree map
-	  foodDictionary.put("Filet", 13000);
-	  foodDictionary.put("Hamburger", 8000);
-	  foodDictionary.put("Salmon", 15000);
-	  foodDictionary.put("JellyFish", 6000);
+	  foodDictionary.put("Steak", 5000);
+	  foodDictionary.put("Chicken", 6000);
+	  foodDictionary.put("Salad", 4000);
+	  foodDictionary.put("Pizza", 8000);
 	  
 	}
 		

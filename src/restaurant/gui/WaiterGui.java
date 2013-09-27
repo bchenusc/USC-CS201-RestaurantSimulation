@@ -23,6 +23,8 @@ public class WaiterGui implements Gui {
     private boolean receivedAction;
     private boolean doingIdle;
     private static final int movementOffset = 20;
+    
+    String displayText = "";
 
     public WaiterGui(WaiterAgent agent) {
         this.agent = agent;
@@ -43,7 +45,8 @@ public class WaiterGui implements Gui {
 	        else
 	        if (xPos == xDestination && yPos == yDestination){
 	        		if(!doingIdle)
-	        			agent.atLocation();     
+	        			agent.atLocation();
+	        		displayText = "";
 	        		receivedAction = false;
 	        		return;
 	        }
@@ -53,6 +56,11 @@ public class WaiterGui implements Gui {
     public void draw(Graphics2D g) {
         g.setColor(Color.MAGENTA);
         g.fillRect(xPos, yPos, hostWidth, hostHeight);
+        if (displayText.trim().length() > 0){
+        	if (xPos > 0 && xPos < 600 && yPos>0 && yPos<450){
+        		g.drawString(displayText, xPos, yPos);
+        	}
+        }
     }
 
     public boolean isPresent() {
@@ -86,9 +94,10 @@ public class WaiterGui implements Gui {
     	doingIdle = false;
     }
     
-    public void DoGiveOrderToCook(){
+    public void DoGiveOrderToCook(restaurant.Order o){
     	xDestination = 601; //Destination of cook
     	yDestination = 100; //Destination of cook
+    	displayText = o.getChoice();
     	receivedAction = true;
     	doingIdle = false;
     }

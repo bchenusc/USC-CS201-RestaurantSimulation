@@ -10,10 +10,10 @@ public class Menu {
 	private final int size = 4;
 	
 	public Menu(){
-		menuDictionary.put("Filet", 24.00f);
-		menuDictionary.put("Hamburger", 5.00f);
-		menuDictionary.put("Salmon", 15.00f);
-		menuDictionary.put("Jellyfish", 16.00f);
+		menuDictionary.put("Steak", 15.99f);
+		menuDictionary.put("Chicken", 10.99f);
+		menuDictionary.put("Salad", 5.99f);
+		menuDictionary.put("Pizza", 8.99f);
 	}
 	
 	public int getSize(){
@@ -22,10 +22,10 @@ public class Menu {
 	
 	public String choice(int n){
 		switch (n){
-			case 0: return "Filet";
-			case 1: return "Hamburger";
-			case 2: return "Salmon";
-			case 3: return "JellyFish";
+			case 0: return "Steak";
+			case 1: return "Chicken";
+			case 2: return "Salad";
+			case 3: return "Pizza";
 			default: return null;
 		}
 		

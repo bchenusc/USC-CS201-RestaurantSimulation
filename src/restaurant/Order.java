@@ -39,5 +39,8 @@ public class Order {
 	  public void setState(OrderState state){
 		  this.state = state;
 	  }
+	  public String getChoice(){
+		  return choice;
+	  }
 	  
 }

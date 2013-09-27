@@ -83,7 +83,9 @@ public class WaiterAgent extends Agent {
 	
 //##########  Scheduler  ##############
 	protected boolean pickAndExecuteAnAction(){
+		
 		if (!myCustomers.isEmpty()){
+			try{
 			for (MyCustomer mc : myCustomers){
 				if (mc.state == MyCustomerState.waiting){
 						idle = false;
@@ -125,12 +127,17 @@ public class WaiterAgent extends Agent {
 			}
 			
 			DoIdle();
-			
+			}
+			catch(ConcurrentModificationException e){
+				
+			}
 			return true;
 			}
 		
 		
 		return false;
+		
+		
 	}
 	
 //############ Action ################
@@ -150,13 +157,13 @@ public class WaiterAgent extends Agent {
 	}
 	 
 	public void GiveOrderToCook(MyCustomer mc){
-		DoGiveOrderToCook();
+		DoGiveOrderToCook(mc.order);
 		mc.state = MyCustomerState.orderCooking;
 		cook.msgHeresAnOrder(mc.order);
 	}
 
 	public void GiveFoodToCustomer(MyCustomer mc){
-		DoGiveOrderToCook();
+		DoGiveOrderToCook(mc.order);
 		DoWalkToCustomer(mc);
 		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
@@ -188,9 +195,9 @@ public class WaiterAgent extends Agent {
 		atLocAcquire();
 	}
 	
-	public void DoGiveOrderToCook(){
+	public void DoGiveOrderToCook(Order o){
 		Do("gives an order to the cook.");
-		gui.DoGiveOrderToCook();
+		gui.DoGiveOrderToCook(o);
 		atLocAcquire();
 	}
 	
