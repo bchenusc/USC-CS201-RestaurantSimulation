@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
+import java.util.concurrent.Semaphore;
+
 import javax.swing.Timer;
 
 /**
@@ -19,7 +21,6 @@ public class CustomerAgent extends Agent {
 	private final int readingMenuTime = 5000;
 	
 	private String name;
-	//private int hungerLevel = 5;        // determines length of meal
 	Timer eatingTimer;
 	Timer readMenuTimer;
 	private CustomerGui customerGui;
@@ -37,6 +38,9 @@ public class CustomerAgent extends Agent {
 	public enum CustomerEvent 
 	{none, gotHungry, followWaiter, seated, gotMenu, readyToOrder, ordered, foodArrived, doneEating, doneLeaving};
 	CustomerEvent event = CustomerEvent.none;
+	
+	//Animation stuff - To implement in 2c
+		private Semaphore atTargetLocation = new Semaphore(0, true);
 
 	/**
 	 * Constructor for CustomerAgent class
@@ -110,12 +114,13 @@ public class CustomerAgent extends Agent {
 
 		if (state == CustomerState.DoingNothing && event == CustomerEvent.gotHungry ){
 			state = CustomerState .WaitingInRestaurant;
+			Do(state.toString());
 			goToRestaurant();
 			return true;
 		}
 		if (state == CustomerState.WaitingInRestaurant && event == CustomerEvent.followWaiter ){
 			state = CustomerState.Seated;
-			
+			Do(state.toString());
 			followWaiter();
 			return true;
 		}
@@ -175,8 +180,6 @@ public class CustomerAgent extends Agent {
 		readMenuTimer.start();
 	}
 
-	
-	
 	private void TellWaiterMyChoice(){
 		Do("tells the waiter he wants " + choice + ".");
 		waiter.msgHeresMyChoice(this,choice);
@@ -199,6 +202,7 @@ public class CustomerAgent extends Agent {
 
 	private void leaveTable() {
 		Do("is leaving.");
+		DoLeavingTable();
 		waiter.msgImDone(this);
 		state = CustomerState.Leaving;
 		stateChanged();
@@ -232,7 +236,9 @@ public class CustomerAgent extends Agent {
 	private void DoFollowWaiter() {
 		Do("is following the waiter.");
 	}
-	
+	private void DoLeavingTable(){
+		customerGui.DoLeavingTable();
+	}
 	
 	//########## UTILITIES ###########
 	private String RandomChoice(Menu menu){
@@ -240,7 +246,21 @@ public class CustomerAgent extends Agent {
 		return menu.choice(random);
 	}
 	
-
+	/*public void atLocation() {//from animation
+		print("semaphore atLocation released");
+			atTargetLocation.release();// = true;
+	}
+	
+	public void acquireLocation(){
+		try {
+			atTargetLocation.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	*/
+	
 	public void setGui(CustomerGui g) {
 		customerGui = g;
 	}

@@ -18,13 +18,13 @@ public class WaiterAgent extends Agent {
 		public String getName(){
 			return name;
 		}
-
+	boolean idle;
 	// This is to distribute the waiting customers evenly among waiters.
 	public int numberOfCustomers;
 	enum MyCustomerState {waiting, seated, readyToOrder, ordering, ordered, orderCooking, orderReady, eating, doneEating;}
 	
 	//Animation stuff - To implement in 2c
-	private Semaphore atTargetLocation = new Semaphore(0,true);
+	private Semaphore atTargetLocation = new Semaphore(0, true);
 	
 	public WaiterAgent(String name, HostAgent h, CookAgent c) {
 		this.name = name;
@@ -37,6 +37,8 @@ public class WaiterAgent extends Agent {
 		c.waiter = this;
 		MyCustomer mc = new MyCustomer(c,t);
 		mc.state = MyCustomerState.waiting;
+		t.occupiedBy = c;
+		idle = true;
 		myCustomers.add(mc);
 		numberOfCustomers++;
 		stateChanged();
@@ -45,6 +47,7 @@ public class WaiterAgent extends Agent {
 	public void msgReadyToOrder(CustomerAgent c){  		
 		for (MyCustomer mc : myCustomers){
 			if (mc.customer == c){
+				Do("Received customer call");
 				mc.state = MyCustomerState.readyToOrder;
 				stateChanged();
 			}
@@ -81,16 +84,17 @@ public class WaiterAgent extends Agent {
 //##########  Scheduler  ##############
 	protected boolean pickAndExecuteAnAction(){
 		if (!myCustomers.isEmpty()){
-			try{
 			for (MyCustomer mc : myCustomers){
 				if (mc.state == MyCustomerState.waiting){
-					SeatCustomer(mc.table, mc);
-					return true;
+						idle = false;
+						SeatCustomer(mc.table, mc);
+						return true;
+					}
 				}
-			}
 			
 			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.readyToOrder){
+					idle = false;
 					TakeOrder(mc);
 					return true;
 				}
@@ -98,6 +102,7 @@ public class WaiterAgent extends Agent {
 			
 			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.ordered){
+					idle = false;
 					GiveOrderToCook(mc);
 					return true;
 				}
@@ -105,6 +110,7 @@ public class WaiterAgent extends Agent {
 			
 			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.orderReady){
+					idle = false;
 					GiveFoodToCustomer(mc);
 					return true;
 				}
@@ -112,41 +118,46 @@ public class WaiterAgent extends Agent {
 			
 			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.doneEating){
+					idle = false;
 					CustomerLeaving(mc);
 					return true;
 				}
 			}
-
+			
+			DoIdle();
+			
 			return true;
 			}
-			catch(Exception e){}
-		}
+		
 		
 		return false;
 	}
 	
 //############ Action ################
 	public void SeatCustomer(Table t, MyCustomer mc) {
+		DoGetCustomer();
 		Do("is seating " + mc.customer.getName());
-		DoSeatCustomer(t.getTableNumber(), mc);
-		mc.state = MyCustomerState.seated;
 		mc.customer.msgFollowMe(new Menu());
-		
+		mc.state = MyCustomerState.seated;
+		DoSeatCustomer(t.getTableNumber(), mc);
 	}
 	
 	public void TakeOrder(MyCustomer mc){
-		Do("is taking " + mc.customer.getName()+ "'s order.");
+		Do("is taking " + mc.customer.getName() + "'s order.");
+		DoWalkToCustomer(mc);
 		mc.customer.WhatWouldYouLike();
 		mc.state = MyCustomerState.ordering;
 	}
 	 
 	public void GiveOrderToCook(MyCustomer mc){
-		Do("gives an order to the cook.");
+		DoGiveOrderToCook();
 		mc.state = MyCustomerState.orderCooking;
 		cook.msgHeresAnOrder(mc.order);
 	}
 
 	public void GiveFoodToCustomer(MyCustomer mc){
+		DoGiveOrderToCook();
+		DoWalkToCustomer(mc);
 		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
 		mc.customer.HeresYourOrder(mc.order.choice);
@@ -162,26 +173,53 @@ public class WaiterAgent extends Agent {
 	private void DoSeatCustomer(int tableNum, MyCustomer mc){
 		gui.DoBringToTable(mc.customer, tableNum);
 		mc.customer.getGui().DoGoToSeat(tableNum);
-		
+		atLocAcquire();
+	}
+	
+	public void DoGetCustomer(){
+		Do("is getting customer.");
+		gui.DoGetCustomer();
+		atLocAcquire();
+	}
+	
+	public void DoWalkToCustomer(MyCustomer mc){
+		//Do("is taking " + mc.customer.getName()+ "'s order.");
+		gui.DoWalkToCustomer(mc.table);
+		atLocAcquire();
+	}
+	
+	public void DoGiveOrderToCook(){
+		Do("gives an order to the cook.");
+		gui.DoGiveOrderToCook();
+		atLocAcquire();
+	}
+	
+	private void atLocAcquire(){
 		try {
 			atTargetLocation.acquire();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-//#####    GUI STUFF DEAL WITH LATER   ####
-	public void msgAtTable() {//from animation
-			print("msgAtTable() called");
-			atTargetLocation.release();// = true;
-			stateChanged();
+		
 	}
 	
-	 public void setGUI(WaiterGui wg){
+	private void DoIdle(){
+		gui.DoIdle();
+		idle = false;
+	}
+
+//#####    GUI Utilities  ####
+	public void atLocation() {//from animation
+				atTargetLocation.release();// = true;
+				idle = true;
+	}
+	
+
+	
+	public void setGUI(WaiterGui wg){
 	    	gui = wg;
-	    	
-	    }
+	}
 	
 //#### Inner Class ####	
 	private class MyCustomer {

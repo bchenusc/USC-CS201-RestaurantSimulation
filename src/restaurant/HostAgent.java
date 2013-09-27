@@ -91,34 +91,6 @@ public class HostAgent extends Agent {
 		}
 
 
-	/*private void seatCustomer(CustomerAgent customer, Table table) {
-		//State change
-		state = HostState.Seating;
-		stateChanged();
-		
-		customer.msgSitAtTable(table.getTableNumber());
-		DoSeatCustomer(customer, table);
-		try {
-			atTable.acquire();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		table.setOccupant(customer);
-		waitingCustomers.remove(customer);
-		hostGui.DoLeaveCustomer();
-		
-	}*/
-	
-	// The animation DoXYZ() routines
-	/*private void DoSeatCustomer(CustomerAgent customer, Table table) {
-		//Notice how we print "customer" directly. It's toString method will do it.
-		//Same with "table"
-		print("Seating " + customer + " at " + table);
-		hostGui.DoBringToTable(customer , table.getTableNumber());
-	}
-	*/
-
 	//utilities
 	public WaiterAgent findWaiterWithLowestCust(){
 		

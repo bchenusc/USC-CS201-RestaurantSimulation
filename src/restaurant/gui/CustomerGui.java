@@ -61,12 +61,19 @@ public class CustomerGui implements Gui{
 					agent.msgAnimationFinishedLeaveRestaurant();
 					System.out.println("about to call gui.setCustomerEnabled(agent);");
 					isHungry = false;
+					//agent.atLocation();
 					gui.setCustomerEnabled(agent);
 				}
 				receivedCoordinates = false;
 				command=Command.noCommand;
 			}
 		}
+	}
+	
+	public void DoLeavingTable(){
+		xDestination = -20; //home base
+		yDestination = -20; //home base
+		receivedCoordinates = true;
 	}
 	
 	public void DoGoToSeat(int tableNumber){
