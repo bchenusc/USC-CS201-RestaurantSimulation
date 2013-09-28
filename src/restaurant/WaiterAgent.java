@@ -105,7 +105,7 @@ public class WaiterAgent extends Agent {
 			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.ordered){
 					idle = false;
-					GiveOrderToCook(mc);
+					GiveOrderToCook(mc, true);
 					return true;
 				}
 			}
@@ -151,12 +151,12 @@ public class WaiterAgent extends Agent {
 	
 	public void TakeOrder(MyCustomer mc){
 		Do("is taking " + mc.customer.getName() + "'s order.");
-		DoWalkToCustomer(mc);
+		DoWalkToCustomer(mc, false);
 		mc.customer.WhatWouldYouLike();
 		mc.state = MyCustomerState.ordering;
 	}
 	 
-	public void GiveOrderToCook(MyCustomer mc){
+	public void GiveOrderToCook(MyCustomer mc, boolean displayText){
 		DoGiveOrderToCook(mc.order);
 		mc.state = MyCustomerState.orderCooking;
 		cook.msgHeresAnOrder(mc.order);
@@ -164,7 +164,7 @@ public class WaiterAgent extends Agent {
 
 	public void GiveFoodToCustomer(MyCustomer mc){
 		DoGiveOrderToCook(mc.order);
-		DoWalkToCustomer(mc);
+		DoWalkToCustomer(mc, true);
 		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
 		mc.customer.HeresYourOrder(mc.order.choice);
@@ -178,6 +178,7 @@ public class WaiterAgent extends Agent {
 
 	//##GUI ACTIONS###
 	private void DoSeatCustomer(int tableNum, MyCustomer mc){
+		gui.setText("Seating Customere");
 		gui.DoBringToTable(mc.customer, tableNum);
 		mc.customer.getGui().DoGoToSeat(tableNum);
 		atLocAcquire();
@@ -185,13 +186,17 @@ public class WaiterAgent extends Agent {
 	
 	public void DoGetCustomer(){
 		Do("is getting customer.");
+		gui.setText("Getting Customer");
 		gui.DoGetCustomer();
 		atLocAcquire();
 	}
 	
-	public void DoWalkToCustomer(MyCustomer mc){
+	public void DoWalkToCustomer(MyCustomer mc, boolean displayText){
 		//Do("is taking " + mc.customer.getName()+ "'s order.");
-		gui.DoWalkToCustomer(mc.table);
+		if (displayText)
+			gui.DoWalkToCustomer(mc.table, mc.order.choice);
+		else
+			gui.DoWalkToCustomer(mc.table, "");
 		atLocAcquire();
 	}
 	

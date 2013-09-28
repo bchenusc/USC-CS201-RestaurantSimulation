@@ -2,7 +2,6 @@ package restaurant.gui;
 
 
 import restaurant.CustomerAgent;
-import restaurant.HostAgent;
 import restaurant.WaiterAgent;
 
 import java.awt.*;
@@ -24,7 +23,7 @@ public class WaiterGui implements Gui {
     private boolean doingIdle;
     private static final int movementOffset = 20;
     
-    String displayText = "";
+    private String displayText = "";
 
     public WaiterGui(WaiterAgent agent) {
         this.agent = agent;
@@ -44,11 +43,11 @@ public class WaiterGui implements Gui {
 	            yPos--;
 	        else
 	        if (xPos == xDestination && yPos == yDestination){
-	        		if(!doingIdle)
-	        			agent.atLocation();
-	        		displayText = "";
-	        		receivedAction = false;
-	        		return;
+        		if(!doingIdle)
+        			agent.atLocation();
+        		displayText = "";
+        		receivedAction = false;
+        		return;
 	        }
     	}
     }
@@ -66,6 +65,10 @@ public class WaiterGui implements Gui {
     public boolean isPresent() {
         return true;
     }
+    
+    public void setText(String text){
+    	displayText = text;
+    }
 
     public void DoBringToTable(CustomerAgent customer, int tableNumber) {
     	for (restaurant.Table myTable : agent.getHost().tables){
@@ -81,7 +84,7 @@ public class WaiterGui implements Gui {
     }
     
     public void DoIdle(){
-    	xDestination = 300; //Idle destination
+    	xDestination = (int)(Math.random() % 300 + 200); //Idle destination
     	yDestination = 100; //Idle destination
     	receivedAction = true;
     	doingIdle = true;
@@ -97,14 +100,14 @@ public class WaiterGui implements Gui {
     public void DoGiveOrderToCook(restaurant.Order o){
     	xDestination = 601; //Destination of cook
     	yDestination = 100; //Destination of cook
-    	displayText = o.getChoice();
     	receivedAction = true;
     	doingIdle = false;
     }
     
-    public void DoWalkToCustomer(restaurant.Table table){
+    public void DoWalkToCustomer(restaurant.Table table, String text){
     	xDestination = table.getPosX() + movementOffset;
     	yDestination = table.getPosY() - movementOffset;
+    	displayText = text;
     	receivedAction = true;
     	doingIdle = false;
     }

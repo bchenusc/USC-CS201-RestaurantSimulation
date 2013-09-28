@@ -26,6 +26,8 @@ public class CustomerGui implements Gui{
 	
 	private boolean receivedCoordinates;
 	
+	String displayText = "";
+	
 	//Cache the host so we have access to table locations.
 	HostAgent host; //We only cache the host so that we can ask for the table location.
 
@@ -59,12 +61,12 @@ public class CustomerGui implements Gui{
 				}
 				else if (command==Command.LeaveRestaurant) {
 					agent.msgAnimationFinishedLeaveRestaurant();
-					System.out.println("about to call gui.setCustomerEnabled(agent);");
+					//System.out.println("about to call gui.setCustomerEnabled(agent);");
 					isHungry = false;
-					//agent.atLocation();
 					gui.setCustomerEnabled(agent);
 				}
 				receivedCoordinates = false;
+				displayText = "";
 				command=Command.noCommand;
 			}
 		}
@@ -90,6 +92,13 @@ public class CustomerGui implements Gui{
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
 		g.fillRect(xPos, yPos, sizeX, sizeY);
+		
+		if (displayText.trim().length() >0)
+		g.drawString(displayText, xPos, yPos);
+	}
+	
+	public void setText(String text){
+		displayText = text;
 	}
 
 	public boolean isPresent() {
@@ -107,18 +116,6 @@ public class CustomerGui implements Gui{
 	public void setPresent(boolean p) {
 		isPresent = p;
 	}
-
-	/*public void DoGoToSeat(int seatnumber) {//later you will map seatnumber to table coordinates.
-		for(restaurant.Table myTable : host.tables){
-			if(myTable.getTableNumber() == seatnumber){
-				xDestination = myTable.getPosX();
-				yDestination = myTable.getPosY();
-				command = Command.GoToSeat;
-			}
-		}
-		
-	}
-	*/
 
 	public void DoExitRestaurant() {
 		xDestination = -40;

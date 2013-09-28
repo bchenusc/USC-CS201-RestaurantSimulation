@@ -1,14 +1,12 @@
 package restaurant;
 
 import restaurant.gui.CustomerGui;
-import restaurant.gui.RestaurantGui;
 import agent.Agent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-import java.util.concurrent.Semaphore;
 
 import javax.swing.Timer;
 
@@ -39,8 +37,6 @@ public class CustomerAgent extends Agent {
 	{none, gotHungry, followWaiter, seated, gotMenu, readyToOrder, ordered, foodArrived, doneEating, doneLeaving};
 	CustomerEvent event = CustomerEvent.none;
 	
-	//Animation stuff - To implement in 2c
-		private Semaphore atTargetLocation = new Semaphore(0, true);
 
 	/**
 	 * Constructor for CustomerAgent class
@@ -88,8 +84,6 @@ public class CustomerAgent extends Agent {
 		menu = m;
 		event = CustomerEvent.followWaiter;
 	
-		//**Temporary hack to check if this works. Skips the gui part
-		//event = CustomerEvent.seated;
 		stateChanged();
 	}
 //Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
@@ -161,21 +155,25 @@ public class CustomerAgent extends Agent {
 
 	private void goToRestaurant() {
 		Do("is going to restaurant.");
+		customerGui.setText("Hungry");
 		host.msgIWantToEat(this);//send our instance, so he can respond to us
 	}
 	
 	private void followWaiter(){
+		customerGui.setText("Walking");
 		DoFollowWaiter ();
 		//call the gui to follow the waiter.
 	}
 	
 	private void CallWaiter(){
 		Do("is calling Waiter.");
+		customerGui.setText("Call Waiter");
 		waiter.msgReadyToOrder(this);
 	}
 	
 	private void ChooseFood(){
 		Do("is choosing food.");
+		customerGui.setText("Choosing");
 		readMenuTimer.restart();
 		readMenuTimer.start();
 	}
@@ -184,6 +182,7 @@ public class CustomerAgent extends Agent {
 		Do("tells the waiter he wants " + choice + ".");
 		waiter.msgHeresMyChoice(this,choice);
 		event = CustomerEvent.ordered;
+		customerGui.setText("?");
 	}
 
 	private void EatFood() {
@@ -197,11 +196,14 @@ public class CustomerAgent extends Agent {
 		//So, we use Java syntactic mechanism to create an
 		//anonymous inner class that has the public method run() in it.
 		eatingTimer.restart();
+		customerGui.setText("Eating " + choice);
 		eatingTimer.start();
+		
 	}
 
 	private void leaveTable() {
 		Do("is leaving.");
+		customerGui.setText("Leaving");
 		DoLeavingTable();
 		waiter.msgImDone(this);
 		state = CustomerState.Leaving;

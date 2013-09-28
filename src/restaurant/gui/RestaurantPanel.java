@@ -23,7 +23,9 @@ public class RestaurantPanel extends JPanel {
     private HostAgent host = new HostAgent("Sarah");
     private CookAgent cook = new CookAgent("Brian");
     private WaiterAgent waiter = new WaiterAgent("Matt", host, cook);
+    private WaiterAgent waiter2 = new WaiterAgent("David", host, cook);
     private WaiterGui waitergui = new WaiterGui(waiter);
+    private WaiterGui waiter2gui = new WaiterGui(waiter2);
     
     //List of Agents for pausing.
     private Vector<Agent> agents = new Vector<Agent>();
@@ -47,20 +49,24 @@ public class RestaurantPanel extends JPanel {
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
         waiter.setGUI(waitergui);
+        waiter2.setGUI(waiter2gui);
 
+        //Hack only one waiter.
         gui.animationPanel.addGui(waitergui);
+        gui.animationPanel.addGui(waiter2gui);
         
         host.startThread(); //Hack only one host.
         cook.startThread(); //Hack only one cook.
         
         //Temporary hack for having only one waiter.
         waiter.startThread();
-        
+        waiter2.startThread();
         
         agents.add(host); //Hack for only having one cook.
         agents.add(cook); //Hack for only having one cook.
         //Temporary hack for having only one waiter.
         agents.add(waiter);
+        agents.add(waiter2);
 
         setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth, gridYWidth));
         group.setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth/2, gridYWidth/2));
@@ -73,6 +79,7 @@ public class RestaurantPanel extends JPanel {
         
         //Add the waiter agent to the Host list waiter agent
         host.waiters.add(waiter);
+        host.waiters.add(waiter2);
     }
     
     public HostAgent getHost(){
