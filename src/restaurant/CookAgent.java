@@ -54,12 +54,12 @@ public class CookAgent extends Agent {
 		// if State == idle and there exists an Order o in pendingOrder such that o.OrderState == pending
 		//then CookOrder(o);
 		if (orders.size() > 0){
-			try{
 				//Look for all pending orders.
 				for(Order o : orders){
 					
 					if (o.getState() == OrderState.pending){
 						CookOrder(o);
+						return true;
 					}
 					
 				}
@@ -70,12 +70,10 @@ public class CookAgent extends Agent {
 						tellWaiterOrderIsReady(orders.get(i));
 						orders.remove(i);
 						i--;
+						return true;
 					}
-					
 				}
-				return true;
-			}
-			catch(Exception e){}
+			return true;
 		}
 		return false;
 	}

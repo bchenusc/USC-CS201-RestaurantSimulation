@@ -69,11 +69,14 @@ public class HostAgent extends Agent {
 		 * and  there exists a Waiter w in waiters such that w.State == idle
 		 * 			then notifyWaiter(t, w);*/
 		if (!waitingCustomers.isEmpty()){
-			for (Table t : tables){
-				if (t.occupiedBy == null){
-					WaiterAgent w = findWaiterWithLowestCust();
-					notifyWaiter(t, w);
-					return true;
+			if (waiters.size() > 0){
+				for (Table t : tables){
+					if (t.occupiedBy == null){
+						
+						WaiterAgent w = findWaiterWithLowestCust();
+						notifyWaiter(t, w);
+						return true;
+					}
 				}
 			}
 			return true;

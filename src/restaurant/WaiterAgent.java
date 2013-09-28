@@ -85,7 +85,6 @@ public class WaiterAgent extends Agent {
 	protected boolean pickAndExecuteAnAction(){
 		
 		if (!myCustomers.isEmpty()){
-			try{
 			for (MyCustomer mc : myCustomers){
 				if (mc.state == MyCustomerState.waiting){
 						idle = false;
@@ -127,14 +126,10 @@ public class WaiterAgent extends Agent {
 			}
 			
 			DoIdle();
-			}
-			catch(ConcurrentModificationException e){
-				
-			}
 			return true;
 			}
 		
-		
+		DoIdle();
 		return false;
 		
 		
@@ -178,7 +173,7 @@ public class WaiterAgent extends Agent {
 
 	//##GUI ACTIONS###
 	private void DoSeatCustomer(int tableNum, MyCustomer mc){
-		gui.setText("Seating Customere");
+		gui.setText("Seating Customer");
 		gui.DoBringToTable(mc.customer, tableNum);
 		mc.customer.getGui().DoGoToSeat(tableNum);
 		atLocAcquire();
@@ -202,6 +197,7 @@ public class WaiterAgent extends Agent {
 	
 	public void DoGiveOrderToCook(Order o){
 		Do("gives an order to the cook.");
+		gui.setText("Going to Cook");
 		gui.DoGiveOrderToCook(o);
 		atLocAcquire();
 	}
@@ -218,6 +214,7 @@ public class WaiterAgent extends Agent {
 	
 	private void DoIdle(){
 		gui.DoIdle();
+		gui.setText("Idle");
 		idle = false;
 	}
 

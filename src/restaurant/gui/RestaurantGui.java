@@ -1,6 +1,7 @@
 package restaurant.gui;
 
 import restaurant.CustomerAgent;
+
 import javax.swing.*;
 
 import java.awt.*;
@@ -23,22 +24,36 @@ public class RestaurantGui extends JFrame implements ActionListener {
      */    
     private RestaurantPanel restPanel = new RestaurantPanel(this);
     
-    private final int WINDOWX = 1200; 
-    private final int WINDOWY = 450; 
+    public static final int WINDOWX = 1200; 
+    public static final int WINDOWY = 450; 
     private final int bigBoundX = 50;
     private final int bigBoundY = 50;
   
-    private JPanel bigRestaurantPanel = new JPanel();
-    private JPanel bigAnimationPanel = new JPanel();
+    private JPanel bigRestaurantPanel;
+    private JPanel bigAnimationPanel;
+    
+    private JPanel botPanelLeft;
+    private JPanel botPanelRight;
+    
+    private JPanel waiterPanel;
+    private JLabel waiterLabel;
+    private JTextField waiterNameField;
+    private JButton waiterButton;
+    private JPanel topWaiterPanel;
+    private JPanel botWaiterPanel;
     
     /* infoPanel holds information about the clicked customer, if there is one*/
     private JPanel infoPanel;
     private JLabel infoLabel; //part of infoPanel
     private JCheckBox stateCB;//part of infoLabel
     
-    private JPanel bottomPanel = new JPanel();
+    private JPanel bottomPanel;
+    private JPanel underBottomPanel;
     private JLabel brianLabel;
-    private JButton pauseButton = new JButton("Pause");
+    private JButton pauseButton;
+    
+    private final int waiterFieldX = 150;
+    private final int waiterFieldY = 25;
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
@@ -51,6 +66,35 @@ public class RestaurantGui extends JFrame implements ActionListener {
         
         //----------------------- *Finds the host. ------------------ Important step: Caching the host in the AnimationPanel
         animationPanel.setHost(restPanel.getHost());
+        
+        //Makes a new of everything
+        bigRestaurantPanel = new JPanel();
+        bigAnimationPanel = new JPanel();
+        botPanelLeft = new JPanel();
+        botPanelRight = new JPanel();
+        waiterPanel = new JPanel();
+        waiterLabel = new JLabel("<html>" + "New Waiter Name: " + "</b></html>");
+        waiterNameField = new JTextField();
+        waiterButton = new JButton("Add Waiter");
+        bottomPanel = new JPanel();
+        underBottomPanel = new JPanel();
+        pauseButton = new JButton("Pause");
+        topWaiterPanel = new JPanel();
+        botWaiterPanel = new JPanel();
+        
+        //Initialize add waiter button
+        waiterButton.addActionListener(new ActionListener() 
+    	{ 
+    		public void actionPerformed(ActionEvent e) {
+    			if (e.getSource() == waiterButton){
+    				if(waiterNameField.getText().trim().length()>0){
+    					System.out.println(waiterNameField.getText() + " was hired.");
+    					restPanel.addWaiter(waiterNameField.getText());
+    				}
+    	    	}
+    		}
+    	});
+        
    
         //-------------------------------
         setBounds(bigBoundX,bigBoundY,WINDOWX , WINDOWY);
@@ -66,10 +110,16 @@ public class RestaurantGui extends JFrame implements ActionListener {
         addTo(restPanel, bigRestaurantPanel);
         addTo(infoLabel, infoPanel);
         addTo(stateCB, infoPanel);
-        addTo (infoPanel, bigRestaurantPanel);
-        addTo(brianLabel, bottomPanel);
-        addTo(pauseButton, bottomPanel);
+        addTo (infoPanel, botPanelLeft);
+        addTo(brianLabel, underBottomPanel);
+        addTo(pauseButton, underBottomPanel);
+        addTo(topWaiterPanel, waiterPanel);
+        addTo(botWaiterPanel, waiterPanel);
+        addTo(waiterPanel, botPanelRight);
+        addTo(botPanelLeft, bottomPanel);
+        addTo(botPanelRight, bottomPanel);
         addTo(bottomPanel, bigRestaurantPanel);
+        addTo(underBottomPanel, bigRestaurantPanel);
         add(bigRestaurantPanel);
         add(bigAnimationPanel);
     }
@@ -93,7 +143,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
             stateCB.setEnabled(!customer.getGui().isHungry());
           // Hack. Should ask customerGui
             infoLabel.setText(
-               "<html><pre>     Name: " + customer.getName() + " </pre></html>");
+               "<html> <b><u><i>Customer Information</i></u></b> <br>    Name: " + customer.getName() + " </html>");
         }
         infoPanel.validate();
     }
@@ -112,7 +162,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         bigAnimationPanel.setPreferredSize(bigDim);
         bigAnimationPanel.setMinimumSize(bigDim);
         bigAnimationPanel.setMaximumSize(bigDim);
-        
+
         //Animation Panel
         animationPanel.setPreferredSize(bigDim);
         animationPanel.setMinimumSize(bigDim);
@@ -131,13 +181,57 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
         infoPanel.setMaximumSize(infoDim);
-        infoPanel.setLayout(new GridLayout(1, 2, 30, 0));
+        //infoPanel.setLayout(new GridLayout(1, 2, 30, 0));
         
         //Bottom panel dimensions.
-        Dimension bottomDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .1));
+        Dimension bottomDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .30));
         bottomPanel.setPreferredSize(bottomDim);
         bottomPanel.setMinimumSize(bottomDim);
         bottomPanel.setMaximumSize(bottomDim);
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+        Dimension underBotDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .1));
+        underBottomPanel.setPreferredSize(underBotDim);
+        underBottomPanel.setMinimumSize(underBotDim);
+        underBottomPanel.setMaximumSize(underBotDim);
+        underBottomPanel.setLayout(new BoxLayout(underBottomPanel, BoxLayout.X_AXIS));
+        
+        //Bottom Panel contains information and waiter panel
+        Dimension botSeparation = new Dimension(WINDOWX/4, (int) (WINDOWY * .3));
+        botPanelLeft.setPreferredSize(botSeparation);
+        botPanelLeft.setMinimumSize(botSeparation);
+        botPanelLeft.setMaximumSize(botSeparation);
+        botPanelRight.setPreferredSize(botSeparation);
+        botPanelRight.setMinimumSize(botSeparation);
+        botPanelRight.setMaximumSize(botSeparation);
+        botPanelRight.setLayout(new BoxLayout(botPanelRight, BoxLayout.Y_AXIS));
+        botPanelLeft.setLayout(new BoxLayout(botPanelLeft, BoxLayout.Y_AXIS));
+        
+        //Waiter panel
+        Dimension waiterDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .3));
+        waiterPanel.setPreferredSize(waiterDim);
+        waiterPanel.setMinimumSize(waiterDim);
+        waiterPanel.setMaximumSize(waiterDim);
+        waiterPanel.setLayout(new BoxLayout(waiterPanel, BoxLayout.Y_AXIS));
+        
+        Dimension waiterSplitDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .3 / 3));
+        topWaiterPanel.setPreferredSize(waiterSplitDim);
+        topWaiterPanel.setMinimumSize(waiterSplitDim);
+        topWaiterPanel.setMaximumSize(waiterSplitDim);
+        Dimension waiterSplitDim2 = new Dimension(WINDOWX/2, (int)(WINDOWY * .3 / 4));
+        botWaiterPanel.setPreferredSize(waiterSplitDim2);
+        botWaiterPanel.setMinimumSize(waiterSplitDim2);
+        botWaiterPanel.setMaximumSize(waiterSplitDim2);
+        botWaiterPanel.setLayout(new BoxLayout(botWaiterPanel, BoxLayout.X_AXIS));
+        topWaiterPanel.setLayout(new BoxLayout(topWaiterPanel, BoxLayout.X_AXIS));
+        
+        //Waiter label and text field and add button to add waiter.
+        Dimension waiterNameFieldDim = new Dimension(waiterFieldX,waiterFieldY);
+        waiterNameField.setPreferredSize(waiterNameFieldDim);
+        waiterNameField.setMinimumSize(waiterNameFieldDim);
+        waiterNameField.setMaximumSize(waiterNameFieldDim);
+        topWaiterPanel.add(waiterLabel);
+        topWaiterPanel.add(waiterNameField);
+        botWaiterPanel.add(waiterButton);
         
         //Initialize checkbox.
         stateCB = new JCheckBox();
@@ -145,7 +239,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         stateCB.addActionListener(this);
         //Initialize information label "Add to make customers"
         infoLabel = new JLabel(); 
-        infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
+        infoLabel.setText("<html><i><u>Customer Information</u> <br> No Customer Information Available</i></html>");
         
         //My name panel (belongs in the bottom panel
         brianLabel = new JLabel("<html><pre><i>Hi I'm Brian!</i></pre></html>");   
@@ -157,9 +251,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
         initializePauseButton();
         
       //Make all the borders.
-        bigRestaurantPanel.setBorder(BorderFactory.createTitledBorder("Restaurant"));
-        bigAnimationPanel.setBorder(BorderFactory.createTitledBorder("Animation"));
-        infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
+       // bigRestaurantPanel.setBorder(BorderFactory.createRaisedSoftBevelBorder());
+        //bigAnimationPanel.setBorder(BorderFactory.createTitledBorder("Animation"));
+       // infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
+        //topWaiterPanel.setBorder(BorderFactory.createTitledBorder(""));
+        //botWaiterPanel.setBorder(BorderFactory.createTitledBorder(""));
     }
     
     private void initializePauseButton(){
@@ -169,20 +265,15 @@ public class RestaurantGui extends JFrame implements ActionListener {
     			if (e.getSource() == pauseButton){
     	    		if (pauseButton.getText() == "Pause"){
     	    			pauseButton.setText("Resume");
-    	    			
     	    		}
     	    		else
     	    		{
     	    			pauseButton.setText("Pause");
-    	    			
     	    		}
     	    		restPanel.Pause();
-    	    		
     	    	}
     		}
-    	
-    	}
-    );
+    	});
     }
     
     /**

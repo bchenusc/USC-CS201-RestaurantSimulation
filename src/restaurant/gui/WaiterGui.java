@@ -84,7 +84,7 @@ public class WaiterGui implements Gui {
     }
     
     public void DoIdle(){
-    	xDestination = (int)(Math.random() % 300 + 200); //Idle destination
+    	xDestination = 300; //Idle destination
     	yDestination = 100; //Idle destination
     	receivedAction = true;
     	doingIdle = true;

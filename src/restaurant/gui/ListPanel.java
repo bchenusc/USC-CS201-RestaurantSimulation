@@ -21,7 +21,7 @@ public class ListPanel extends JPanel implements ActionListener {
                     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     private JPanel view = new JPanel();
     private List<JButton> list = new ArrayList<JButton>();
-    private JButton addPersonB = new JButton("Add");
+    private JButton addPersonB = new JButton("Add Customer");
 
     private RestaurantPanel restPanel;
     private String type;
@@ -35,8 +35,8 @@ public class ListPanel extends JPanel implements ActionListener {
     
     private final int nameFieldDimesionWidth = 150;
     private final int nameFieldDimensionHeight = 25;
-    private final int addCustPanelSizeX = 600;
-    private final int addCustPanelSizeY = 80;
+    //private final int addCustPanelSizeX = 600;
+    //private final int addCustPanelSizeY = 80;
 
     /**
      * Constructor for ListPanel.  Sets up all the gui
@@ -47,8 +47,12 @@ public class ListPanel extends JPanel implements ActionListener {
     public ListPanel(RestaurantPanel rp, String type) {
         restPanel = rp;
         this.type = type;
-
+        
+        Dimension dim = new Dimension(restPanel.gui.WINDOWX/4, (int)(restPanel.gui.WINDOWY/2.5f));
         setLayout(new BoxLayout((Container) this, BoxLayout.Y_AXIS));
+        setPreferredSize(dim);
+        setMinimumSize(dim);
+        setMaximumSize(dim);
         
         initializeGUI();
         
@@ -68,7 +72,7 @@ public class ListPanel extends JPanel implements ActionListener {
     
     private void initializeGUI(){
     	//Name label
-    	nameLabel = new JLabel("<html><pre> <u>" + type + "</u><br></pre></html>");
+    	nameLabel = new JLabel("<html><b>" + "New Customer Name: " + "</html>");
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         //Name Field
@@ -95,15 +99,16 @@ public class ListPanel extends JPanel implements ActionListener {
         });
         
         //Upper panel (where they add a new customer)
-        Dimension custPanelDim = new Dimension(addCustPanelSizeX/2,addCustPanelSizeY/2);
+        Dimension custPanelDim = new Dimension(restPanel.gui.WINDOWX/2,restPanel.gui.WINDOWY/16);
         upperPanel.setPreferredSize(custPanelDim);
         upperPanel.setMinimumSize(custPanelDim);
         upperPanel.setMaximumSize(custPanelDim);
         upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.X_AXIS));
         
-        lowerPanel.setPreferredSize(custPanelDim);
-        lowerPanel.setMinimumSize(custPanelDim);
-        lowerPanel.setMaximumSize(custPanelDim);
+        Dimension custPanelDim2 = new Dimension(restPanel.gui.WINDOWX/2,restPanel.gui.WINDOWY/16);
+        lowerPanel.setPreferredSize(custPanelDim2);
+        lowerPanel.setMinimumSize(custPanelDim2);
+        lowerPanel.setMaximumSize(custPanelDim2);
         lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.X_AXIS));
 
         
