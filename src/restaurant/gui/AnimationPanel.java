@@ -19,7 +19,7 @@ public class AnimationPanel extends JPanel implements ActionListener {
     private final int TABLEWIDTH = 50;
     private final int TABLEHEIGHT = 50;
     
-    private final int timerint = 3;
+    private final int timerint = 7;
     public Timer timer;
     private List<Gui> guis = new ArrayList<Gui>();
     

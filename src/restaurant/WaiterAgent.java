@@ -56,7 +56,7 @@ public class WaiterAgent extends Agent {
 	public void msgHeresMyChoice(CustomerAgent ca, String c){ 
 		for (MyCustomer mc : myCustomers){
 			if (mc.customer == ca){
-				mc.order = new Order(c, this, mc.table.tableNumber);
+				//mc.order = new Order(c, this, mc.table.tableNumber);
 				mc.state = MyCustomerState.ordered;
 				stateChanged();
 			}
@@ -164,7 +164,6 @@ public class WaiterAgent extends Agent {
 		mc.state = MyCustomerState.eating;
 		mc.customer.HeresYourOrder(mc.order.choice);
 	}
-
 	public void CustomerLeaving(MyCustomer c){
 		Do(c.customer.getName() + "is leaving the restaurant.");
 		host.msgTableIsClear(c.table);
@@ -223,8 +222,6 @@ public class WaiterAgent extends Agent {
 				atTargetLocation.release();// = true;
 				idle = true;
 	}
-	
-
 	
 	public void setGUI(WaiterGui wg){
 	    	gui = wg;
