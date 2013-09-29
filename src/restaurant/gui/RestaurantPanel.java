@@ -44,44 +44,19 @@ public class RestaurantPanel extends JPanel {
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
-        //waiter.setGUI(waitergui);
-        //waiter2.setGUI(waiter2gui);
-
-        //Hack only one waiter.
-        //gui.animationPanel.addGui(waitergui);
-        //gui.animationPanel.addGui(waiter2gui);
         
         host.startThread(); //Hack only one host.
         cook.startThread(); //Hack only one cook.
         
-        //Temporary hack for having only one waiter.
-        //waiter.startThread();
-        //waiter2.startThread();
-        
         agents.add(host); //Hack for only having one cook.
         agents.add(cook); //Hack for only having one cook.
-        //Temporary hack for having only one waiter.
-        //agents.add(waiter);
-        //agents.add(waiter2);
-
-        //setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth, gridYWidth));
-       //group.setLayout(new GridLayout(gridXPos, gridYPos, gridXWidth/2, gridYWidth/2));
         
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         
-        
-
-        //customerPanel.setBorder(BorderFactory.createTitledBorder(""));
-        
-
         initRestLabel();
         customerSide.add(customerPanel);
         add(restLabel);
         customerSide.add(group);
-        
-        //Add the waiter agent to the Host list waiter agent
-        //host.waiters.add(waiter);
-        //host.waiters.add(waiter2);
     }
     
     public void addWaiter(String waiterName){
@@ -124,12 +99,8 @@ public class RestaurantPanel extends JPanel {
         
         label.setText(
                 "<html><h3><u>Tonight's Staff</u></h3><table><tr><td>host:</td><td>" + host.getName() + "</td></tr></table><h3><u> Menu</u></h3><table><tr><td>Steak</td><td>$15.99</td></tr><tr><td>Chicken</td><td>$10.99</td></tr><tr><td>Salad</td><td>$5.99</td></tr><tr><td>Pizza</td><td>$8.99</td></tr></table><br></html>");
-        //label.setText("<html></td></tr></table><h3><u> Menu</u></h3><table><tr><td>Steak</td><td>$15.99</td></tr><tr><td>Chicken</td><td>$10.99</td></tr><tr><td>Salad</td><td>$5.99</td></tr><tr><td>Pizza</td><td>$8.99</td></tr></table><br></html>");
         menu.add(label);
-        //menu.setBorder(BorderFactory.createTitledBorder(""));
-        //customerSide.setBorder(BorderFactory.createTitledBorder(""));
         
-        //restLabel.setBorder(BorderFactory.createTitledBorder(""));
         menu.add(label, BorderLayout.CENTER);
         menu.add(new JLabel("               "), BorderLayout.EAST);
         menu.add(new JLabel("               "), BorderLayout.WEST);
@@ -159,6 +130,7 @@ public class RestaurantPanel extends JPanel {
     }
     
     public void Pause(){
+    	gui.animationPanel.toggleTimer();
     	for(Agent a : agents){
     		a.Pause();
     	}

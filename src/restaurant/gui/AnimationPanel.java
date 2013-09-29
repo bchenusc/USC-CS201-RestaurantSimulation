@@ -19,8 +19,8 @@ public class AnimationPanel extends JPanel implements ActionListener {
     private final int TABLEWIDTH = 50;
     private final int TABLEHEIGHT = 50;
     
-    private final int timerint = 2;
-
+    private final int timerint = 3;
+    public Timer timer;
     private List<Gui> guis = new ArrayList<Gui>();
     
     private HostAgent host;
@@ -32,12 +32,19 @@ public class AnimationPanel extends JPanel implements ActionListener {
     	setSize(WINDOWX, WINDOWY);
         setVisible(true);
  
-    	Timer timer = new Timer(timerint, this );
+    	timer = new Timer(timerint, this );
     	timer.start();
     }
 
 	public void actionPerformed(ActionEvent e) {
 		repaint();  //Will have paintComponent called
+	}
+	
+	public void toggleTimer(){
+		if (timer.isRunning()){
+			timer.stop();
+		}
+		else timer.start();
 	}
 
     public void paintComponent(Graphics g) {

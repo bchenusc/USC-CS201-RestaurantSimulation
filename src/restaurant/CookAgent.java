@@ -51,7 +51,7 @@ public class CookAgent extends Agent {
 //##########  Scheduler  ##############
 @Override
 	protected boolean pickAndExecuteAnAction() {
-		// if State == idle and there exists an Order o in pendingOrder such that o.OrderState == pending
+		// if there exists an Order o in pendingOrder such that o.OrderState == pending
 		//then CookOrder(o);
 		if (orders.size() > 0){
 				//Look for all pending orders.
