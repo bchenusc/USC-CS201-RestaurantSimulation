@@ -5,6 +5,13 @@
   + USC Email: brianych@usc.edu
   + USC ID: 8964066866
   
+### Screenshot
+![alt text](DesignDoc/screenshot.png "Screenshot")
+
+### Description
+Restaurant v2 is a Java based restaurant simulation including waiters, cooks, hosts, and customers using Eclipse. The program utilizes
+Semaphores to handle multi-threaded actions.
+  
 ###How to Run in Eclipse
   + Press the Play button at the top of Eclipse to Build and Run
   + Add new Customers with the new Customer Button.
