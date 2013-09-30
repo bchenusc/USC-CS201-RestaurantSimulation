@@ -97,7 +97,7 @@ public class WaiterGui implements Gui {
     	doingIdle = false;
     }
     
-    public void DoGiveOrderToCook(restaurant.Order o){
+    public void DoGiveOrderToCook(){
     	xDestination = 601; //Destination of cook
     	yDestination = 100; //Destination of cook
     	receivedAction = true;

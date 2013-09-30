@@ -41,9 +41,10 @@ public class CookAgent extends Agent {
 	}
 		
 //########## Messages  ###############
-	public void msgHeresAnOrder(Order o)
+	public void msgHeresAnOrder(String o, WaiterAgent w, int tableNumber)
 	{
-		 orders.add(o);
+		Order order = new Order(o, w, tableNumber);
+		 orders.add(order);
 		 stateChanged();
 	}
 	
@@ -85,7 +86,7 @@ public class CookAgent extends Agent {
 	}
 	
 	private void tellWaiterOrderIsReady(Order o){
-		o.waiter.msgOrderIsReady(o);
+		o.waiter.msgOrderIsReady(o.choice);
 		o.setState(OrderState.notified);
 	}
 	

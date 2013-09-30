@@ -42,6 +42,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JPanel topWaiterPanel;
     private JPanel botWaiterPanel;
     
+    //Switch from waiter to customers
+    private JButton waiterView;
+    private JButton customerView;
+    
     /* infoPanel holds information about the clicked customer, if there is one*/
     private JPanel infoPanel;
     private JLabel infoLabel; //part of infoPanel
@@ -51,6 +55,8 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JPanel underBottomPanel;
     private JLabel brianLabel;
     private JButton pauseButton;
+    
+    //Create a list panel of waiter
     
     private final int waiterFieldX = 150;
     private final int waiterFieldY = 25;
@@ -82,18 +88,12 @@ public class RestaurantGui extends JFrame implements ActionListener {
         topWaiterPanel = new JPanel();
         botWaiterPanel = new JPanel();
         
+        //Switch views between waiter and customer
+        waiterView = new JButton("Mange Waiters");
+        customerView = new JButton("Manage Customers");
+        
         //Initialize add waiter button
-        waiterButton.addActionListener(new ActionListener() 
-    	{ 
-    		public void actionPerformed(ActionEvent e) {
-    			if (e.getSource() == waiterButton){
-    				if(waiterNameField.getText().trim().length()>0){
-    					System.out.println(waiterNameField.getText() + " was hired.");
-    					restPanel.addWaiter(waiterNameField.getText());
-    				}
-    	    	}
-    		}
-    	});
+        waiterButton.addActionListener(this);
         
    
         //-------------------------------
@@ -113,8 +113,14 @@ public class RestaurantGui extends JFrame implements ActionListener {
         addTo (infoPanel, botPanelLeft);
         addTo(brianLabel, underBottomPanel);
         addTo(pauseButton, underBottomPanel);
-        addTo(topWaiterPanel, waiterPanel);
-        addTo(botWaiterPanel, waiterPanel);
+        //addTo(topWaiterPanel, waiterPanel);
+        //addTo(botWaiterPanel, waiterPanel);
+        
+        //Waiter view button.
+        addTo(customerView, waiterPanel);
+        addTo(waiterView, waiterPanel);
+  
+        //addTo(waiterListPanel, waiterPanel);
         addTo(waiterPanel, botPanelRight);
         addTo(botPanelLeft, bottomPanel);
         addTo(botPanelRight, bottomPanel);
@@ -211,7 +217,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         waiterPanel.setPreferredSize(waiterDim);
         waiterPanel.setMinimumSize(waiterDim);
         waiterPanel.setMaximumSize(waiterDim);
-        waiterPanel.setLayout(new BoxLayout(waiterPanel, BoxLayout.Y_AXIS));
+        waiterPanel.setLayout(new BoxLayout(waiterPanel, BoxLayout.X_AXIS));
         
         Dimension waiterSplitDim = new Dimension(WINDOWX/2, (int)(WINDOWY * .3 / 3));
         topWaiterPanel.setPreferredSize(waiterSplitDim);
@@ -232,6 +238,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
         topWaiterPanel.add(waiterLabel);
         topWaiterPanel.add(waiterNameField);
         botWaiterPanel.add(waiterButton);
+        
+        //Switch between waiter and customer view
+        waiterView.addActionListener(this);
+        customerView.addActionListener(this);
         
         //Initialize checkbox.
         stateCB = new JCheckBox();
@@ -254,6 +264,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
        // bigRestaurantPanel.setBorder(BorderFactory.createRaisedSoftBevelBorder());
         //bigAnimationPanel.setBorder(BorderFactory.createTitledBorder("Animation"));
        // infoPanel.setBorder(BorderFactory.createTitledBorder("Information"));
+        waiterPanel.setBorder(BorderFactory.createTitledBorder("Creation Panel"));
         //topWaiterPanel.setBorder(BorderFactory.createTitledBorder(""));
         //botWaiterPanel.setBorder(BorderFactory.createTitledBorder(""));
     }
@@ -289,8 +300,29 @@ public class RestaurantGui extends JFrame implements ActionListener {
                 c.getGui().setHungry();
                 stateCB.setEnabled(false);
             }
+            return;
         }
+        
+        if (e.getSource() == waiterView){
+        	//System.out.println("waiver view");
+        	restPanel.switchViews(2);
+        	return;
+        }
+        if (e.getSource() == customerView){
+        	restPanel.switchViews(1);
+        	return;
+        }
+        
+        if (e.getSource() == waiterButton){
+			if(waiterNameField.getText().trim().length()>0){
+				System.out.println(waiterNameField.getText() + " was hired.");
+				restPanel.addWaiter(waiterNameField.getText());
+			}
+			return;
+    	}
     }
+    
+    
     /**
      * Message sent from a customer gui to enable that customer's
      * "I'm hungry" checkbox.

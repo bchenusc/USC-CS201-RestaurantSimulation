@@ -34,7 +34,10 @@ public class RestaurantPanel extends JPanel {
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
 
     private JPanel restLabel = new JPanel();
-    private ListPanel customerPanel = new ListPanel(this, "Customers");
+    private ListPanel customerPanel;
+    private ListPanel waiterListPanel;
+
+    private int viewIndex = 1; //Are you viewing the customer, waiter, etc panel.
     private JPanel group = new JPanel();
     private JPanel menu = new JPanel();
     private JPanel customerSide = new JPanel();
@@ -44,6 +47,9 @@ public class RestaurantPanel extends JPanel {
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
+        
+        customerPanel = new ListPanel(this, "Customers", true);
+        waiterListPanel = new ListPanel(this,"Waiters", false);
         
         host.startThread(); //Hack only one host.
         cook.startThread(); //Hack only one cook.
@@ -55,8 +61,35 @@ public class RestaurantPanel extends JPanel {
         
         initRestLabel();
         customerSide.add(customerPanel);
+        
         add(restLabel);
         customerSide.add(group);
+    }
+    
+    public void switchViews(int view){
+    	
+    	switch(view){
+	    	case 1: 
+	    		if(viewIndex != 1){
+	    			customerSide.removeAll();
+	    			customerSide.add(customerPanel);
+	    			viewIndex = 1;
+	    			customerSide.revalidate();
+	    			customerSide.repaint();
+	    			
+	    		}
+	    		break;
+	    	case 2:
+	    		if (viewIndex != 2){
+	    			customerSide.removeAll();
+	    			customerSide.add(waiterListPanel);
+	    			viewIndex = 2;
+	    			customerSide.revalidate();
+	    			customerSide.repaint();
+	    		}
+	    		break;
+	    	default: break;
+    	}
     }
     
     public void addWaiter(String waiterName){

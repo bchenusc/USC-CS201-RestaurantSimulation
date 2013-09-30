@@ -57,14 +57,15 @@ public class WaiterAgent extends Agent {
 		for (MyCustomer mc : myCustomers){
 			if (mc.customer == ca){
 				//mc.order = new Order(c, this, mc.table.tableNumber);
+				mc.choice = c;
 				mc.state = MyCustomerState.ordered;
 				stateChanged();
 			}
 		}
 	}
-	public void msgOrderIsReady(Order o){ 		
+	public void msgOrderIsReady(String o){ 		
 		for (MyCustomer mc : myCustomers){
-			if (mc.order == o){
+			if (mc.choice == o){
 				mc.state = MyCustomerState.orderReady;
 				stateChanged();
 			}
@@ -102,7 +103,7 @@ public class WaiterAgent extends Agent {
 			}
 			
 			for (MyCustomer mc: myCustomers){
-				if (mc.state == MyCustomerState.ordered){
+				if (mc.state == MyCustomerState.ordered){ 
 					idle = false;
 					GiveOrderToCook(mc, true);
 					return true;
@@ -152,17 +153,17 @@ public class WaiterAgent extends Agent {
 	}
 	 
 	public void GiveOrderToCook(MyCustomer mc, boolean displayText){
-		DoGiveOrderToCook(mc.order);
+		DoGiveOrderToCook();
 		mc.state = MyCustomerState.orderCooking;
-		cook.msgHeresAnOrder(mc.order);
+		cook.msgHeresAnOrder(mc.choice, this, mc.table.tableNumber);
 	}
 
 	public void GiveFoodToCustomer(MyCustomer mc){
-		DoGiveOrderToCook(mc.order);
+		DoGiveOrderToCook();
 		DoWalkToCustomer(mc, true);
 		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
-		mc.customer.HeresYourOrder(mc.order.choice);
+		mc.customer.HeresYourOrder(mc.choice);
 	}
 	public void CustomerLeaving(MyCustomer c){
 		Do(c.customer.getName() + "is leaving the restaurant.");
@@ -188,16 +189,16 @@ public class WaiterAgent extends Agent {
 	public void DoWalkToCustomer(MyCustomer mc, boolean displayText){
 		//Do("is taking " + mc.customer.getName()+ "'s order.");
 		if (displayText)
-			gui.DoWalkToCustomer(mc.table, mc.order.choice);
+			gui.DoWalkToCustomer(mc.table, mc.choice);
 		else
 			gui.DoWalkToCustomer(mc.table, "");
 		atLocAcquire();
 	}
 	
-	public void DoGiveOrderToCook(Order o){
+	public void DoGiveOrderToCook(){
 		Do("gives an order to the cook.");
 		gui.setText("Going to Cook");
-		gui.DoGiveOrderToCook(o);
+		gui.DoGiveOrderToCook();
 		atLocAcquire();
 	}
 	
@@ -231,7 +232,8 @@ public class WaiterAgent extends Agent {
 	private class MyCustomer {
 		CustomerAgent customer;
 		   Table table;
-		   Order order;
+		   //Order order;
+		   String choice;
 		   MyCustomerState state = MyCustomerState.waiting;
 		   
 		   public MyCustomer(CustomerAgent c, Table t) {
