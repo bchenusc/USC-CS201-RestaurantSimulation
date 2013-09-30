@@ -166,7 +166,7 @@ public class WaiterAgent extends Agent {
 		mc.customer.HeresYourOrder(mc.choice);
 	}
 	public void CustomerLeaving(MyCustomer c){
-		Do(c.customer.getName() + "is leaving the restaurant.");
+		Do(c.customer.getName() + " is leaving the restaurant.");
 		host.msgTableIsClear(c.table);
 		myCustomers.remove(c);
 	}
