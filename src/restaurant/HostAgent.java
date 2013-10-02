@@ -32,7 +32,8 @@ public class HostAgent extends Agent {
 
 	private String name;
 	
-	private enum MyWaiterState {none, wantBreak, onBreak};
+	private enum MyWaiterState {none, wantBreak, allowedBreak, onBreak};
+	int workingWaiters = 0;
 
 	public HostAgent(String name) {
 		super();
@@ -50,6 +51,28 @@ public class HostAgent extends Agent {
 	}
 
 //########### Messages #####################
+	
+	//Waiter wants a break.
+	public void msgWaiterWantsABreak(WaiterAgent waiter){
+		for(MyWaiter w: waiters){
+			if (w.waiter == waiter){
+				w.state = MyWaiterState.wantBreak;
+				stateChanged();
+				return;
+			}
+		}
+	}
+	
+	public void msgWaiterOffBreak(WaiterAgent waiter){
+		for(MyWaiter w: waiters){
+			if (w.waiter == waiter){
+				w.state = MyWaiterState.none;
+				workingWaiters++;
+				stateChanged();
+				return;
+			}
+		}
+	}
 
 	public void msgIWantToEat(CustomerAgent c){
 		waitingCustomers.add(c);
@@ -82,6 +105,22 @@ public class HostAgent extends Agent {
 			}
 			return true;
 		}
+		
+		for(MyWaiter w: waiters){
+			if (w.state == MyWaiterState.wantBreak && workingWaiters> 1){
+				workingWaiters--;
+				w.state = MyWaiterState.allowedBreak;
+				WaiterOnBreak(w);
+				return true;
+			}
+		}
+		
+		for (MyWaiter w: waiters){
+			if (w.state == MyWaiterState.wantBreak){
+				return true;
+			}
+		}
+		
 		return false;
 		//we have tried all our rules and found
 		//nothing to do. So return false to main loop of abstract agent
@@ -94,15 +133,30 @@ public class HostAgent extends Agent {
 		   w.msgSeatAtTable(waitingCustomers.remove(0), t);
 		}
 
+	private void WaiterOnBreak(MyWaiter w){
+		Do("Allowed "+ w.waiter.name + " to go on break.");
+		w.state = MyWaiterState.onBreak;
+		w.waiter.msgCanGoOnBreak();
+	}
 
 	//utilities
 	public WaiterAgent findWaiterWithLowestCust(){
 		
 		int index = 0;
 		int lowest = waiters.get(0).waiter.numberOfCustomers;
+		//First find the first waiter who is not on break as initial waiter to find lowest customers assigned to waiters.
+		//This is to prevent if waiter #1 decides to go on break but he has the lowest customer assigned.
+		for (int i=0; i<waiters.size(); i++){
+			if (waiters.get(i).state != MyWaiterState.allowedBreak){
+				index = i;
+				lowest = waiters.get(i).waiter.numberOfCustomers;
+				break;
+			}
+		}
 		
 		for (int i=0; i<waiters.size(); i++){
-			if (waiters.get(i).waiter.numberOfCustomers < lowest){
+			//If the waiter has not been approved to take a break and the waiter has the lowest number of customers.
+			if (waiters.get(i).state != MyWaiterState.allowedBreak && waiters.get(i).waiter.numberOfCustomers < lowest){
 				lowest = waiters.get(i).waiter.numberOfCustomers;
 				index = i;
 			}
@@ -113,6 +167,7 @@ public class HostAgent extends Agent {
 	
 	public void addWaiter(WaiterAgent w){
 		waiters.add(new MyWaiter(w));
+		workingWaiters++;
 	}
 	
 	private class MyWaiter {
@@ -121,10 +176,6 @@ public class HostAgent extends Agent {
 		
 		public MyWaiter(WaiterAgent w){
 			waiter = w;
-		}
-		
-		public void changeState(MyWaiterState ms){
-			state = ms;
 		}
 	}
 

@@ -1,16 +1,25 @@
 package restaurant;
 
 import agent.Agent;
+import restaurant.Order.OrderState;
 import restaurant.gui.WaiterGui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+
+import javax.swing.Timer;
 
 public class WaiterAgent extends Agent {
 	WaiterGui gui;
 	List<MyCustomer> myCustomers = new ArrayList<MyCustomer>();
 	CookAgent cook;
 	HostAgent host;
+
+	private enum WaiterState {none, wantABreak, askedBreak, goingOnBreak, onBreak};
+	private WaiterState state = WaiterState.none;
+	
 		public HostAgent getHost(){
 			return host;
 		}
@@ -18,18 +27,41 @@ public class WaiterAgent extends Agent {
 		public String getName(){
 			return name;
 		}
-	boolean idle;
+		
+	Timer breakTimer;
+	int breakLength = 1; //seconds
+	
 	// This is to distribute the waiting customers evenly among waiters.
 	public int numberOfCustomers;
 	enum MyCustomerState {waiting, seated, readyToOrder, ordering, reordering, ordered, orderCooking, orderReady, eating, doneEating;}
 	
 	//Animation stuff - To implement in 2c
 	private Semaphore atTargetLocation = new Semaphore(0, true);
+	boolean idle; //Idle is not a state. It is simply an animation helper variable.
+
 	
 	public WaiterAgent(String name, HostAgent h, CookAgent c) {
 		this.name = name;
 		host = h;
 		cook = c;
+		
+		breakTimer = new Timer(breakLength*1000, new ActionListener() {
+			   public void actionPerformed(ActionEvent e){
+			      OffBreak();
+			      breakTimer.stop();
+			   }
+			});
+	}
+	
+	//Wants a break
+	public void msgWantABreak(){
+		Do("Want a break after my customers leave.");
+		state = WaiterState.wantABreak;
+		stateChanged();
+	}
+	public void msgCanGoOnBreak(){
+		state = WaiterState.goingOnBreak; 
+		stateChanged();
 	}
 
 // ######## Messages ################
@@ -101,8 +133,8 @@ public class WaiterAgent extends Agent {
 						idle = false;
 						SeatCustomer(mc.table, mc);
 						return true;
-					}
 				}
+			}
 			
 			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.readyToOrder){
@@ -148,6 +180,16 @@ public class WaiterAgent extends Agent {
 			return true;
 			}
 		
+		if (state == WaiterState.wantABreak){
+			IWantABreak();
+			return true;
+		}
+		
+		if (state == WaiterState.goingOnBreak && numberOfCustomers == 0){
+			TakeABreak();
+			return true;
+		}
+		
 		DoIdle();
 		return false;
 		
@@ -155,6 +197,29 @@ public class WaiterAgent extends Agent {
 	}
 	
 //############ Action ################
+	//Want a break;
+	public void IWantABreak(){
+		Do("I'm telling the host I want a break.");
+		state = WaiterState.askedBreak;
+		host.msgWaiterWantsABreak(this);
+	}
+	
+	//Take a break;
+	public void TakeABreak(){
+		Do("I'm taking a break!");
+		DoTakeABreak();
+		state = WaiterState.onBreak;
+		breakTimer.restart();
+		breakTimer.start();
+	}
+	//OffBreak
+	public void OffBreak(){
+		Do("I'm coming back to work!");
+		state = WaiterState.none;
+		host.msgWaiterOffBreak(this);
+		gui.DoOffBreak();
+	}
+	
 	public void SeatCustomer(Table t, MyCustomer mc) {
 		DoGetCustomer();
 		Do("is seating " + mc.customer.getName());
@@ -196,9 +261,16 @@ public class WaiterAgent extends Agent {
 		Do(c.customer.getName() + " is leaving the restaurant.");
 		host.msgTableIsClear(c.table);
 		myCustomers.remove(c);
+		numberOfCustomers--;
 	}
 
 	//##GUI ACTIONS###
+	private void DoTakeABreak(){
+		gui.setText("OnBreak");
+		gui.DoTakeABreak();
+		atLocAcquire();
+	}
+	
 	private void DoSeatCustomer(int tableNum, MyCustomer mc){
 		gui.setText("Seating Customer");
 		gui.DoBringToTable(mc.customer, tableNum);

@@ -94,7 +94,7 @@ public class RestaurantPanel extends JPanel {
     
     public void addWaiter(String waiterName){
     	WaiterAgent w = new WaiterAgent(waiterName, host, cook);
-    	WaiterGui waitergui = new WaiterGui(w);
+    	WaiterGui waitergui = new WaiterGui(w, gui);
     	w.setGUI(waitergui);
     	gui.animationPanel.addGui(waitergui);
     	host.addWaiter(w);
@@ -165,7 +165,9 @@ public class RestaurantPanel extends JPanel {
         	for(Agent a : agents){
                 if (a instanceof WaiterAgent){
                 	WaiterAgent w = (WaiterAgent)a;
-                	gui.updateInfoPanel(w);
+                	if (w.getName().equals(name)) {
+                		gui.updateInfoPanel(w);
+                	}
                 }
                    
             }

@@ -158,7 +158,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         	stateCB.setText("Want break?");
         	stateCB.setSelected(waiter.getGUI().isOnBreak());
         	stateCB.setEnabled(!waiter.getGUI().isOnBreak());
-        	infoLabel.setText( "<html> <b><u><i>Customer Information</i></u></b> <br>    Name: " + waiter.getName() + " </html>");
+        	infoLabel.setText( "<html> <b><u><i>Waiter Information</i></u></b> <br>    Name: " + waiter.getName() + " </html>");
         }
         infoPanel.validate();
     }
@@ -313,7 +313,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
             
             if (currentPerson instanceof WaiterAgent){
             	WaiterAgent w = (WaiterAgent) currentPerson;
-            	w.getGUI().
+            	w.getGUI().wantBreak(true);
+            	stateCB.setEnabled(false);
+            	return;
             }
             
             return;
@@ -355,6 +357,17 @@ public class RestaurantGui extends JFrame implements ActionListener {
             }
         }
     }
+    
+    public void setWaiterEnabled(WaiterAgent c){
+    	if (currentPerson instanceof WaiterAgent){
+    		WaiterAgent w = (WaiterAgent) currentPerson;
+    		if (c.equals(w)){
+    			stateCB.setEnabled(true);
+    			stateCB.setSelected(false);
+    		}
+    	}
+    }
+    
     /**
      * Main routine to get gui started
      */

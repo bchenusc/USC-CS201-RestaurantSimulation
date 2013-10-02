@@ -9,6 +9,8 @@ import java.awt.*;
 public class WaiterGui implements Gui {
 
     private WaiterAgent agent = null;
+    
+    RestaurantGui gui;
 
     private int xPos = -20, yPos = -20;//default waiter position
     private int xDestination = -20, yDestination = -20;//default start position
@@ -23,18 +25,23 @@ public class WaiterGui implements Gui {
     private boolean doingIdle;
     private static final int movementOffset = 20;
     
-    private boolean onBreak;
+    private boolean wantBreak;
     	public boolean isOnBreak(){
-    		return onBreak;
+    		return wantBreak;
+    	}
+    	public void wantBreak(boolean b){
+    		wantBreak = b;
+    		agent.msgWantABreak();
     	}
     
     private String displayText = "";
 
-    public WaiterGui(WaiterAgent agent) {
+    public WaiterGui(WaiterAgent agent, RestaurantGui r) {
         this.agent = agent;
         receivedAction = false;
         doingIdle = false;
-        onBreak = false;
+        wantBreak = false;
+        gui = r;
     }
 
     public void updatePosition() {
@@ -75,6 +82,13 @@ public class WaiterGui implements Gui {
     public void setText(String text){
     	displayText = text;
     }
+    
+    public void DoTakeABreak(){
+    	xDestination = -20; //Top Left of the screen
+    	yDestination = -20; //Top Left of the screen
+    	receivedAction = true;
+    	doingIdle = false;
+    }
 
     public void DoBringToTable(CustomerAgent customer, int tableNumber) {
     	for (restaurant.Table myTable : agent.getHost().tables){
@@ -101,6 +115,11 @@ public class WaiterGui implements Gui {
     	yDestination = -20; // Host Destination
     	receivedAction = true;
     	doingIdle = false;
+    }
+    
+    public void DoOffBreak(){
+    	wantBreak = false;
+    	gui.setWaiterEnabled(agent);
     }
     
     public void DoGiveOrderToCook(){
