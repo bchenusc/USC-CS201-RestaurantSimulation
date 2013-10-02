@@ -91,13 +91,11 @@ public class ListPanel extends JPanel implements ActionListener {
         		
         	}
         	public void keyReleased (KeyEvent e){
-        		//if (type = "Customers"){
         			if (hungryBoxAvailable)
 	        		if (nameField.getText().length() == 0){
 	        			hungryBox.setEnabled(false);
 	        		}
 	        		else hungryBox.setEnabled(true);
-        		//}
         	}
         });
         

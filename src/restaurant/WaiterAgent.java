@@ -182,6 +182,7 @@ public class WaiterAgent extends Agent {
 		Menu m = new Menu();
 		m.remove(mc.choice);
 		mc.customer.msgOutOfFood(new Menu());
+		mc.state = MyCustomerState.ordering;
 	}
 
 	public void GiveFoodToCustomer(MyCustomer mc){
@@ -248,6 +249,9 @@ public class WaiterAgent extends Agent {
 	
 	public void setGUI(WaiterGui wg){
 	    	gui = wg;
+	}
+	public WaiterGui getGUI(){
+		return gui;
 	}
 	
 //#### Inner Class ####	

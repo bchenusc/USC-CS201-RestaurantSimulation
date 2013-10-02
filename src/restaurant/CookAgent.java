@@ -35,10 +35,10 @@ public class CookAgent extends Agent {
 	  orders = new ArrayList<Order>();
 	  
 	  //Tree map
-	  foodDictionary.put("Steak", new Food("Steak", 5000, 3));
-	  foodDictionary.put("Chicken", new Food("Chicken", 4500, 4));
-	  foodDictionary.put("Salad", new Food("Salad", 6000, 5));
-	  foodDictionary.put("Pizza", new Food("Pizza", 7000, 6));
+	  foodDictionary.put("Steak", new Food("Steak", 5000, 1));
+	  foodDictionary.put("Chicken", new Food("Chicken", 4500, 1));
+	  foodDictionary.put("Salad", new Food("Salad", 6000, 1));
+	  foodDictionary.put("Pizza", new Food("Pizza", 7000, 1));
 	  
 	}
 		
@@ -87,7 +87,13 @@ public class CookAgent extends Agent {
 		if (temp.amount == 0){
 			orders.remove(o);
 			o.waiter.msgOutOfFood(o.choice, o.tableNumber);
+			return;
 		}
+		if (temp.amount == 1){
+			//order more from the restaurant;
+		}
+		
+		temp.amount --;
 		
 		  Do("is cooking " + o.choice + ".");
 		  o.setTimer(foodDictionary.get(o.choice).cookTime);

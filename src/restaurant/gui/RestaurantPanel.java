@@ -97,7 +97,7 @@ public class RestaurantPanel extends JPanel {
     	WaiterGui waitergui = new WaiterGui(w);
     	w.setGUI(waitergui);
     	gui.animationPanel.addGui(waitergui);
-    	host.waiters.add(w);
+    	host.addWaiter(w);
     	agents.add(w);
     	w.startThread();
     }
@@ -158,6 +158,16 @@ public class RestaurantPanel extends JPanel {
                 CustomerAgent temp = customers.get(i);
                 if (temp.getName() == name)
                     gui.updateInfoPanel(temp);
+            }
+        }
+        
+        if (type.equals("Waiters")){
+        	for(Agent a : agents){
+                if (a instanceof WaiterAgent){
+                	WaiterAgent w = (WaiterAgent)a;
+                	gui.updateInfoPanel(w);
+                }
+                   
             }
         }
     }

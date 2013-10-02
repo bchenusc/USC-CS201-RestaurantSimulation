@@ -23,12 +23,18 @@ public class WaiterGui implements Gui {
     private boolean doingIdle;
     private static final int movementOffset = 20;
     
+    private boolean onBreak;
+    	public boolean isOnBreak(){
+    		return onBreak;
+    	}
+    
     private String displayText = "";
 
     public WaiterGui(WaiterAgent agent) {
         this.agent = agent;
         receivedAction = false;
         doingIdle = false;
+        onBreak = false;
     }
 
     public void updatePosition() {

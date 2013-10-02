@@ -255,21 +255,6 @@ public class CustomerAgent extends Agent {
 		return menu.choice(random);
 	}
 	
-	/*public void atLocation() {//from animation
-		print("semaphore atLocation released");
-			atTargetLocation.release();// = true;
-	}
-	
-	public void acquireLocation(){
-		try {
-			atTargetLocation.acquire();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	*/
-	
 	public void setGui(CustomerGui g) {
 		customerGui = g;
 	}

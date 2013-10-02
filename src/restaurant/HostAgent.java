@@ -1,6 +1,7 @@
 package restaurant;
 
 import agent.Agent;
+import restaurant.WaiterAgent.MyCustomerState;
 import restaurant.gui.WaiterGui;
 
 import java.util.*;
@@ -23,15 +24,15 @@ public class HostAgent extends Agent {
 	public List<CustomerAgent> waitingCustomers = new ArrayList<CustomerAgent>();
 	
 	//List of waiters
-	public List<WaiterAgent> waiters = new ArrayList<WaiterAgent>();
+	public List<MyWaiter> waiters = new ArrayList<MyWaiter>();
 	
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
 
 	private String name;
-
-	public WaiterGui hostGui = null;
+	
+	private enum MyWaiterState {none, wantBreak, onBreak};
 
 	public HostAgent(String name) {
 		super();
@@ -98,25 +99,35 @@ public class HostAgent extends Agent {
 	public WaiterAgent findWaiterWithLowestCust(){
 		
 		int index = 0;
-		int lowest = waiters.get(0).numberOfCustomers;
+		int lowest = waiters.get(0).waiter.numberOfCustomers;
 		
 		for (int i=0; i<waiters.size(); i++){
-			if (waiters.get(i).numberOfCustomers < lowest){
-				lowest = waiters.get(i).numberOfCustomers;
+			if (waiters.get(i).waiter.numberOfCustomers < lowest){
+				lowest = waiters.get(i).waiter.numberOfCustomers;
 				index = i;
 			}
 		}
-		return waiters.get(index);
+		return waiters.get(index).waiter;
 		
 	}
 	
-	public void setGui(WaiterGui gui) {
-		hostGui = gui;
+	public void addWaiter(WaiterAgent w){
+		waiters.add(new MyWaiter(w));
+	}
+	
+	private class MyWaiter {
+		MyWaiterState state = MyWaiterState.none;
+		WaiterAgent waiter;
+		
+		public MyWaiter(WaiterAgent w){
+			waiter = w;
+		}
+		
+		public void changeState(MyWaiterState ms){
+			state = ms;
+		}
 	}
 
-	public WaiterGui getGui() {
-		return hostGui;
-	}
 
 }
 
