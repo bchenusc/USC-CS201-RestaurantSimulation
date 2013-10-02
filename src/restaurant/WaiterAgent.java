@@ -21,7 +21,7 @@ public class WaiterAgent extends Agent {
 	boolean idle;
 	// This is to distribute the waiting customers evenly among waiters.
 	public int numberOfCustomers;
-	enum MyCustomerState {waiting, seated, readyToOrder, ordering, ordered, orderCooking, orderReady, eating, doneEating;}
+	enum MyCustomerState {waiting, seated, readyToOrder, ordering, reordering, ordered, orderCooking, orderReady, eating, doneEating;}
 	
 	//Animation stuff - To implement in 2c
 	private Semaphore atTargetLocation = new Semaphore(0, true);
@@ -63,9 +63,19 @@ public class WaiterAgent extends Agent {
 			}
 		}
 	}
-	public void msgOrderIsReady(String o){ 		
+	public void msgOutOfFood(String choice, int table){
 		for (MyCustomer mc : myCustomers){
-			if (mc.choice == o){
+			if (mc.table.tableNumber ==  table){
+				//Do go back to customer and ask for an order.
+				mc.state = MyCustomerState.reordering;
+				stateChanged();
+			}
+		}
+	}
+	
+	public void msgOrderIsReady(String o, int tableNumber){ 		
+		for (MyCustomer mc : myCustomers){
+			if (mc.choice == o && mc.table.tableNumber == tableNumber){
 				mc.state = MyCustomerState.orderReady;
 				stateChanged();
 			}
@@ -111,6 +121,14 @@ public class WaiterAgent extends Agent {
 			}
 			
 			for (MyCustomer mc: myCustomers){
+				if(mc.state == MyCustomerState.reordering){
+					idle = false;
+					TakeReorder(mc);
+					return true;
+				}
+			}
+			
+			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.orderReady){
 					idle = false;
 					GiveFoodToCustomer(mc);
@@ -147,7 +165,7 @@ public class WaiterAgent extends Agent {
 	
 	public void TakeOrder(MyCustomer mc){
 		Do("is taking " + mc.customer.getName() + "'s order.");
-		DoWalkToCustomer(mc, false);
+		DoWalkToCustomer(mc, "");
 		mc.customer.WhatWouldYouLike();
 		mc.state = MyCustomerState.ordering;
 	}
@@ -157,10 +175,18 @@ public class WaiterAgent extends Agent {
 		mc.state = MyCustomerState.orderCooking;
 		cook.msgHeresAnOrder(mc.choice, this, mc.table.tableNumber);
 	}
+	
+	public void TakeReorder(MyCustomer mc){
+		Do("Going to customer " + mc.customer.getCustomerName() + " for a reorder.");
+		DoWalkToCustomer(mc, "Reordering");
+		Menu m = new Menu();
+		m.remove(mc.choice);
+		mc.customer.msgOutOfFood(new Menu());
+	}
 
 	public void GiveFoodToCustomer(MyCustomer mc){
 		DoGiveOrderToCook();
-		DoWalkToCustomer(mc, true);
+		DoWalkToCustomer(mc, mc.choice);
 		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
 		mc.customer.HeresYourOrder(mc.choice);
@@ -186,12 +212,8 @@ public class WaiterAgent extends Agent {
 		atLocAcquire();
 	}
 	
-	public void DoWalkToCustomer(MyCustomer mc, boolean displayText){
-		//Do("is taking " + mc.customer.getName()+ "'s order.");
-		if (displayText)
-			gui.DoWalkToCustomer(mc.table, mc.choice);
-		else
-			gui.DoWalkToCustomer(mc.table, "");
+	public void DoWalkToCustomer(MyCustomer mc, String displayText){
+		gui.DoWalkToCustomer(mc.table, displayText);
 		atLocAcquire();
 	}
 	

@@ -7,7 +7,10 @@ import restaurant.Order;
 import restaurant.Order.OrderState;
 
 
+import restaurant.WaiterAgent.MyCustomerState;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 //import restaurant.HostAgent.HostState;
 //import java.awt.*;
 //import java.awt.event.ActionEvent;
@@ -15,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 //import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class CookAgent extends Agent {
 	
@@ -25,7 +27,7 @@ public class CookAgent extends Agent {
 	List<Order> orders;
 
 	//A map containing all the foods and their cook times. Implement in Constructor pls!
-	Map<String, Integer> foodDictionary = new TreeMap<String, Integer>(); 
+	Map<String, Food> foodDictionary = new HashMap<String, Food>(); 
 
 	//Constructor
 	public CookAgent(String name){
@@ -33,10 +35,10 @@ public class CookAgent extends Agent {
 	  orders = new ArrayList<Order>();
 	  
 	  //Tree map
-	  foodDictionary.put("Steak", 5000);
-	  foodDictionary.put("Chicken", 6000);
-	  foodDictionary.put("Salad", 4000);
-	  foodDictionary.put("Pizza", 8000);
+	  foodDictionary.put("Steak", new Food("Steak", 5000, 3));
+	  foodDictionary.put("Chicken", new Food("Chicken", 4500, 4));
+	  foodDictionary.put("Salad", new Food("Salad", 6000, 5));
+	  foodDictionary.put("Pizza", new Food("Pizza", 7000, 6));
 	  
 	}
 		
@@ -81,12 +83,18 @@ public class CookAgent extends Agent {
 		
 //########## Actions ###############
 	private void CookOrder(Order o){
+		Food temp = foodDictionary.get(o.choice);
+		if (temp.amount == 0){
+			orders.remove(o);
+			o.waiter.msgOutOfFood(o.choice, o.tableNumber);
+		}
+		
 		  Do("is cooking " + o.choice + ".");
-		  o.setTimer(foodDictionary.get(o.choice));
+		  o.setTimer(foodDictionary.get(o.choice).cookTime);
 	}
 	
 	private void tellWaiterOrderIsReady(Order o){
-		o.waiter.msgOrderIsReady(o.choice);
+		o.waiter.msgOrderIsReady(o.choice, o.tableNumber);
 		o.setState(OrderState.notified);
 	}
 	
@@ -95,7 +103,22 @@ public class CookAgent extends Agent {
 		return "Cook " + name;
 	}
 
-//######################## End of Class #############################
+//######################## End of Class Cook#############################
+	
+	//#### Inner Class ####	
+	private class Food {
+		   private String choice;
+		   private int cookTime;
+		   private int amount;
+		   
+		   private Food(String c, int ct, int amt){
+			   choice = c;
+			   cookTime = ct;
+			   amount = amt;
+		   }
+		   
+		   
+	}
 }
 
 

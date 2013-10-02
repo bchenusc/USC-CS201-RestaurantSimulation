@@ -99,6 +99,13 @@ public class CustomerAgent extends Agent {
 		event = CustomerEvent.foodArrived;
 		stateChanged();
 	}
+	
+	public void msgOutOfFood(Menu m){
+		menu = m;
+		event = CustomerEvent.gotMenu;
+		state = CustomerState.Seated;
+		stateChanged();
+	}
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.

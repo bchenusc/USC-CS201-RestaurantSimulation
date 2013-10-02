@@ -3,11 +3,12 @@ package restaurant;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class Menu {
 	//Map of Food and Price.
 	Map<String, Float> menuDictionary = new Hashtable<String, Float>(); 
-	private final int size = 4;
+	private int size = 4;
 	
 	public Menu(){
 		menuDictionary.put("Steak", 15.99f);
@@ -21,14 +22,13 @@ public class Menu {
 	}
 	
 	public String choice(int n){
-		switch (n){
-			case 0: return "Steak";
-			case 1: return "Chicken";
-			case 2: return "Salad";
-			case 3: return "Pizza";
-			default: return null;
-		}
-		
+		String s[] = menuDictionary.keySet().toArray(new String[0]);
+		return s[n];
+	}
+	
+	public void remove(String s){
+		menuDictionary.remove(s);
+		size --;
 	}
 	
 }
