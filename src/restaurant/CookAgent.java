@@ -3,12 +3,12 @@ package restaurant;
 //import javax.swing.*;
 
 import agent.Agent;
-import restaurant.Order;
-import restaurant.Order.OrderState;
 
 
 import restaurant.WaiterAgent.MyCustomerState;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 //import restaurant.HostAgent.HostState;
@@ -19,6 +19,8 @@ import java.util.List;
 //import java.util.ArrayList;
 import java.util.Map;
 
+import javax.swing.Timer;
+
 public class CookAgent extends Agent {
 	
 	String name;
@@ -28,6 +30,8 @@ public class CookAgent extends Agent {
 
 	//A map containing all the foods and their cook times. Implement in Constructor pls!
 	Map<String, Food> foodDictionary = new HashMap<String, Food>(); 
+	
+	public enum OrderState { pending, cooking, cooked, notified;}
 
 	//Constructor
 	public CookAgent(String name){
@@ -56,6 +60,7 @@ public class CookAgent extends Agent {
 	protected boolean pickAndExecuteAnAction() {
 		// if there exists an Order o in pendingOrder such that o.OrderState == pending
 		//then CookOrder(o);
+	try{
 		if (orders.size() > 0){
 				//Look for all pending orders.
 				for(Order o : orders){
@@ -70,14 +75,18 @@ public class CookAgent extends Agent {
 				for (int i=0; i<orders.size();i++){
 					
 					if (orders.get(i).getState() == OrderState.cooked){
-						tellWaiterOrderIsReady(orders.get(i));
-						orders.remove(i);
+						tellWaiterOrderIsReady(orders.get(i), i);
 						i--;
 						return true;
 					}
 				}
 			return true;
 		}
+	}
+	catch(Exception e){
+			
+	}
+		
 		return false;
 	}
 		
@@ -99,9 +108,10 @@ public class CookAgent extends Agent {
 		  o.setTimer(foodDictionary.get(o.choice).cookTime);
 	}
 	
-	private void tellWaiterOrderIsReady(Order o){
+	private void tellWaiterOrderIsReady(Order o, int index){
 		o.waiter.msgOrderIsReady(o.choice, o.tableNumber);
 		o.setState(OrderState.notified);
+		orders.remove(index);
 	}
 	
 //################    Utility     ##################
@@ -125,6 +135,45 @@ public class CookAgent extends Agent {
 		   
 		   
 	}
+	
+	private class Order {
+		  String choice;
+		  WaiterAgent waiter;
+		  int tableNumber;
+		  Timer timer;
+		  int orderTime;
+		  
+		  private OrderState state = OrderState.pending;
+		  
+		  public Order(String c, WaiterAgent w, int tableNumber){
+			 choice = c;
+			 waiter = w;
+			 this.tableNumber = tableNumber;
+		  }
+		  public void setTimer(int time){
+			  orderTime = time;
+			  state =  OrderState.cooking;
+			  timer = new Timer(time, new ActionListener() {
+				   public void actionPerformed(ActionEvent e){
+				      state = OrderState.cooked;
+				      
+				      timer.stop();
+				   }
+				});
+			  timer.start();
+		  }
+		  public OrderState getState(){
+			  return state;
+		  }
+		  public void setState(OrderState state){
+			  this.state = state;
+		  }
+		  public String getChoice(){
+			  return choice;
+		  }
+		  
+	}
+
 }
 
 

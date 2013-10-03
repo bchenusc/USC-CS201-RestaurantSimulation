@@ -1,10 +1,10 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.WaiterAgent.MyCustomerState;
-import restaurant.gui.WaiterGui;
 
 import java.util.*;
+
+import restaurant.WaiterAgent.MyCustomerState;
 
 /**
  * Restaurant Host Agent
@@ -90,14 +90,14 @@ public class HostAgent extends Agent {
 	 */
 	protected boolean pickAndExecuteAnAction() {
 		/*if !waitingCustomer.empty() there exists a Table t in tables such that t.occupiedBy == null 
-		 * and  there exists a Waiter w in waiters such that w.State == idle
+		 * 
 		 * 			then notifyWaiter(t, w);*/
 		if (!waitingCustomers.isEmpty()){
 			if (waiters.size() > 0){
 				for (Table t : tables){
 					if (t.occupiedBy == null){
 						
-						WaiterAgent w = findWaiterWithLowestCust();
+						MyWaiter w = findWaiterWithLowestCust();
 						notifyWaiter(t, w);
 						return true;
 					}
@@ -128,9 +128,10 @@ public class HostAgent extends Agent {
 	}
 
 // ######################   Actions  ##################
-	private void notifyWaiter(Table t, WaiterAgent w){
-		  Do("is notifying waiter "+ w.name);
-		   w.msgSeatAtTable(waitingCustomers.remove(0), t);
+	private void notifyWaiter(Table t, MyWaiter w){
+		  Do("is notifying waiter "+ w.waiter.name);
+		   w.numberOfCustomers++;
+		   w.waiter.msgSeatAtTable(waitingCustomers.remove(0), t);
 		}
 
 	private void WaiterOnBreak(MyWaiter w){
@@ -140,28 +141,28 @@ public class HostAgent extends Agent {
 	}
 
 	//utilities
-	public WaiterAgent findWaiterWithLowestCust(){
+	public MyWaiter findWaiterWithLowestCust(){
 		
 		int index = 0;
-		int lowest = waiters.get(0).waiter.numberOfCustomers;
+		int lowest = waiters.get(0).numberOfCustomers;
 		//First find the first waiter who is not on break as initial waiter to find lowest customers assigned to waiters.
 		//This is to prevent if waiter #1 decides to go on break but he has the lowest customer assigned.
 		for (int i=0; i<waiters.size(); i++){
 			if (waiters.get(i).state != MyWaiterState.allowedBreak){
 				index = i;
-				lowest = waiters.get(i).waiter.numberOfCustomers;
+				lowest = waiters.get(i).numberOfCustomers;
 				break;
 			}
 		}
 		
 		for (int i=0; i<waiters.size(); i++){
 			//If the waiter has not been approved to take a break and the waiter has the lowest number of customers.
-			if (waiters.get(i).state != MyWaiterState.allowedBreak && waiters.get(i).waiter.numberOfCustomers < lowest){
-				lowest = waiters.get(i).waiter.numberOfCustomers;
+			if (waiters.get(i).state != MyWaiterState.allowedBreak && waiters.get(i).numberOfCustomers < lowest){
+				lowest = waiters.get(i).numberOfCustomers;
 				index = i;
 			}
 		}
-		return waiters.get(index).waiter;
+		return waiters.get(index);
 		
 	}
 	
@@ -173,12 +174,13 @@ public class HostAgent extends Agent {
 	private class MyWaiter {
 		MyWaiterState state = MyWaiterState.none;
 		WaiterAgent waiter;
+		int numberOfCustomers;
 		
 		public MyWaiter(WaiterAgent w){
 			waiter = w;
+			numberOfCustomers = 0;
 		}
 	}
-
 
 }
 

@@ -1,7 +1,6 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.Order.OrderState;
 import restaurant.gui.WaiterGui;
 
 import java.awt.event.ActionEvent;
@@ -32,7 +31,7 @@ public class WaiterAgent extends Agent {
 	int breakLength = 1; //seconds
 	
 	// This is to distribute the waiting customers evenly among waiters.
-	public int numberOfCustomers;
+	private int numberOfCustomers;
 	enum MyCustomerState {waiting, seated, readyToOrder, ordering, reordering, ordered, orderCooking, orderReady, eating, doneEating;}
 	
 	//Animation stuff - To implement in 2c
