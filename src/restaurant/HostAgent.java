@@ -106,7 +106,7 @@ public class HostAgent extends Agent {
 			//return true;
 		}
 		
-		//Waiter break code
+		//Waiter break code/
 		for(MyWaiter w: waiters){
 			if (w.state == MyWaiterState.wantBreak && workingWaiters> 1){
 				workingWaiters--;
