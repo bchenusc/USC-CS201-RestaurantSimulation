@@ -112,7 +112,6 @@ public class CustomerAgent extends Agent {
 	 */
 	protected boolean pickAndExecuteAnAction() {
 		//	CustomerAgent is a finite state machine
-
 		if (state == CustomerState.DoingNothing && event == CustomerEvent.gotHungry ){
 			state = CustomerState .WaitingInRestaurant;
 			Do(state.toString());

@@ -26,6 +26,10 @@ public class Menu {
 		return s[n];
 	}
 	
+	public float getPrice(String food){
+		return menuDictionary.get(food);
+	}
+	
 	public void remove(String s){
 		menuDictionary.remove(s);
 		size --;
