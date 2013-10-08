@@ -103,9 +103,10 @@ public class HostAgent extends Agent {
 					}
 				}
 			}
-			return true;
+			//return true;
 		}
 		
+		//Waiter break code
 		for(MyWaiter w: waiters){
 			if (w.state == MyWaiterState.wantBreak && workingWaiters> 1){
 				workingWaiters--;
@@ -169,6 +170,7 @@ public class HostAgent extends Agent {
 	public void addWaiter(WaiterAgent w){
 		waiters.add(new MyWaiter(w));
 		workingWaiters++;
+		stateChanged();
 	}
 	
 	private class MyWaiter {

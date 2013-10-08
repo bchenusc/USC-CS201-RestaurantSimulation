@@ -205,7 +205,6 @@ public class CustomerAgent extends Agent {
 		eatingTimer.restart();
 		customerGui.setText("Eating " + choice);
 		eatingTimer.start();
-		
 	}
 
 	private void leaveTable() {

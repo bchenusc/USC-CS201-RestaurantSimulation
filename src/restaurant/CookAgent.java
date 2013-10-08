@@ -64,7 +64,6 @@ public class CookAgent extends Agent {
 		if (orders.size() > 0){
 				//Look for all pending orders.
 				for(Order o : orders){
-					
 					if (o.getState() == OrderState.pending){
 						CookOrder(o);
 						return true;
@@ -80,11 +79,10 @@ public class CookAgent extends Agent {
 						return true;
 					}
 				}
-			return true;
 		}
 	}
 	catch(Exception e){
-			
+			e.printStackTrace();
 	}
 		
 		return false;
@@ -94,12 +92,12 @@ public class CookAgent extends Agent {
 	private void CookOrder(Order o){
 		Food temp = foodDictionary.get(o.choice);
 		if (temp.amount == 0){
-			orders.remove(o);
 			o.waiter.msgOutOfFood(o.choice, o.tableNumber);
+			orders.remove(o);
 			return;
 		}
 		if (temp.amount == 1){
-			//order more from the restaurant;
+			//order more for the restaurant;
 		}
 		
 		temp.amount --;
@@ -132,8 +130,6 @@ public class CookAgent extends Agent {
 			   cookTime = ct;
 			   amount = amt;
 		   }
-		   
-		   
 	}
 	
 	private class Order {
@@ -153,11 +149,12 @@ public class CookAgent extends Agent {
 		  public void setTimer(int time){
 			  orderTime = time;
 			  state =  OrderState.cooking;
+			  //Timer is a cooking timer.
 			  timer = new Timer(time, new ActionListener() {
 				   public void actionPerformed(ActionEvent e){
 				      state = OrderState.cooked;
-				      
 				      timer.stop();
+				      stateChanged();
 				   }
 				});
 			  timer.start();

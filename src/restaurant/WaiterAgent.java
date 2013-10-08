@@ -125,7 +125,7 @@ public class WaiterAgent extends Agent {
 	
 //##########  Scheduler  ##############
 	protected boolean pickAndExecuteAnAction(){
-		
+		try{
 		if (!myCustomers.isEmpty()){
 			for (MyCustomer mc : myCustomers){
 				if (mc.state == MyCustomerState.waiting){
@@ -188,10 +188,14 @@ public class WaiterAgent extends Agent {
 			TakeABreak();
 			return true;
 		}
+		}
+	
+		catch(Exception e){
+			e.printStackTrace();
+		}
 		
 		DoIdle();
 		return false;
-		
 		
 	}
 	
