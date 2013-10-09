@@ -44,10 +44,11 @@ public class CashierAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void msgHeresIsMyMoney(CustomerAgent c, int amount){
+	public void msgHeresIsMyMoney(CustomerAgent c, float amount){
 		for (Check ch: checks){
 			if (ch.customer == c){
 				ch.state = CheckStatus.paid;
+				ch.customerPayment = amount;
 				stateChanged();
 			}
 		}
@@ -68,7 +69,7 @@ public class CashierAgent extends Agent {
 		
 		for (Check ch: checks){
 			if (ch.state == CheckStatus.paid){
-				CheckisPaid(ch);
+				CheckIsPaid(ch);
 				return true;
 			}
 		
@@ -82,7 +83,25 @@ public class CashierAgent extends Agent {
 	}
 		
 //########## Actions ###############
+	public void CalculateCheck(Check c){
+		Do("Calculating Check");
+		c.state = CheckStatus.calculated;
+		c.totalCost = menu.getPrice(c.choice);
+		c.waiter.msgHereIsCheck(c.totalCost, c.customer);
+	}
 	
+	public void CheckIsPaid(Check c){
+		if (c.customerPayment - c.totalCost < 0){
+			c.waiter.msgCleanUpDeadCustomer(c.customer);
+			c.customer.msgDie();
+			checks.remove(c);
+			return;
+		}
+		
+		Do("Here is your change: $" + (c.customerPayment-c.totalCost));
+		c.customer.msgHeresYourChange(c.customerPayment - c.totalCost);
+		checks.remove(c);
+	}
 	
 //################    Utility     ##################
 	public String toString(){
@@ -94,6 +113,8 @@ public class CashierAgent extends Agent {
 	//#### Inner Class ####	
 	private class Check {
 		  String choice;
+		  float totalCost;
+		  float customerPayment;
 		  CustomerAgent customer;
 		  WaiterAgent waiter;
 		  CheckStatus state = CheckStatus.pending;

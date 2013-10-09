@@ -26,15 +26,20 @@ public class CustomerAgent extends Agent {
 	//Necessary links.
 	public HostAgent host;
 	public WaiterAgent waiter;
+	public CashierAgent cashier;
 	private String choice;
 	private Menu menu;
+	float totalMoney;
+	float totalCost;
+	
+	private int numberOfTimesOrdering;
 
 	public enum CustomerState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Ordering, WaitingForFood, Eating, DoneEating, Leaving, ReadingMenu};
+	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Ordering, WaitingForFood, Eating, DoneEating, Leaving, ReadingMenu, NotEnoughmoney, RequestingCheck, Dead};
 	private CustomerState state = CustomerState.DoingNothing;//The start state
 
 	public enum CustomerEvent 
-	{none, gotHungry, followWaiter, seated, gotMenu, readyToOrder, ordered, foodArrived, doneEating, doneLeaving};
+	{none, gotHungry, followWaiter, seated, gotMenu, readyToOrder, ordered, foodArrived, doneEating, doneLeaving, ReceivedCheck};
 	CustomerEvent event = CustomerEvent.none;
 	
 
@@ -44,9 +49,15 @@ public class CustomerAgent extends Agent {
 	 * @param name name of the customer
 	 * @param gui  reference to the customergui so the customer can send it messages
 	 */
-	public CustomerAgent(String name){
+	public CustomerAgent(String name, CashierAgent cashier){
 		super();
+		
+		
 		this.name = name;
+		this.cashier = cashier;
+		totalMoney = 13f; //can change in future;
+		numberOfTimesOrdering = 0;
+		
 		eatingTimer = new Timer(eatingTime, new ActionListener() {
 			   public void actionPerformed(ActionEvent e){
 			      event = CustomerEvent.doneEating;
@@ -60,7 +71,6 @@ public class CustomerAgent extends Agent {
 			      event = CustomerEvent.readyToOrder;
 			      
 			      stateChanged();
-			      
 			      readMenuTimer.stop();
 			   }
 			});	
@@ -83,7 +93,6 @@ public class CustomerAgent extends Agent {
 	public void msgFollowMe(Menu m){
 		menu = m;
 		event = CustomerEvent.followWaiter;
-	
 		stateChanged();
 	}
 //Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
@@ -104,6 +113,23 @@ public class CustomerAgent extends Agent {
 		menu = m;
 		event = CustomerEvent.gotMenu;
 		state = CustomerState.Seated;
+		stateChanged();
+	}
+	
+	//Paying
+	public void msgHereIsTotal(float total){
+		totalCost = total;
+		event = CustomerEvent.ReceivedCheck;
+		stateChanged();
+	}
+	
+	public void msgHeresYourChange(float change){
+		Do("Received: $"+ change);
+		totalMoney = change;
+	}
+	
+	public void msgDie(){
+		state = CustomerState.Dead;
 		stateChanged();
 	}
 
@@ -145,22 +171,36 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == CustomerState.Eating && event == CustomerEvent.doneEating){
+			state = CustomerState.RequestingCheck;
+			RequestCheck();
+			return true;
+		}
+		if (state==CustomerState.RequestingCheck && event == CustomerEvent.ReceivedCheck){
 			state = CustomerState.Leaving;
 			leaveTable();
 			return true;
 		}
 		if (state == CustomerState.Leaving && event == CustomerEvent.doneLeaving){
 			state = CustomerState.DoingNothing;
-			//no action
+			Paying();
 			return true;
 		}
+		if (state==CustomerState.NotEnoughmoney && event == CustomerEvent.ReceivedCheck){
+			leaveTable();
+			state = CustomerState.DoingNothing;
+		}
+		
+		if (state == CustomerState.Dead){
+			Dead();
+		}
+		
 		return false;
 	}
 
 // ################# ACTIONS ####################
 
 	private void goToRestaurant() {
-		Do("is going to restaurant.");
+		Do("is going to restaurant with " + totalMoney);
 		customerGui.setText("Hungry");
 		host.msgIWantToEat(this);//send our instance, so he can respond to us
 	}
@@ -180,6 +220,16 @@ public class CustomerAgent extends Agent {
 	private void ChooseFood(){
 		Do("is choosing food.");
 		customerGui.setText("Choosing");
+			if (!menu.HaveEnoughMoneyForAny(totalMoney) || numberOfTimesOrdering > 2){
+				if (!menu.HaveEnoughMoneyForAny(totalMoney))
+				Do("I don't have enough money!");
+				else Do("This restaurant is always out of stock!");
+				state = CustomerState.NotEnoughmoney;
+				event = CustomerEvent.ReceivedCheck;
+				stateChanged();
+				return;
+			}
+		numberOfTimesOrdering ++;
 		readMenuTimer.restart();
 		readMenuTimer.start();
 	}
@@ -205,6 +255,17 @@ public class CustomerAgent extends Agent {
 		customerGui.setText("Eating " + choice);
 		eatingTimer.start();
 	}
+	
+	private void RequestCheck(){
+		Do("Requesting a check");
+		customerGui.setText("Check Please");
+		waiter.msgRequestCheck(this);
+	}
+	
+	private void Paying(){
+		Do("I'm paying");
+		cashier.msgHeresIsMyMoney(this, totalMoney);
+	}
 
 	private void leaveTable() {
 		Do("is leaving.");
@@ -214,6 +275,11 @@ public class CustomerAgent extends Agent {
 		state = CustomerState.Leaving;
 		stateChanged();
 		customerGui.DoExitRestaurant(); //set done leaving here.
+	}
+	
+	private void Dead(){
+		Do("has been terminated for lack of payment.");
+		customerGui.setText("Dead");
 	}
 
 	// Accessors, etc.
@@ -237,6 +303,11 @@ public class CustomerAgent extends Agent {
 		//from animation
 		event = CustomerEvent.doneLeaving;
 		stateChanged();
+	}
+	
+	public void DoGoToDeadLocation(){
+		customerGui.setText("Dead");
+		customerGui.DoGoToDeadLocation();
 	}
 	
 	//######### GUI Action###########

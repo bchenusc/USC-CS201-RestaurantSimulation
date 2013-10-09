@@ -110,6 +110,13 @@ public class WaiterGui implements Gui {
     	doingIdle = true;
     }
     
+    public void DoGoToDeathPile(){
+    	xDestination = 300;
+    	yDestination = 400;
+    	receivedAction = true;
+    	doingIdle = false;
+    }
+    
     public void DoGetCustomer(){
     	xDestination = -20; //Host destination
     	yDestination = -20; // Host Destination

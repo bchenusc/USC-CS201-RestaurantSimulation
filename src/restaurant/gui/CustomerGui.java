@@ -25,6 +25,7 @@ public class CustomerGui implements Gui{
 	private Command command = Command.noCommand;
 	
 	private boolean receivedCoordinates;
+	private boolean dead;
 	
 	String displayText = "";
 	
@@ -41,6 +42,7 @@ public class CustomerGui implements Gui{
 		this.host = host;
 		
 		receivedCoordinates = false;
+		dead = false;
 	}
 
 	public void updatePosition() {
@@ -61,12 +63,12 @@ public class CustomerGui implements Gui{
 				}
 				else if (command==Command.LeaveRestaurant) {
 					agent.msgAnimationFinishedLeaveRestaurant();
-					//System.out.println("about to call gui.setCustomerEnabled(agent);");
 					isHungry = false;
 					gui.setCustomerEnabled(agent);
 				}
 				receivedCoordinates = false;
 				displayText = "";
+				if (dead) displayText = "Dead Customer Pile";
 				command=Command.noCommand;
 			}
 		}
@@ -75,6 +77,13 @@ public class CustomerGui implements Gui{
 	public void DoLeavingTable(){
 		xDestination = -20; //home base
 		yDestination = -20; //home base
+		receivedCoordinates = true;
+	}
+	
+	public void DoGoToDeadLocation(){
+		xDestination = 300;
+		yDestination = 400;
+		dead = true;
 		receivedCoordinates = true;
 	}
 	

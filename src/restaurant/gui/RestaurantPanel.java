@@ -1,5 +1,6 @@
 package restaurant.gui;
 
+import restaurant.CashierAgent;
 import restaurant.CookAgent;
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
@@ -20,12 +21,9 @@ import java.util.Vector;
 public class RestaurantPanel extends JPanel {
 
     //Host, cook, waiters and customers
-    private HostAgent host = new HostAgent("Sarah");
+    private HostAgent host = new HostAgent("Omar");
     private CookAgent cook = new CookAgent("Brian");
-    //private WaiterAgent waiter = new WaiterAgent("Matt", host, cook);
-    //private WaiterAgent waiter2 = new WaiterAgent("David", host, cook);
-    //private WaiterGui waitergui = new WaiterGui(waiter);
-    //private WaiterGui waiter2gui = new WaiterGui(waiter2);
+    private CashierAgent cashier = new CashierAgent("Grant");
     
     //List of Agents for pausing.
     private Vector<Agent> agents = new Vector<Agent>();
@@ -53,9 +51,11 @@ public class RestaurantPanel extends JPanel {
         
         host.startThread(); //Hack only one host.
         cook.startThread(); //Hack only one cook.
+        cashier.startThread(); //Hack only one cashier
         
         agents.add(host); //Hack for only having one cook.
         agents.add(cook); //Hack for only having one cook.
+        agents.add(cashier); //Hack only one cashier;
         
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         
@@ -93,7 +93,7 @@ public class RestaurantPanel extends JPanel {
     }
     
     public void addWaiter(String waiterName){
-    	WaiterAgent w = new WaiterAgent(waiterName, host, cook);
+    	WaiterAgent w = new WaiterAgent(waiterName, host, cook, cashier);
     	WaiterGui waitergui = new WaiterGui(w, gui);
     	w.setGUI(waitergui);
     	gui.animationPanel.addGui(waitergui);
@@ -191,7 +191,7 @@ public class RestaurantPanel extends JPanel {
     public void addPerson(String type, String name, boolean isHungry) {
 
     	if (type.equals("Customers")) {
-    		CustomerAgent c = new CustomerAgent(name);	
+    		CustomerAgent c = new CustomerAgent(name, cashier);	
     		CustomerGui g = new CustomerGui(c, gui, host);
 
     		gui.animationPanel.addGui(g);// dw

@@ -15,7 +15,8 @@ public class WaiterAgent extends Agent {
 	List<MyCustomer> myCustomers = new ArrayList<MyCustomer>();
 	CookAgent cook;
 	HostAgent host;
-
+	CashierAgent cashier;
+	
 	private enum WaiterState {none, wantABreak, askedBreak, goingOnBreak, onBreak};
 	private WaiterState state = WaiterState.none;
 	
@@ -32,17 +33,20 @@ public class WaiterAgent extends Agent {
 	
 	// This is to distribute the waiting customers evenly among waiters.
 	private int numberOfCustomers;
-	enum MyCustomerState {waiting, seated, readyToOrder, ordering, reordering, ordered, orderCooking, orderReady, eating, doneEating;}
+	enum MyCustomerState {waiting, seated, readyToOrder, ordering, reordering, ordered, orderCooking, orderReady, eating, doneEating,
+		gotCheck, wantCheck, waitingCheck, paying, dead, rotting;}
 	
 	//Animation stuff - To implement in 2c
 	private Semaphore atTargetLocation = new Semaphore(0, true);
 	boolean idle; //Idle is not a state. It is simply an animation helper variable.
 
 	
-	public WaiterAgent(String name, HostAgent h, CookAgent c) {
+	
+	public WaiterAgent(String name, HostAgent h, CookAgent c, CashierAgent cash) {
 		this.name = name;
 		host = h;
 		cook = c;
+		cashier = cash;
 		
 		breakTimer = new Timer(breakLength*1000, new ActionListener() {
 			   public void actionPerformed(ActionEvent e){
@@ -120,7 +124,34 @@ public class WaiterAgent extends Agent {
 			}
 		}
 	}
-
+	
+	//Having to do with the check.
+	public void msgRequestCheck (CustomerAgent c){
+		for (MyCustomer mc: myCustomers){
+			if (mc.customer == c){
+				mc.state = MyCustomerState.wantCheck;
+				stateChanged();
+			}
+		}
+	}
+	
+	public void msgHereIsCheck(float total, CustomerAgent c){
+		for(MyCustomer mc: myCustomers){
+			if (mc.customer == c){
+				mc.totalCost = total;
+				mc.state = MyCustomerState.gotCheck;
+				stateChanged();
+			}
+		}
+	}
+	
+	public void msgCleanUpDeadCustomer(CustomerAgent c){
+		Do("Readying to kill customer");
+		MyCustomer mc = new MyCustomer(c, null);
+		myCustomers.add(mc);
+		mc.state = MyCustomerState.dead;
+		stateChanged();
+	}
 	
 	
 //##########  Scheduler  ##############
@@ -168,9 +199,33 @@ public class WaiterAgent extends Agent {
 			}
 			
 			for (MyCustomer mc: myCustomers){
+				if (mc.state == MyCustomerState.wantCheck){
+					idle = false;
+					AskCashierForTotal(mc);
+					return true;
+				}
+			}
+			
+			for(MyCustomer mc: myCustomers){
+				if (mc.state == MyCustomerState.gotCheck){
+					idle = false;
+					GiveCustomerCheck(mc);
+					return true;
+				}
+			}
+			
+			for (MyCustomer mc: myCustomers){
 				if (mc.state == MyCustomerState.doneEating){
 					idle = false;
 					CustomerLeaving(mc);
+					return true;
+				}
+			}
+			
+			for (MyCustomer mc: myCustomers){
+				if (mc.state == MyCustomerState.dead){
+					idle = false;
+					CleanDeadCustomer(mc);
 					return true;
 				}
 			}
@@ -201,14 +256,14 @@ public class WaiterAgent extends Agent {
 	
 //############ Action ################
 	//Want a break;
-	public void IWantABreak(){
+	private void IWantABreak(){
 		Do("I'm telling the host I want a break.");
 		state = WaiterState.askedBreak;
 		host.msgWaiterWantsABreak(this);
 	}
 	
 	//Take a break;
-	public void TakeABreak(){
+	private void TakeABreak(){
 		Do("I'm taking a break!");
 		DoTakeABreak();
 		state = WaiterState.onBreak;
@@ -216,14 +271,14 @@ public class WaiterAgent extends Agent {
 		breakTimer.start();
 	}
 	//OffBreak
-	public void OffBreak(){
+	private void OffBreak(){
 		Do("I'm coming back to work!");
 		state = WaiterState.none;
 		host.msgWaiterOffBreak(this);
 		gui.DoOffBreak();
 	}
 	
-	public void SeatCustomer(Table t, MyCustomer mc) {
+	private void SeatCustomer(Table t, MyCustomer mc) {
 		DoGetCustomer();
 		Do("is seating " + mc.customer.getName());
 		mc.customer.msgFollowMe(new Menu());
@@ -231,43 +286,72 @@ public class WaiterAgent extends Agent {
 		DoSeatCustomer(t.getTableNumber(), mc);
 	}
 	
-	public void TakeOrder(MyCustomer mc){
+	private void TakeOrder(MyCustomer mc){
 		Do("is taking " + mc.customer.getName() + "'s order.");
 		DoWalkToCustomer(mc, "");
 		mc.customer.WhatWouldYouLike();
 		mc.state = MyCustomerState.ordering;
 	}
 	 
-	public void GiveOrderToCook(MyCustomer mc, boolean displayText){
+	private void GiveOrderToCook(MyCustomer mc, boolean displayText){
 		DoGiveOrderToCook();
 		mc.state = MyCustomerState.orderCooking;
 		cook.msgHeresAnOrder(mc.choice, this, mc.table.tableNumber);
 	}
 	
-	public void TakeReorder(MyCustomer mc){
+	private void TakeReorder(MyCustomer mc){
 		Do("Going to customer " + mc.customer.getCustomerName() + " for a reorder.");
 		DoWalkToCustomer(mc, "Reordering");
 		Menu m = new Menu();
 		m.remove(mc.choice);
-		mc.customer.msgOutOfFood(new Menu());
+		mc.customer.msgOutOfFood(m);
 		mc.state = MyCustomerState.ordering;
 	}
 
-	public void GiveFoodToCustomer(MyCustomer mc){
+	private void GiveFoodToCustomer(MyCustomer mc){
 		DoGiveOrderToCook();
 		DoWalkToCustomer(mc, mc.choice);
 		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
 		mc.customer.HeresYourOrder(mc.choice);
 	}
-	public void CustomerLeaving(MyCustomer c){
+	
+	private void AskCashierForTotal(MyCustomer mc){
+		DoGetCheck();
+		Do("Asking "+ cashier.name + " for check.");
+		mc.state = MyCustomerState.waitingCheck;
+		cashier.msgHereIsCheck(mc.choice, mc.customer, this);
+	}
+	
+	private void GiveCustomerCheck(MyCustomer mc){
+		DoWalkToCustomer(mc, "Giving Check");
+		mc.customer.msgHereIsTotal(mc.totalCost);
+		mc.state = MyCustomerState.paying;
+	}
+	
+	private void CustomerLeaving(MyCustomer c){
 		Do(c.customer.getName() + " is leaving the restaurant.");
 		host.msgTableIsClear(c.table);
 		myCustomers.remove(c);
 		numberOfCustomers--;
 	}
+	
+	private void CleanDeadCustomer(MyCustomer mc){
+		Do("Killing Customer "+ mc.customer.getName());
+		DoGetDeadCustomer();
+		mc.customer.DoGoToDeadLocation();
+		DoGoToDeadLocation();
+		mc.state = MyCustomerState.rotting;
+		myCustomers.remove(mc);
+	}
 
 	//##GUI ACTIONS###
+	private void DoGoToDeadLocation(){
+		gui.setText("Carrying");
+		gui.DoGoToDeathPile();
+		atLocAcquire();
+	}
+	
 	private void DoTakeABreak(){
 		gui.setText("OnBreak");
 		gui.DoTakeABreak();
@@ -288,6 +372,19 @@ public class WaiterAgent extends Agent {
 		atLocAcquire();
 	}
 	
+	public void DoGetDeadCustomer(){
+		Do("is removing a dead customer.");
+		gui.setText("Killing Customer");
+		gui.DoGetCustomer();
+		atLocAcquire();
+	}
+	
+	public void DoGetCheck(){
+		gui.setText("Get Check");
+		gui.DoGetCustomer();
+		atLocAcquire();
+	}
+	
 	public void DoWalkToCustomer(MyCustomer mc, String displayText){
 		gui.DoWalkToCustomer(mc.table, displayText);
 		atLocAcquire();
@@ -304,7 +401,7 @@ public class WaiterAgent extends Agent {
 		try {
 			atTargetLocation.acquire();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
@@ -333,13 +430,14 @@ public class WaiterAgent extends Agent {
 	private class MyCustomer {
 		CustomerAgent customer;
 		   Table table;
-		   //Order order;
 		   String choice;
+		   float totalCost;
 		   MyCustomerState state = MyCustomerState.waiting;
 		   
 		   public MyCustomer(CustomerAgent c, Table t) {
 				customer = c;
 				table = t;
+				totalCost = 0;
 			}
 	}
 

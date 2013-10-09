@@ -4,12 +4,10 @@ package restaurant;
 
 import agent.Agent;
 
-
-import restaurant.WaiterAgent.MyCustomerState;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 //import restaurant.HostAgent.HostState;
 //import java.awt.*;
@@ -27,11 +25,16 @@ public class CookAgent extends Agent {
 	
 	//A list of ALL orders that the cook is attending to.
 	List<Order> orders;
+	
+	//List of all the markets
+	List<MarketAgent> markets = new ArrayList<MarketAgent>();
 
 	//A map containing all the foods and their cook times. Implement in Constructor pls!
 	Map<String, Food> foodDictionary = new HashMap<String, Food>(); 
 	
 	public enum OrderState { pending, cooking, cooked, notified;}
+	
+	private int max_Capacity = 2;
 
 	//Constructor
 	public CookAgent(String name){
@@ -52,6 +55,19 @@ public class CookAgent extends Agent {
 		Order order = new Order(o, w, tableNumber);
 		 orders.add(order);
 		 stateChanged();
+	}
+	
+	public void msgFillOrder(String choice, int amount, boolean filled){
+		Do("Refilling " + choice + " amount.");
+		Food f = foodDictionary.get(choice);
+		f.amount = foodDictionary.get(choice).amount+amount;
+		foodDictionary.put(choice, f);
+		if (filled){
+			return;
+		}
+		else{
+			f.orderFromIndex ++;
+		}
 	}
 	
 	
@@ -81,8 +97,8 @@ public class CookAgent extends Agent {
 				}
 		}
 	}
-	catch(Exception e){
-			e.printStackTrace();
+	catch(ConcurrentModificationException e){
+			return false;
 	}
 		
 		return false;
@@ -93,11 +109,12 @@ public class CookAgent extends Agent {
 		Food temp = foodDictionary.get(o.choice);
 		if (temp.amount == 0){
 			o.waiter.msgOutOfFood(o.choice, o.tableNumber);
-			orders.remove(o);
-			return;
+			orders.remove(o);			
 		}
-		if (temp.amount == 1){
+		if (temp.amount <= 1){
 			//order more for the restaurant;
+			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity , this);
+			return;
 		}
 		
 		temp.amount --;
@@ -124,6 +141,9 @@ public class CookAgent extends Agent {
 		   private String choice;
 		   private int cookTime;
 		   private int amount;
+		   
+		   private int orderFromIndex = 0;
+		   
 		   
 		   private Food(String c, int ct, int amt){
 			   choice = c;

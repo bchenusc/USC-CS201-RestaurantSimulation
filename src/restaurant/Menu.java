@@ -30,6 +30,20 @@ public class Menu {
 		return menuDictionary.get(food);
 	}
 	
+	public boolean HaveEnoughMoneyForAny(float money){
+		String s[] = menuDictionary.keySet().toArray(new String[0]);
+		for (String st: s){
+			if (menuDictionary.get(st) <= money){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean HaveEnoughMoneyForItem(float money, String choice){
+		return money >= menuDictionary.get(choice);
+	}
+	
 	public void remove(String s){
 		menuDictionary.remove(s);
 		size --;
