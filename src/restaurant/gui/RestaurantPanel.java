@@ -5,13 +5,14 @@ import restaurant.CookAgent;
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
 import restaurant.WaiterAgent;
+import restaurant.MarketAgent;
 
 import javax.swing.*;
 
 import agent.Agent;
 
 import java.awt.*;
-//import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -24,6 +25,7 @@ public class RestaurantPanel extends JPanel {
     private HostAgent host = new HostAgent("Omar");
     private CookAgent cook = new CookAgent("Brian");
     private CashierAgent cashier = new CashierAgent("Grant");
+    private ArrayList<MarketAgent> markets = new ArrayList<MarketAgent>();
     
     //List of Agents for pausing.
     private Vector<Agent> agents = new Vector<Agent>();
@@ -48,6 +50,13 @@ public class RestaurantPanel extends JPanel {
         
         customerPanel = new ListPanel(this, "Customers", true);
         waiterListPanel = new ListPanel(this,"Waiters", false);
+        
+        for (int i=0; i<3; i++){
+        	markets.add(new MarketAgent(i+". Market"));
+        	markets.get(i).startThread();
+        	agents.add(markets.get(i));
+        	cook.addMarket(markets.get(i));
+        }    
         
         host.startThread(); //Hack only one host.
         cook.startThread(); //Hack only one cook.

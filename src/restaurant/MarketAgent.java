@@ -46,6 +46,7 @@ public class MarketAgent extends Agent {
 	try{
 		if (marketOrders.size() > 0){
 			fillOrder();
+			return true;
 		}
 		
 	}
@@ -58,8 +59,8 @@ public class MarketAgent extends Agent {
 		
 //########## Actions ###############
 	public void fillOrder(){
-		Do("Filling order");
 		MarketOrder mo = marketOrders.remove(0);
+		Do("Filling " + mo.choice + " wanting "+ mo.amount);
 		if(inventory.get(mo.choice)>0){
 			if (mo.amount > inventory.get(mo.choice)){
 				mo.cook.msgFillOrder(mo.choice, inventory.get(mo.choice), false);

@@ -32,9 +32,9 @@ public class CookAgent extends Agent {
 	//A map containing all the foods and their cook times. Implement in Constructor pls!
 	Map<String, Food> foodDictionary = new HashMap<String, Food>(); 
 	
-	public enum OrderState { pending, cooking, cooked, notified;}
+	public enum OrderState { pending, checkingAmount, cooking, cooked, notified;}
 	
-	private int max_Capacity = 2;
+	private int max_Capacity = 3;
 
 	//Constructor
 	public CookAgent(String name){
@@ -58,7 +58,7 @@ public class CookAgent extends Agent {
 	}
 	
 	public void msgFillOrder(String choice, int amount, boolean filled){
-		Do("Refilling " + choice + " amount.");
+		Do("Refilling " + choice + " by " + amount + " " + filled);
 		Food f = foodDictionary.get(choice);
 		f.amount = foodDictionary.get(choice).amount+amount;
 		foodDictionary.put(choice, f);
@@ -106,15 +106,17 @@ public class CookAgent extends Agent {
 		
 //########## Actions ###############
 	private void CookOrder(Order o){
+		o.state = OrderState.checkingAmount;
 		Food temp = foodDictionary.get(o.choice);
 		if (temp.amount == 0){
 			o.waiter.msgOutOfFood(o.choice, o.tableNumber);
-			orders.remove(o);			
-		}
-		if (temp.amount <= 1){
-			//order more for the restaurant;
-			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity , this);
+			orders.remove(o);	
+			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount , this);
 			return;
+		}
+		if (temp.amount == 1){
+			//order more for the restaurant;
+			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount , this);
 		}
 		
 		temp.amount --;
@@ -132,6 +134,10 @@ public class CookAgent extends Agent {
 //################    Utility     ##################
 	public String toString(){
 		return "Cook " + name;
+	}
+	
+	public void addMarket(MarketAgent ma){
+		markets.add(ma);
 	}
 
 //######################## End of Class Cook#############################
