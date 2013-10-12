@@ -7,14 +7,14 @@ import java.util.Set;
 
 public class Menu {
 	//Map of Food and Price.
-	Map<String, Float> menuDictionary = new Hashtable<String, Float>(); 
+	Map<String, Double> menuDictionary = new Hashtable<String, Double>(); 
 	private int size = 4;
 	
 	public Menu(){
-		menuDictionary.put("Steak", 15.99f);
-		menuDictionary.put("Chicken", 10.99f);
-		menuDictionary.put("Salad", 5.99f);
-		menuDictionary.put("Pizza", 8.99f);
+		menuDictionary.put("Steak", 15.99);
+		menuDictionary.put("Chicken", 10.99);
+		menuDictionary.put("Salad", 5.99);
+		menuDictionary.put("Pizza", 8.99);
 	}
 	
 	public int getSize(){
@@ -26,14 +26,14 @@ public class Menu {
 		return s[n];
 	}
 	
-	public float getPrice(String food){
+	public double getPrice(String food){
 		return menuDictionary.get(food);
 	}
 	
-	public boolean HaveEnoughMoneyForAny(float money){
+	public boolean HaveEnoughMoneyForAny(double totalMoney){
 		String s[] = menuDictionary.keySet().toArray(new String[0]);
 		for (String st: s){
-			if (menuDictionary.get(st) <= money){
+			if (menuDictionary.get(st) <= totalMoney){
 				return true;
 			}
 		}
