@@ -55,7 +55,7 @@ public class CustomerAgent extends Agent {
 		
 		this.name = n;
 		this.cashier = cashier;
-		totalMoney = 13f; //can change in future;
+		totalMoney = 5.99; //can change in future;
 		numberOfTimesOrdering = 0;
 		
 		eatingTimer = new Timer(eatingTime, new ActionListener() {

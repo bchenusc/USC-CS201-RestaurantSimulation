@@ -21,16 +21,18 @@ import javax.swing.Timer;
 
 public class CookAgent extends Agent {
 	
-	String name;
+	private String name;
 	
 	//A list of ALL orders that the cook is attending to.
-	List<Order> orders;
+	private List<Order> orders;
 	
 	//List of all the markets
-	List<MarketAgent> markets = new ArrayList<MarketAgent>();
+	private List<MarketAgent> markets = new ArrayList<MarketAgent>();
 
 	//A map containing all the foods and their cook times. Implement in Constructor pls!
-	Map<String, Food> foodDictionary = new HashMap<String, Food>(); 
+	private Map<String, Food> foodDictionary = new HashMap<String, Food>();
+	
+	private String searchMarketsFor = "";
 	
 	public enum OrderState { pending, checkingAmount, cooking, cooked, notified;}
 	
@@ -67,6 +69,8 @@ public class CookAgent extends Agent {
 		}
 		else{
 			f.orderFromIndex ++;
+			searchMarketsFor = choice;
+			stateChanged();
 		}
 	}
 	
@@ -95,6 +99,11 @@ public class CookAgent extends Agent {
 						return true;
 					}
 				}
+				
+				if (searchMarketsFor.trim().length() > 0){
+					SearchMarkets(searchMarketsFor);
+					return true;
+				}
 		}
 	}
 	catch(ConcurrentModificationException e){
@@ -112,12 +121,14 @@ public class CookAgent extends Agent {
 			o.waiter.msgOutOfFood(o.choice, o.tableNumber);
 			orders.remove(o);
 			Do("Out of "+ o.choice);
+			if (temp.orderFromIndex < markets.size())
 			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount , this);
 			return;
 		}
 		if (temp.amount == 1){
 			//order more for the restaurant;
 			Do("Last "+ o.choice+". Ordering more.");
+			if (temp.orderFromIndex < markets.size())
 			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount , this);
 		}
 		
@@ -125,6 +136,18 @@ public class CookAgent extends Agent {
 		
 		  Do("is cooking " + o.choice + ".");
 		  o.setTimer(foodDictionary.get(o.choice).cookTime);
+	}
+	
+	//Search markets is only called when the cook needs to iterate to more markets because another market ran out of the item he needed.
+	private void SearchMarkets(String choice){
+		Do("Searching other markets for " + choice+ ".");
+		searchMarketsFor = "";
+		Food temp = foodDictionary.get(choice);
+		if (temp.orderFromIndex == markets.size()) {
+			Do("Stopped searching for "+ temp.choice+".");
+			return; //If the cook searched all the markets, then forget about searching more.
+		}
+		markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount, this); //Ask market for food.
 	}
 	
 	private void tellWaiterOrderIsReady(Order o, int index){
