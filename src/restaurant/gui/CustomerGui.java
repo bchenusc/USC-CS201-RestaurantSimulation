@@ -100,6 +100,9 @@ public class CustomerGui implements Gui{
 
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
+		if (dead){
+			g.setColor(Color.RED);
+		}
 		g.fillRect(xPos, yPos, sizeX, sizeY);
 		
 		if (displayText.trim().length() >0)
