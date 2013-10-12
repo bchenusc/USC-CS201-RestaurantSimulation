@@ -44,11 +44,11 @@ public class CashierAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void msgHeresIsMyMoney(CustomerAgent c, float amount){
+	public void msgHeresIsMyMoney(CustomerAgent c, double totalMoney){
 		for (Check ch: checks){
 			if (ch.customer == c){
 				ch.state = CheckStatus.paid;
-				ch.customerPayment = amount;
+				ch.customerPayment = totalMoney;
 				stateChanged();
 			}
 		}
@@ -113,8 +113,8 @@ public class CashierAgent extends Agent {
 	//#### Inner Class ####	
 	private class Check {
 		  String choice;
-		  float totalCost;
-		  float customerPayment;
+		  double totalCost;
+		  double customerPayment;
 		  CustomerAgent customer;
 		  WaiterAgent waiter;
 		  CheckStatus state = CheckStatus.pending;
