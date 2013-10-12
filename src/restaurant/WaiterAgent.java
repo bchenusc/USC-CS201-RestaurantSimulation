@@ -135,10 +135,10 @@ public class WaiterAgent extends Agent {
 		}
 	}
 	
-	public void msgHereIsCheck(float total, CustomerAgent c){
+	public void msgHereIsCheck(double totalCost, CustomerAgent c){
 		for(MyCustomer mc: myCustomers){
 			if (mc.customer == c){
-				mc.totalCost = total;
+				mc.totalCost = totalCost;
 				mc.state = MyCustomerState.gotCheck;
 				stateChanged();
 			}
@@ -161,6 +161,7 @@ public class WaiterAgent extends Agent {
 			for (MyCustomer mc : myCustomers){
 				if (mc.state == MyCustomerState.waiting){
 						idle = false;
+						if (mc.table != null)
 						SeatCustomer(mc.table, mc);
 						return true;
 				}
@@ -289,7 +290,7 @@ public class WaiterAgent extends Agent {
 	private void TakeOrder(MyCustomer mc){
 		Do("is taking " + mc.customer.getName() + "'s order.");
 		DoWalkToCustomer(mc, "");
-		mc.customer.WhatWouldYouLike();
+		mc.customer.msgWhatWouldYouLike();
 		mc.state = MyCustomerState.ordering;
 	}
 	 
@@ -313,7 +314,7 @@ public class WaiterAgent extends Agent {
 		DoWalkToCustomer(mc, mc.choice);
 		Do("is giving food to " + mc.customer.getName());	
 		mc.state = MyCustomerState.eating;
-		mc.customer.HeresYourOrder(mc.choice);
+		mc.customer.msgHeresYourOrder(mc.choice);
 	}
 	
 	private void AskCashierForTotal(MyCustomer mc){
@@ -431,7 +432,7 @@ public class WaiterAgent extends Agent {
 		CustomerAgent customer;
 		   Table table;
 		   String choice;
-		   float totalCost;
+		   double totalCost;
 		   MyCustomerState state = MyCustomerState.waiting;
 		   
 		   public MyCustomer(CustomerAgent c, Table t) {
