@@ -150,7 +150,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
             stateCB.setEnabled(!customer.getGui().isHungry());
           // Hack. Should ask customerGui
             infoLabel.setText(
-               "<html> <b><u><i>Customer Information</i></u></b> <br>    Name: " + customer.getName() + " </html>");
+               "<html> <b><u><i>Customer Information</i></u></b> <br>    Name: " + customer.getName() + "<br>Money: $"+ customer.getMoney()+" </html>");
         }
         
         if (person instanceof restaurant.WaiterAgent){
