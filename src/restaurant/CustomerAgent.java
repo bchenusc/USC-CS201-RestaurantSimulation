@@ -29,8 +29,8 @@ public class CustomerAgent extends Agent {
 	public CashierAgent cashier;
 	private String choice;
 	private Menu menu;
-	float totalMoney;
-	float totalCost;
+	double totalMoney;
+	double totalCost;
 	
 	private int numberOfTimesOrdering;
 
@@ -49,11 +49,11 @@ public class CustomerAgent extends Agent {
 	 * @param name name of the customer
 	 * @param gui  reference to the customergui so the customer can send it messages
 	 */
-	public CustomerAgent(String name, CashierAgent cashier){
+	public CustomerAgent(String n, CashierAgent cashier){
 		super();
 		
 		
-		this.name = name;
+		this.name = n;
 		this.cashier = cashier;
 		totalMoney = 13f; //can change in future;
 		numberOfTimesOrdering = 0;
@@ -69,6 +69,11 @@ public class CustomerAgent extends Agent {
 			   public void actionPerformed(ActionEvent e){
 			      choice = RandomChoice(menu);
 			      event = CustomerEvent.readyToOrder;
+			      
+			      //Super hack. Allows you to order a specific food off of the menu.
+			      if (name.equals("Steak") || name.equals("Pizza") || name.equals("Salad")|| name.equals("Chicken")){
+			    	  choice = name;
+			      }
 			      
 			      stateChanged();
 			      readMenuTimer.stop();
@@ -96,12 +101,12 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 //Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
-	public void WhatWouldYouLike(){
+	public void msgWhatWouldYouLike(){
 		event = CustomerEvent.ordered;
 		stateChanged();
 	}
 	
-	public void HeresYourOrder(String order){
+	public void msgHeresYourOrder(String order){
 		if (order!= choice){
 			Do("Wrong Order!!!");
 		}
@@ -117,15 +122,15 @@ public class CustomerAgent extends Agent {
 	}
 	
 	//Paying
-	public void msgHereIsTotal(float total){
-		totalCost = total;
+	public void msgHereIsTotal(double totalCost2){
+		totalCost = totalCost2;
 		event = CustomerEvent.ReceivedCheck;
 		stateChanged();
 	}
 	
-	public void msgHeresYourChange(float change){
-		Do("Received: $"+ change);
-		totalMoney = change;
+	public void msgHeresYourChange(double d){
+		Do("Received: $"+ d);
+		totalMoney = d;
 	}
 	
 	public void msgDie(){
@@ -186,6 +191,7 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state==CustomerState.NotEnoughmoney && event == CustomerEvent.ReceivedCheck){
+			giveAllMoneyToCashier();
 			leaveTable();
 			state = CustomerState.DoingNothing;
 		}
@@ -198,6 +204,10 @@ public class CustomerAgent extends Agent {
 	}
 
 // ################# ACTIONS ####################
+
+	private void giveAllMoneyToCashier() {
+		totalMoney = 0;
+	}
 
 	private void goToRestaurant() {
 		Do("is going to restaurant with " + totalMoney);
@@ -322,6 +332,11 @@ public class CustomerAgent extends Agent {
 	private String RandomChoice(Menu menu){
 		int random = (int)(Math.random() * ((menu.getSize())));
 		return menu.choice(random);
+	}
+	
+	public double getMoney(){
+		return totalMoney;
+	
 	}
 	
 	public void setGui(CustomerGui g) {
