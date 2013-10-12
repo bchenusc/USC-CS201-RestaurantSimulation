@@ -25,10 +25,10 @@ public class MarketAgent extends Agent {
 	  this.name = name;
 	  
 	  //Tree map
-	  inventory.put("Steak", 2);
-	  inventory.put("Chicken", 2);
-	  inventory.put("Salad", 2);
-	  inventory.put("Pizza", 2);
+	  inventory.put("Steak", 1);
+	  inventory.put("Chicken", 1);
+	  inventory.put("Salad", 1);
+	  inventory.put("Pizza", 1);
 	  
 	}
 		

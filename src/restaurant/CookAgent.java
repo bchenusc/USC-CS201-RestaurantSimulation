@@ -34,7 +34,7 @@ public class CookAgent extends Agent {
 	
 	public enum OrderState { pending, checkingAmount, cooking, cooked, notified;}
 	
-	private int max_Capacity = 3;
+	private int max_Capacity = 4;
 
 	//Constructor
 	public CookAgent(String name){
@@ -58,7 +58,7 @@ public class CookAgent extends Agent {
 	}
 	
 	public void msgFillOrder(String choice, int amount, boolean filled){
-		Do("Refilling " + choice + " by " + amount + " " + filled);
+		Do("Refilling " + choice + " by " + amount+".");
 		Food f = foodDictionary.get(choice);
 		f.amount = foodDictionary.get(choice).amount+amount;
 		foodDictionary.put(choice, f);
@@ -110,12 +110,14 @@ public class CookAgent extends Agent {
 		Food temp = foodDictionary.get(o.choice);
 		if (temp.amount == 0){
 			o.waiter.msgOutOfFood(o.choice, o.tableNumber);
-			orders.remove(o);	
+			orders.remove(o);
+			Do("Out of "+ o.choice);
 			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount , this);
 			return;
 		}
 		if (temp.amount == 1){
 			//order more for the restaurant;
+			Do("Last "+ o.choice+". Ordering more.");
 			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount , this);
 		}
 		
