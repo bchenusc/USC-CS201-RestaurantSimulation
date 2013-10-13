@@ -21,10 +21,11 @@ public class HostAgent extends Agent {
 	static final int NTABLES = 4;//a global for the number of tables.
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
-	public List<CustomerAgent> waitingCustomers = new ArrayList<CustomerAgent>();
+	private List<WaitingCustomer> waitingCustomers = new ArrayList<WaitingCustomer>();
+	private enum WaitingCustomerState {none, full};
 	
 	//List of waiters
-	public List<MyWaiter> waiters = new ArrayList<MyWaiter>();
+	private List<MyWaiter> waiters = new ArrayList<MyWaiter>();
 	
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
@@ -75,13 +76,21 @@ public class HostAgent extends Agent {
 	}
 
 	public void msgIWantToEat(CustomerAgent c){
-		waitingCustomers.add(c);
+		waitingCustomers.add(new WaitingCustomer(c));
 		stateChanged();
 	}
 	
 	public void msgTableIsClear(Table t){
 		t.occupiedBy = null;
 		stateChanged();
+	}
+	
+	public void msgLeavingEarly(CustomerAgent c){
+		for (WaitingCustomer wc: waitingCustomers){
+			if (wc.customer == c){
+				waitingCustomers.remove(wc);
+			}
+		}
 	}
 
 //########### Scheduler ##############
@@ -96,14 +105,17 @@ public class HostAgent extends Agent {
 			if (waiters.size() > 0){
 				for (Table t : tables){
 					if (t.occupiedBy == null){
-						
 						MyWaiter w = findWaiterWithLowestCust();
 						notifyWaiter(t, w);
 						return true;
 					}
 				}
+				//All tables are full
+				for (WaitingCustomer wc : waitingCustomers){
+					if (wc.state == WaitingCustomerState.none)
+					notifyCustomerFullHouse(wc);
+				}
 			}
-			//return true;
 		}
 		
 		//Waiter break code/
@@ -132,13 +144,20 @@ public class HostAgent extends Agent {
 	private void notifyWaiter(Table t, MyWaiter w){
 		  Do("is notifying waiter "+ w.waiter.name);
 		   w.numberOfCustomers++;
-		   w.waiter.msgSeatAtTable(waitingCustomers.remove(0), t);
+		   WaitingCustomer c = waitingCustomers.remove(0);
+		   w.waiter.msgSeatAtTable(c.customer, t);
 		}
 
 	private void WaiterOnBreak(MyWaiter w){
 		Do("Allowed "+ w.waiter.name + " to go on break.");
 		w.state = MyWaiterState.onBreak;
 		w.waiter.msgCanGoOnBreak();
+	}
+	
+	private void notifyCustomerFullHouse(WaitingCustomer c){
+		Do("Notifying customer Restaurant full.");
+		c.state = WaitingCustomerState.full;
+		c.customer.msgFullHouse();
 	}
 
 	//utilities
@@ -173,6 +192,16 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 	
+	private class WaitingCustomer{
+		WaitingCustomerState state = WaitingCustomerState.none;
+		CustomerAgent customer;
+		
+		public WaitingCustomer(CustomerAgent c){
+			customer = c;
+		}
+	
+	};
+	
 	private class MyWaiter {
 		MyWaiterState state = MyWaiterState.none;
 		WaiterAgent waiter;
@@ -182,7 +211,7 @@ public class HostAgent extends Agent {
 			waiter = w;
 			numberOfCustomers = 0;
 		}
-	}
+	};
 
 }
 
