@@ -69,7 +69,7 @@ public class WaiterAgent extends Agent {
 
 // ######## Messages ################
 	public void msgSeatAtTable(CustomerAgent c, Table t) {
-		c.waiter = this;
+		c.setWaiter(this);
 		MyCustomer mc = new MyCustomer(c,t);
 		mc.state = MyCustomerState.waiting;
 		t.occupiedBy = c;
@@ -163,7 +163,7 @@ public class WaiterAgent extends Agent {
 						idle = false;
 						if (mc.table != null)
 						SeatCustomer(mc.table, mc);
-						return true;
+						
 				}
 			}
 			
@@ -171,7 +171,7 @@ public class WaiterAgent extends Agent {
 				if (mc.state == MyCustomerState.readyToOrder){
 					idle = false;
 					TakeOrder(mc);
-					return true;
+					
 				}
 			}
 			
@@ -179,7 +179,7 @@ public class WaiterAgent extends Agent {
 				if (mc.state == MyCustomerState.ordered){ 
 					idle = false;
 					GiveOrderToCook(mc, true);
-					return true;
+					
 				}
 			}
 			
@@ -187,7 +187,6 @@ public class WaiterAgent extends Agent {
 				if(mc.state == MyCustomerState.reordering){
 					idle = false;
 					TakeReorder(mc);
-					return true;
 				}
 			}
 			
@@ -195,7 +194,6 @@ public class WaiterAgent extends Agent {
 				if (mc.state == MyCustomerState.orderReady){
 					idle = false;
 					GiveFoodToCustomer(mc);
-					return true;
 				}
 			}
 			
@@ -203,7 +201,6 @@ public class WaiterAgent extends Agent {
 				if (mc.state == MyCustomerState.wantCheck){
 					idle = false;
 					AskCashierForTotal(mc);
-					return true;
 				}
 			}
 			
@@ -211,7 +208,6 @@ public class WaiterAgent extends Agent {
 				if (mc.state == MyCustomerState.gotCheck){
 					idle = false;
 					GiveCustomerCheck(mc);
-					return true;
 				}
 			}
 			
@@ -219,7 +215,6 @@ public class WaiterAgent extends Agent {
 				if (mc.state == MyCustomerState.doneEating){
 					idle = false;
 					CustomerLeaving(mc);
-					return true;
 				}
 			}
 			
@@ -227,7 +222,6 @@ public class WaiterAgent extends Agent {
 				if (mc.state == MyCustomerState.dead){
 					idle = false;
 					CleanDeadCustomer(mc);
-					return true;
 				}
 			}
 			
@@ -247,7 +241,7 @@ public class WaiterAgent extends Agent {
 		}
 	
 		catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		DoIdle();
