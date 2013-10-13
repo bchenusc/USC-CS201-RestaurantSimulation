@@ -34,7 +34,7 @@ public class CookAgent extends Agent {
 	
 	private String searchMarketsFor = "";
 	
-	public enum OrderState { pending, checkingAmount, cooking, cooked, notified;}
+	private enum OrderState { pending, checkingAmount, cooking, cooked, notified;}
 	
 	private int max_Capacity = 4;
 
