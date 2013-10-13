@@ -132,6 +132,8 @@ public class CustomerGui implements Gui{
 	public void DoExitRestaurant() {
 		xDestination = -40;
 		yDestination = -40;
+		
 		command = Command.LeaveRestaurant;
+		receivedCoordinates = true;
 	}
 }
