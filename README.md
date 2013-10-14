@@ -30,8 +30,14 @@ Remember this is a hack for grading easiness, not a functionality.
  + Name a customer 5.99. He will start off with $5.99 and attempt to randomly buy food. If he buys something too expensive, the cashier will ask
  the waiter to kill the customer. The waiter will then drag the dead body to the bottom of the screen where dead customers end up for the rest of 
  their dead life.
+ + Test the cook's refilling system by having several customers order only one type of item. The cook will output statements
+ when he is refilling his stock.
+ + Customers start out with only $10 initially unless hacked.
+ + Cooks start out with inventory initially.
+ + Markets start out with inventory initially.
  
  ###Documents
+ + [Interaction Diagram] (DesignDoc/InteractionDiagramFull.png)
  + [CashierAgent](DesignDoc/CashierAgent_Implementation.png)
  + [WaiterAgent](DesignDoc/WaiterAgent_Implementation.png)
  + [CustomerAgent](DesignDoc/CustomerAgent_Implementation.png)
