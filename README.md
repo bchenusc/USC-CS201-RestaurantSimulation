@@ -25,6 +25,20 @@ If the item is already out, the customer will STILL try to order that item which
 Remember this is a hack for grading easiness, not a functionality.
  + If you name your customer 0 or 5.99, the customer will have that set amount of money when he is created. $5.99 is the cheapest price on the menu. 
 
+###Ways to test some scenarios
+ + Name a customer 0. He will start off with $0 and leave.
+ + Name a customer 5.99. He will start off with $5.99 and attempt to randomly buy food. If he buys something too expensive, the cashier will ask
+ the waiter to kill the customer. The waiter will then drag the dead body to the bottom of the screen where dead customers end up for the rest of 
+ their dead life.
+ 
+ ###Documents
+ +[CashierAgent](DesignDoc / CashierAgent_Implementation.png)
+ +[WaiterAgent](DesignDoc / WaiterAgent_Implementation.png)
+ +[CustomerAgent](DesignDoc / CustomerAgent_Implementation.png)
+ +[CookAgent](DesignDoc / CookAgent_Implementation.png)
+ +[HostAgent](DesignDoc / HostAgent_Implementation.png)
+ +[MarketAgent](DesignDoc / MarketAgent_Implementation.png)
+ 
 ###Resources
   + [Restaurant v1](http://www-scf.usc.edu/~csci201/readings/restaurant-v1.html)
   + [Agent Roadmap](http://www-scf.usc.edu/~csci201/readings/agent-roadmap.html)
