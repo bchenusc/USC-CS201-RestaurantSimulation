@@ -38,6 +38,7 @@ Remember this is a hack for grading easiness, not a functionality.
  
  ###Documents
  + [Interaction Diagram] (DesignDoc/InteractionDiagramFull.png)
+ + [Non-normative Diagram] (DesignDoc/Non-Normative%20Interaction%20Diagram.png)
  + [CashierAgent](DesignDoc/CashierAgent_Implementation.png)
  + [WaiterAgent](DesignDoc/WaiterAgent_Implementation.png)
  + [CustomerAgent](DesignDoc/CustomerAgent_Implementation.png)
