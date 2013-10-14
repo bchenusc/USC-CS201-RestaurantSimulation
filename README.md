@@ -32,12 +32,12 @@ Remember this is a hack for grading easiness, not a functionality.
  their dead life.
  
  ###Documents
- +[CashierAgent](DesignDoc / CashierAgent_Implementation.png)
- +[WaiterAgent](DesignDoc / WaiterAgent_Implementation.png)
- +[CustomerAgent](DesignDoc / CustomerAgent_Implementation.png)
- +[CookAgent](DesignDoc / CookAgent_Implementation.png)
- +[HostAgent](DesignDoc / HostAgent_Implementation.png)
- +[MarketAgent](DesignDoc / MarketAgent_Implementation.png)
+ + [CashierAgent](DesignDoc/CashierAgent_Implementation.png)
+ + [WaiterAgent](DesignDoc/WaiterAgent_Implementation.png)
+ + [CustomerAgent](DesignDoc/CustomerAgent_Implementation.png)
+ + [CookAgent](DesignDoc/CookAgent_Implementation.png)
+ + [HostAgent](DesignDoc/HostAgent_Implementation.png)
+ + [MarketAgent](DesignDoc/MarketAgent_Implementation.png)
  
 ###Resources
   + [Restaurant v1](http://www-scf.usc.edu/~csci201/readings/restaurant-v1.html)
