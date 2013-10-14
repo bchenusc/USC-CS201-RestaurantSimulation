@@ -75,7 +75,8 @@ public class CustomerAgent extends Agent {
 		this.cashier = cashier;
 		totalMoney = 10; //can change in future;
 			//hack to change total money.
-			if (n == "0" || n=="5.99"){
+			if (n.equals("0") || n.equals("5.99")){
+				
 				totalMoney = Double.parseDouble(n);
 			}
 		numberOfTimesOrdering = 0;
