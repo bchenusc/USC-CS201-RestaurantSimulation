@@ -18,6 +18,12 @@ Semaphores to handle multi-threaded actions.
   + You must input a name for the Customer before adding.
   + Add new Waiters with the new Waiter Button.
   + You must input a name for the Waiter before adding.
+  
+###Hacks to Run Scenarios
+ + If you name your customer Chicken, Steak, Pizza, or Salad. He will ONLY order that item every single time. Please do not abuse.
+If the item is already out, the customer will STILL try to order that item which will result in the customer sitting in the seat forever.
+Remember this is a hack for grading easiness, not a functionality.
+ + If you name your customer 0 or 5.99, the customer will have that set amount of money when he is created. $5.99 is the cheapest price on the menu. 
 
 ###Resources
   + [Restaurant v1](http://www-scf.usc.edu/~csci201/readings/restaurant-v1.html)
