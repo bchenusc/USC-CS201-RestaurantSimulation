@@ -5,6 +5,9 @@ import agent.Agent;
 import java.util.*;
 
 import restaurant.WaiterAgent.MyCustomerState;
+import restaurant.interfaces.Customer;
+import restaurant.interfaces.Host;
+import restaurant.interfaces.Waiter;
 
 /**
  * Restaurant Host Agent
@@ -13,7 +16,7 @@ import restaurant.WaiterAgent.MyCustomerState;
 //does all the rest. Rather than calling the other agent a waiter, we called him
 //the HostAgent. A Host is the manager of a restaurant who sees that all
 //is proceeded as he wishes.
-public class HostAgent extends Agent {
+public class HostAgent extends Agent implements Host {
 	
 	private final int WINDOWX = 450;
 	private final int WINDOWY = 350;
@@ -21,11 +24,11 @@ public class HostAgent extends Agent {
 	static final int NTABLES = 4;//a global for the number of tables.
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
-	private List<WaitingCustomer> waitingCustomers = new ArrayList<WaitingCustomer>();
+	private List<WaitingCustomer> waitingCustomers = Collections.synchronizedList(new ArrayList<WaitingCustomer>());
 	private enum WaitingCustomerState {none, full};
 	
 	//List of waiters
-	private List<MyWaiter> waiters = new ArrayList<MyWaiter>();
+	private List<MyWaiter> waiters = Collections.synchronizedList(new ArrayList<MyWaiter>());
 	
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
@@ -54,41 +57,53 @@ public class HostAgent extends Agent {
 //########### Messages #####################
 	
 	//Waiter wants a break.
-	public void msgWaiterWantsABreak(WaiterAgent waiter){
-		for(MyWaiter w: waiters){
-			if (w.waiter == waiter){
-				w.state = MyWaiterState.wantBreak;
-				stateChanged();
-				return;
+	@Override
+	public void msgWaiterWantsABreak(Waiter waiter){
+		synchronized (waiters){
+			for(MyWaiter w: waiters){
+				if (w.waiter == waiter){
+					w.state = MyWaiterState.wantBreak;
+					stateChanged();
+					return;
+				}
 			}
 		}
 	}
 	
-	public void msgWaiterOffBreak(WaiterAgent waiter){
-		for(MyWaiter w: waiters){
-			if (w.waiter == waiter){
-				w.state = MyWaiterState.none;
-				workingWaiters++;
-				stateChanged();
-				return;
+	@Override
+	public void msgWaiterOffBreak(Waiter waiter){
+		synchronized (waiters){
+			for(MyWaiter w: waiters){
+				if (w.waiter == waiter){
+					w.state = MyWaiterState.none;
+					workingWaiters++;
+					stateChanged();
+					return;
+				}
 			}
 		}
 	}
 
-	public void msgIWantToEat(CustomerAgent c){
-		waitingCustomers.add(new WaitingCustomer(c));
+	@Override
+	public void msgIWantToEat(Customer c){
+			waitingCustomers.add(new WaitingCustomer(c));
 		stateChanged();
 	}
 	
+	@Override
 	public void msgTableIsClear(Table t){
 		t.occupiedBy = null;
 		stateChanged();
 	}
 	
-	public void msgLeavingEarly(CustomerAgent c){
-		for (WaitingCustomer wc: waitingCustomers){
-			if (wc.customer == c){
-				waitingCustomers.remove(wc);
+	@Override
+	public void msgLeavingEarly(Customer c){
+		synchronized (waitingCustomers){
+			for (WaitingCustomer wc: waitingCustomers){
+				if (wc.customer == c){
+					waitingCustomers.remove(wc);
+					return;
+				}
 			}
 		}
 	}
@@ -101,36 +116,46 @@ public class HostAgent extends Agent {
 		/*if !waitingCustomer.empty() there exists a Table t in tables such that t.occupiedBy == null 
 		 * 
 		 * 			then notifyWaiter(t, w);*/
-		if (!waitingCustomers.isEmpty()){
-			if (waiters.size() > 0){
-				for (Table t : tables){
-					if (t.occupiedBy == null){
-						MyWaiter w = findWaiterWithLowestCust();
-						notifyWaiter(t, w);
+		synchronized (waiters){
+			if (!waitingCustomers.isEmpty()){
+				if (waiters.size() > 0){
+					for (Table t : tables){
+						if (t.occupiedBy == null){
+							synchronized (waiters){
+								MyWaiter w = findWaiterWithLowestCust();
+								notifyWaiter(t, w);
+							}
+							return true;
+						}
+					}
+					//All tables are full
+					synchronized (waitingCustomers){
+						for (WaitingCustomer wc : waitingCustomers){
+							if (wc.state == WaitingCustomerState.none)
+							notifyCustomerFullHouse(wc);
+						}
+					}
+				}
+			}
+			
+			//Waiter break code/
+			synchronized (waiters){
+				for(MyWaiter w: waiters){
+					if (w.state == MyWaiterState.wantBreak && workingWaiters> 1){
+						workingWaiters--;
+						w.state = MyWaiterState.allowedBreak;
+						WaiterOnBreak(w);
 						return true;
 					}
 				}
-				//All tables are full
-				for (WaitingCustomer wc : waitingCustomers){
-					if (wc.state == WaitingCustomerState.none)
-					notifyCustomerFullHouse(wc);
+			}
+			
+			synchronized(waiters){
+				for (MyWaiter w: waiters){
+					if (w.state == MyWaiterState.wantBreak){
+						return true;
+					}
 				}
-			}
-		}
-		
-		//Waiter break code/
-		for(MyWaiter w: waiters){
-			if (w.state == MyWaiterState.wantBreak && workingWaiters> 1){
-				workingWaiters--;
-				w.state = MyWaiterState.allowedBreak;
-				WaiterOnBreak(w);
-				return true;
-			}
-		}
-		
-		for (MyWaiter w: waiters){
-			if (w.state == MyWaiterState.wantBreak){
-				return true;
 			}
 		}
 		
@@ -167,19 +192,22 @@ public class HostAgent extends Agent {
 		int lowest = waiters.get(0).numberOfCustomers;
 		//First find the first waiter who is not on break as initial waiter to find lowest customers assigned to waiters.
 		//This is to prevent if waiter #1 decides to go on break but he has the lowest customer assigned.
-		for (int i=0; i<waiters.size(); i++){
-			if (waiters.get(i).state != MyWaiterState.allowedBreak){
-				index = i;
-				lowest = waiters.get(i).numberOfCustomers;
-				break;
+		synchronized(waiters){
+			for (int i=0; i<waiters.size(); i++){
+				if (waiters.get(i).state != MyWaiterState.allowedBreak){
+					index = i;
+					lowest = waiters.get(i).numberOfCustomers;
+					break;
+				}
 			}
 		}
-		
-		for (int i=0; i<waiters.size(); i++){
-			//If the waiter has not been approved to take a break and the waiter has the lowest number of customers.
-			if (waiters.get(i).state != MyWaiterState.allowedBreak && waiters.get(i).numberOfCustomers < lowest){
-				lowest = waiters.get(i).numberOfCustomers;
-				index = i;
+		synchronized(waiters){
+			for (int i=0; i<waiters.size(); i++){
+				//If the waiter has not been approved to take a break and the waiter has the lowest number of customers.
+				if (waiters.get(i).state != MyWaiterState.allowedBreak && waiters.get(i).numberOfCustomers < lowest){
+					lowest = waiters.get(i).numberOfCustomers;
+					index = i;
+				}
 			}
 		}
 		return waiters.get(index);
@@ -192,15 +220,21 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 	
+	public Collection<Table> getTables(){
+		return tables;
+	}
+	
 	private class WaitingCustomer{
 		WaitingCustomerState state = WaitingCustomerState.none;
-		CustomerAgent customer;
+		Customer customer;
 		
-		public WaitingCustomer(CustomerAgent c){
+		public WaitingCustomer(Customer c){
 			customer = c;
 		}
 	
 	};
+	
+	
 	
 	private class MyWaiter {
 		MyWaiterState state = MyWaiterState.none;

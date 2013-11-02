@@ -1,10 +1,20 @@
 package restaurant;
 
 import restaurant.gui.CustomerGui;
+import restaurant.interfaces.Cashier;
+import restaurant.interfaces.Customer;
+import restaurant.interfaces.Host;
+import restaurant.interfaces.Waiter;
 import agent.Agent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+
+
+
+
+
 
 
 
@@ -13,7 +23,7 @@ import javax.swing.Timer;
 /**
  * Restaurant customer agent.
  */
-public class CustomerAgent extends Agent {
+public class CustomerAgent extends Agent implements Customer{
 	
 	private final int eatingTime = 15000;
 	private final int readingMenuTime = 5000;
@@ -24,31 +34,31 @@ public class CustomerAgent extends Agent {
 	private CustomerGui customerGui;
 
 	//Necessary links.
-	private HostAgent host;
-		public HostAgent getHost(){
+	private Host host;
+		public Host getHost(){
 			return host;
 		}
-		public void setHost(HostAgent w){
+		public void setHost(Host w){
 			host = w;
 		}
-	private WaiterAgent waiter;	
-		public WaiterAgent getWaiter(){
+	private Waiter waiter;	
+		public Waiter getWaiter(){
 			return waiter;
 		}
-		public void setWaiter(WaiterAgent w){
+		public void setWaiter(Waiter w){
 			waiter = w;
 		}
-	private CashierAgent cashier;
-		public CashierAgent getCashier(){
+	private Cashier cashier;
+		public Cashier getCashier(){
 			return cashier;
 		}
-		public void setCashier(CashierAgent w){
+		public void setCashier(Cashier w){
 			cashier = w;
 		}
 	private String choice;
 	private Menu menu;
-	double totalMoney;
-	double totalCost;
+	public double totalMoney;
+	public double totalCost;
 	
 	private int numberOfTimesOrdering;
 
@@ -67,7 +77,7 @@ public class CustomerAgent extends Agent {
 	 * @param name name of the customer
 	 * @param gui  reference to the customergui so the customer can send it messages
 	 */
-	public CustomerAgent(String n, CashierAgent cashier){
+	public CustomerAgent(String n, Cashier cashier){
 		super();
 		
 		this.name = n;
@@ -109,17 +119,20 @@ public class CustomerAgent extends Agent {
 	}
 // ##################### Messages #################
 	
+	@Override
 	public void msgIsHungry(){ 
 		Do("is hungry.");
 		event = CustomerEvent.gotHungry; 
 		stateChanged();
     }
+	@Override
 	public void msgFollowMe(Menu m){
 		menu = m;
 		event = CustomerEvent.followWaiter;
 		stateChanged();
 	}
 	
+	@Override
 	public void msgFullHouse(){
 		int tiredOfWaiting = (int)(Math.random() * 2);
 		if (tiredOfWaiting == 1){
@@ -131,11 +144,13 @@ public class CustomerAgent extends Agent {
 	}
 	
 //Get a message from customer GUI when we reach the table to handle animation. Once we reach the table set Customer State to seated.
+	@Override
 	public void msgWhatWouldYouLike(){
 		event = CustomerEvent.ordered;
 		stateChanged();
 	}
 	
+	@Override
 	public void msgHeresYourOrder(String order){
 		if (order!= choice){
 			Do("Wrong Order!!!");
@@ -144,6 +159,7 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
+	@Override
 	public void msgOutOfFood(Menu m){
 		menu = m;
 		event = CustomerEvent.gotMenu;
@@ -152,17 +168,20 @@ public class CustomerAgent extends Agent {
 	}
 	
 	//Paying
+	@Override
 	public void msgHereIsTotal(double totalCost2){
 		totalCost = totalCost2;
 		event = CustomerEvent.ReceivedCheck;
 		stateChanged();
 	}
 	
+	@Override
 	public void msgHeresYourChange(double d){
 		Do("Received: $"+ d);
 		totalMoney = d;
 	}
 	
+	@Override
 	public void msgDie(){
 		state = CustomerState.Dead;
 		stateChanged();
@@ -182,7 +201,7 @@ public class CustomerAgent extends Agent {
 		if (state==CustomerState.tiredOfWaiting && event == CustomerEvent.ReceivedCheck){
 			state = CustomerState.DoingNothing;
 			leaveRestaurantEarly();
-			
+			return false;
 		}
 		
 		if (state == CustomerState.WaitingInRestaurant && event == CustomerEvent.followWaiter ){
