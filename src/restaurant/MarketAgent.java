@@ -9,10 +9,17 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 
+import restaurant.interfaces.Cook;
+import restaurant.interfaces.Market;
 
-public class MarketAgent extends Agent {
+
+public class MarketAgent extends Agent implements Market {
 	
 	String name;
+	CashierAgent cashier;
+	
+	private double money = 0;
+	private double marketCharge = 1;
 	
 	//Hashmap of all food types and quantity available.
 	HashMap<String, Integer> inventory = new HashMap<String, Integer>();
@@ -21,9 +28,9 @@ public class MarketAgent extends Agent {
 	public enum OrderState { pending, cooking, cooked, notified;}
 
 	//Constructor
-	public MarketAgent(String name){
+	public MarketAgent(String name, CashierAgent ca){
 	  this.name = name;
-	  
+	  cashier = ca;
 	  //Tree map
 	  inventory.put("Steak", 1);
 	  inventory.put("Chicken", 1);
@@ -33,12 +40,16 @@ public class MarketAgent extends Agent {
 	}
 		
 //########## Messages  ###############
-	public void msgINeedFood(String choice, int amount, CookAgent c){
+	@Override
+	public void msgINeedFood(String choice, int amount, Cook c){
 		MarketOrder mo = new MarketOrder(choice, amount, c);
 		marketOrders.add(mo);
 		stateChanged();
 	}
 	
+	public void msgPayMarket(double money){
+		this.money = money;
+	}
 	
 //##########  Scheduler  ##############
 @Override
@@ -64,10 +75,12 @@ public class MarketAgent extends Agent {
 		if(inventory.get(mo.choice)>0){
 			if (mo.amount > inventory.get(mo.choice)){
 				mo.cook.msgFillOrder(mo.choice, inventory.get(mo.choice), false);
+				cashier.msgHereIsMarketCost(inventory.get(mo.choice) * marketCharge, this);
 				inventory.put(mo.choice, 0);
 			}
 			else{
 				mo.cook.msgFillOrder(mo.choice, mo.amount, true);
+				cashier.msgHereIsMarketCost(mo.amount * marketCharge, this);
 				inventory.put(mo.choice, inventory.get(mo.choice) - mo.amount);
 			}
 		}
@@ -82,11 +95,11 @@ public class MarketAgent extends Agent {
 	
 	//#### Inner Class ####	
 	private class MarketOrder {
-		  CookAgent cook;
+		  Cook cook;
 		  String choice;
 		  int amount;
 		  
-		  public MarketOrder(String ch, int amt, CookAgent c){
+		  public MarketOrder(String ch, int amt, Cook c){
 			  cook = c;
 			  choice = ch;
 			  amount = amt;
