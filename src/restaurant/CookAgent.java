@@ -19,7 +19,10 @@ import java.util.Map;
 
 import javax.swing.Timer;
 
-public class CookAgent extends Agent {
+import restaurant.interfaces.Cook;
+import restaurant.interfaces.Waiter;
+
+public class CookAgent extends Agent implements Cook {
 	
 	private String name;
 	
@@ -52,13 +55,15 @@ public class CookAgent extends Agent {
 	}
 		
 //########## Messages  ###############
-	public void msgHeresAnOrder(String o, WaiterAgent w, int tableNumber)
+	@Override
+	public void msgHeresAnOrder(String o, Waiter w, int tableNumber)
 	{
 		Order order = new Order(o, w, tableNumber);
 		 orders.add(order);
 		 stateChanged();
 	}
 	
+	@Override
 	public void msgFillOrder(String choice, int amount, boolean filled){
 		Do("Refilling " + choice + " by " + amount+".");
 		Food f = foodDictionary.get(choice);
@@ -185,14 +190,14 @@ public class CookAgent extends Agent {
 	
 	private class Order {
 		  String choice;
-		  WaiterAgent waiter;
+		  Waiter waiter;
 		  int tableNumber;
 		  Timer timer;
 		  int orderTime;
 		  
 		  private OrderState state = OrderState.pending;
 		  
-		  public Order(String c, WaiterAgent w, int tableNumber){
+		  public Order(String c, Waiter w, int tableNumber){
 			 choice = c;
 			 waiter = w;
 			 this.tableNumber = tableNumber;
