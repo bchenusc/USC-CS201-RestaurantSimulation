@@ -4,10 +4,14 @@ package restaurant;
 
 import agent.Agent;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.Timer;
 
 import restaurant.interfaces.Cook;
 import restaurant.interfaces.Market;
@@ -21,6 +25,11 @@ public class MarketAgent extends Agent implements Market {
 	private double money = 0;
 	private double marketCharge = 1;
 	
+	MarketAgent me;
+	
+	private final int deliveryTime = 15000;
+	Timer deliveryTimer;
+	
 	//Hashmap of all food types and quantity available.
 	HashMap<String, Integer> inventory = new HashMap<String, Integer>();
 	List<MarketOrder> marketOrders = new ArrayList<MarketOrder>();
@@ -29,8 +38,10 @@ public class MarketAgent extends Agent implements Market {
 
 	//Constructor
 	public MarketAgent(String name, CashierAgent ca){
+		me = this;
 	  this.name = name;
 	  cashier = ca;
+	  
 	  //Tree map
 	  inventory.put("Steak", 1);
 	  inventory.put("Chicken", 1);
@@ -42,6 +53,7 @@ public class MarketAgent extends Agent implements Market {
 //########## Messages  ###############
 	@Override
 	public void msgINeedFood(String choice, int amount, Cook c){
+		Do("Filling " + choice + " wanting "+ amount + " in 15 seconds.");
 		MarketOrder mo = new MarketOrder(choice, amount, c);
 		marketOrders.add(mo);
 		stateChanged();
@@ -55,6 +67,7 @@ public class MarketAgent extends Agent implements Market {
 @Override
 	protected boolean pickAndExecuteAnAction() {
 	try{
+		
 		if (marketOrders.size() > 0){
 			fillOrder();
 			return true;
@@ -64,26 +77,31 @@ public class MarketAgent extends Agent implements Market {
 	catch(ConcurrentModificationException e){
 			return false;
 	}
-		
 		return false;
 	}
 		
 //########## Actions ###############
 	public void fillOrder(){
-		MarketOrder mo = marketOrders.remove(0);
-		Do("Filling " + mo.choice + " wanting "+ mo.amount);
-		if(inventory.get(mo.choice)>0){
-			if (mo.amount > inventory.get(mo.choice)){
-				mo.cook.msgFillOrder(mo.choice, inventory.get(mo.choice), false);
-				cashier.msgHereIsMarketCost(inventory.get(mo.choice) * marketCharge, this);
-				inventory.put(mo.choice, 0);
-			}
-			else{
-				mo.cook.msgFillOrder(mo.choice, mo.amount, true);
-				cashier.msgHereIsMarketCost(mo.amount * marketCharge, this);
-				inventory.put(mo.choice, inventory.get(mo.choice) - mo.amount);
-			}
-		}
+		deliveryTimer = new Timer(deliveryTime, new ActionListener() {
+			   public void actionPerformed(ActionEvent e){
+				   Do("Filled " + marketOrders.get(0).choice + " with "+ marketOrders.get(0).amount);
+				   MarketOrder mo = marketOrders.remove(0);
+				   if(inventory.get(mo.choice)>0){
+						if (mo.amount > inventory.get(mo.choice)){
+							mo.cook.msgFillOrder(mo.choice, inventory.get(mo.choice), false);
+							cashier.msgHereIsMarketCost(inventory.get(mo.choice) * marketCharge, me);
+							inventory.put(mo.choice, 0);
+						}
+						else{
+							mo.cook.msgFillOrder(mo.choice, mo.amount, true);
+							cashier.msgHereIsMarketCost(mo.amount * marketCharge, me);
+							inventory.put(mo.choice, inventory.get(mo.choice) - mo.amount);
+						}
+					}
+				   deliveryTimer.stop();
+			   }
+			});
+		
 	}
 	
 //################    Utility     ##################
