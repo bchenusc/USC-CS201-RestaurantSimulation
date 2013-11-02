@@ -4,14 +4,11 @@ package restaurant;
 
 import agent.Agent;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.Timer;
 
 import restaurant.interfaces.Cook;
 import restaurant.interfaces.Market;
@@ -26,9 +23,6 @@ public class MarketAgent extends Agent implements Market {
 	private double marketCharge = 1;
 	
 	MarketAgent me;
-	
-	private final int deliveryTime = 15000;
-	Timer deliveryTimer;
 	
 	//Hashmap of all food types and quantity available.
 	HashMap<String, Integer> inventory = new HashMap<String, Integer>();
@@ -82,25 +76,20 @@ public class MarketAgent extends Agent implements Market {
 		
 //########## Actions ###############
 	public void fillOrder(){
-		deliveryTimer = new Timer(deliveryTime, new ActionListener() {
-			   public void actionPerformed(ActionEvent e){
-				   Do("Filled " + marketOrders.get(0).choice + " with "+ marketOrders.get(0).amount);
-				   MarketOrder mo = marketOrders.remove(0);
-				   if(inventory.get(mo.choice)>0){
-						if (mo.amount > inventory.get(mo.choice)){
-							mo.cook.msgFillOrder(mo.choice, inventory.get(mo.choice), false);
-							cashier.msgHereIsMarketCost(inventory.get(mo.choice) * marketCharge, me);
-							inventory.put(mo.choice, 0);
-						}
-						else{
-							mo.cook.msgFillOrder(mo.choice, mo.amount, true);
-							cashier.msgHereIsMarketCost(mo.amount * marketCharge, me);
-							inventory.put(mo.choice, inventory.get(mo.choice) - mo.amount);
-						}
-					}
-				   deliveryTimer.stop();
-			   }
-			});
+			Do("Market Filled " + marketOrders.get(0).choice + " with "+ marketOrders.get(0).amount);
+			MarketOrder mo = marketOrders.remove(0);
+			if(inventory.get(mo.choice)>0){
+				if (mo.amount > inventory.get(mo.choice)){
+					mo.cook.msgFillOrder(mo.choice, inventory.get(mo.choice), false);
+					cashier.msgHereIsMarketCost(inventory.get(mo.choice) * marketCharge, me);
+					inventory.put(mo.choice, 0);
+				}
+				else{
+					mo.cook.msgFillOrder(mo.choice, mo.amount, true);
+					cashier.msgHereIsMarketCost(mo.amount * marketCharge, me);
+					inventory.put(mo.choice, inventory.get(mo.choice) - mo.amount);
+				}
+			}
 		
 	}
 	

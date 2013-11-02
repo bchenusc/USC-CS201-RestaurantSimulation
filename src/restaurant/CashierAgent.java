@@ -40,11 +40,14 @@ public class CashierAgent extends Agent implements Cashier {
 	
 	@Override
 	public void msgHeresIsMyMoney(Customer c, double totalMoney){
-		for (Check ch: checks){
-			if (ch.customer == c){
-				ch.state = CheckStatus.paid;
-				ch.customerPayment = totalMoney;
-				stateChanged();
+		synchronized(checks){
+			for (Check ch: checks){
+				if (ch.customer == c){
+					ch.state = CheckStatus.paid;
+					ch.customerPayment = totalMoney;
+					stateChanged();
+					return;
+				}
 			}
 		}
 	}
