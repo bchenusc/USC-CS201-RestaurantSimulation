@@ -16,15 +16,19 @@ import java.util.HashMap;
 import java.util.List;
 //import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.Timer;
 
+import restaurant.gui.CookGui;
+import restaurant.gui.WaiterGui;
 import restaurant.interfaces.Cook;
 import restaurant.interfaces.Waiter;
 
 public class CookAgent extends Agent implements Cook {
 	
 	private String name;
+	CookGui gui;
 	
 	//A list of ALL orders that the cook is attending to.
 	private List<Order> orders;
@@ -40,6 +44,8 @@ public class CookAgent extends Agent implements Cook {
 	private enum OrderState { pending, checkingAmount, cooking, cooked, notified;}
 	
 	private int max_Capacity = 4;
+	
+	private Semaphore atTargetLocation = new Semaphore(0, true);
 
 	//Constructor
 	public CookAgent(String name){
@@ -168,6 +174,27 @@ public class CookAgent extends Agent implements Cook {
 	
 	public void addMarket(MarketAgent ma){
 		markets.add(ma);
+	}
+	
+	private void atLocAcquire(){
+		try {
+			atTargetLocation.acquire();
+		} catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void atLocation() {//from animation
+		atTargetLocation.release();// = true;
+	}
+
+	public void setGUI(CookGui wg){
+		gui = wg;
+	}
+	public CookGui getGUI(){
+		return gui;
 	}
 
 //######################## End of Class Cook#############################

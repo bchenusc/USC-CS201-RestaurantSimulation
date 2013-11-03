@@ -265,6 +265,7 @@ public class CustomerAgent extends Agent implements Customer{
 
 	private void goToRestaurant() {
 		Do("is going to restaurant with " + totalMoney);
+		DoGoToWaitingArea();
 		customerGui.setText("Hungry");
 		host.msgIWantToEat(this);//send our instance, so he can respond to us
 	}
@@ -374,11 +375,17 @@ public class CustomerAgent extends Agent implements Customer{
 		event = CustomerEvent.gotMenu;
 		stateChanged();
 	}
+	
 	public void msgAnimationFinishedLeaveRestaurant() {
 		//from animation
 		event = CustomerEvent.doneLeaving;
 		stateChanged();
 	}
+	
+	public void DoGoToWaitingArea(){
+		customerGui.DoGoToWaitingArea();
+	}
+	
 	
 	public void DoGoToDeadLocation(){
 		customerGui.setText("Dead");

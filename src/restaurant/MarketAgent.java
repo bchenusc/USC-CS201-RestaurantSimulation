@@ -60,17 +60,17 @@ public class MarketAgent extends Agent implements Market {
 //##########  Scheduler  ##############
 @Override
 	protected boolean pickAndExecuteAnAction() {
-	try{
-		
-		if (marketOrders.size() > 0){
-			fillOrder();
-			return true;
+		try{
+			
+			if (marketOrders.size() > 0){
+				fillOrder();
+				return true;
+			}
+			
 		}
-		
-	}
-	catch(ConcurrentModificationException e){
-			return false;
-	}
+		catch(ConcurrentModificationException e){
+				return false;
+		}
 		return false;
 	}
 		
