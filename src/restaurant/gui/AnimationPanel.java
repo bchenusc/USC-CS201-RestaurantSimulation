@@ -3,6 +3,7 @@ package restaurant.gui;
 import javax.swing.*;
 
 import restaurant.HostAgent;
+import restaurant.interfaces.Host;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,12 +20,20 @@ public class AnimationPanel extends JPanel implements ActionListener {
     private final int TABLEWIDTH = 50;
     private final int TABLEHEIGHT = 50;
     
+    private final int WaitingAreaX = 15;
+    private final int WaitingAreaY = 15;
+    
+    private final int KitchenAreaX = 520;
+    private final int KitchenAreaY = 50;
+    private final int KitchenWidth = 10;
+    private final int KitchenHeight = 50;
+    
     private final int timerint = 5;
     public Timer timer;
     private List<Gui> guis = new ArrayList<Gui>();
     
-    private HostAgent host;
-    public void setHost(HostAgent host){
+    private Host host;
+    public void setHost(Host host){
     	this.host = host;
     }
 
@@ -54,7 +63,28 @@ public class AnimationPanel extends JPanel implements ActionListener {
         g2.setColor(getBackground());
         g2.fillRect(0, 0, WINDOWX, WINDOWY );
         
-        for (restaurant.Table t : host.tables){
+        
+        //Waiting Area
+        g2.setColor(Color.CYAN);
+        g2.fillRect(WaitingAreaX, WaitingAreaY, TABLEWIDTH, TABLEHEIGHT);
+        g2.setColor(Color.black);
+        g2.drawString("Waiting Area", WaitingAreaX, WaitingAreaY);
+        
+        
+        //Table to give to waiters.
+        g2.setColor(Color.gray);
+        g2.fillRect(KitchenAreaX, KitchenAreaY, KitchenWidth, KitchenHeight);
+        g2.setColor(Color.black);
+        g2.drawString("Plating", KitchenAreaX-10, KitchenAreaY +25);
+        
+      //Grills
+        g2.setColor(Color.red);
+        g2.fillRect(KitchenAreaX, KitchenAreaY + 50, KitchenWidth, KitchenHeight);
+        g2.setColor(Color.black);
+        g2.drawString("Grills", KitchenAreaX-10, KitchenAreaY + 75);
+        
+        if (host instanceof HostAgent)
+        for (restaurant.Table t : ((HostAgent) host).getTables()){
         	//Here is the table
             g2.setColor(Color.ORANGE);
             g2.fillRect(t.getPosX(), t.getPosY(), TABLEWIDTH, TABLEHEIGHT);//200 and 250 need to be table params
@@ -78,6 +108,9 @@ public class AnimationPanel extends JPanel implements ActionListener {
     }
 
     public void addGui(WaiterGui gui) {
+        guis.add(gui);
+    }
+    public void addGui(CookGui gui) {
         guis.add(gui);
     }
 }
