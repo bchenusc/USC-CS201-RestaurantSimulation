@@ -5,11 +5,8 @@ import agent.Agent;
 
 import restaurant.interfaces.Cashier;
 import restaurant.interfaces.Customer;
+import restaurant.interfaces.Market;
 import restaurant.interfaces.Waiter;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 import java.util.*;
 
@@ -52,9 +49,9 @@ public class CashierAgent extends Agent implements Cashier {
 		}
 	}
 	
-	public void msgHereIsMarketCost(double cost, MarketAgent m){
+	public void msgHereIsMarketCost(double cost, Market m){
 		Check ch = new Check(cost, m);
-		checks.add(ch);
+		checks.add(ch);	
 		stateChanged();
 	}
 	
@@ -129,7 +126,7 @@ public boolean pickAndExecuteAnAction() {
 	//#### Inner Class ####	
 	public class Check {
 		  String choice;
-		  double totalCost;
+		  public double totalCost;
 		  double customerPayment;
 		  Customer customer;
 		  Waiter waiter;
@@ -137,7 +134,7 @@ public boolean pickAndExecuteAnAction() {
 		  
 		  //For market
 		  public CheckType type = CheckType.restaurant;
-		  MarketAgent market;
+		  Market market;
 		  
 		  //Restaurant Check
 		  public Check(String choice, Customer c, Waiter w){
@@ -147,7 +144,7 @@ public boolean pickAndExecuteAnAction() {
 		  }
 		  
 		  //Market Check
-		  public Check (double cost, MarketAgent m){
+		  public Check (double cost, Market m){
 			  totalCost = cost;
 			  type = CheckType.market;
 			  market = m;
