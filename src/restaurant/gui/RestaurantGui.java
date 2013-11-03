@@ -2,6 +2,8 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import restaurant.WaiterAgent;
+import restaurant.interfaces.Customer;
+import restaurant.interfaces.Waiter;
 
 import javax.swing.*;
 
@@ -348,9 +350,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
      *
      * @param c reference to the customer
      */
-    public void setCustomerEnabled(CustomerAgent c) {
+    public void setCustomerEnabled(Customer c) {
         if (currentPerson instanceof CustomerAgent) {
-            CustomerAgent cust = (CustomerAgent) currentPerson;
+            Customer cust = (Customer) currentPerson;
             if (c.equals(cust)) {
                 stateCB.setEnabled(true);
                 stateCB.setSelected(false);
@@ -358,9 +360,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
         }
     }
     
-    public void setWaiterEnabled(WaiterAgent c){
+    public void setWaiterEnabled(Waiter c){
     	if (currentPerson instanceof WaiterAgent){
-    		WaiterAgent w = (WaiterAgent) currentPerson;
+    		Waiter w = (Waiter) currentPerson;
     		if (c.equals(w)){
     			stateCB.setEnabled(true);
     			stateCB.setSelected(false);

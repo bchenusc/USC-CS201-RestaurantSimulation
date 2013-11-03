@@ -1,8 +1,9 @@
 package restaurant.gui;
 
 
-import restaurant.CustomerAgent;
 import restaurant.WaiterAgent;
+import restaurant.HostAgent;
+import restaurant.interfaces.Customer;
 
 import java.awt.*;
 
@@ -90,8 +91,8 @@ public class WaiterGui implements Gui {
     	doingIdle = false;
     }
 
-    public void DoBringToTable(CustomerAgent customer, int tableNumber) {
-    	for (restaurant.Table myTable : agent.getHost().tables){
+    public void DoBringToTable(Customer customer, int tableNumber) {
+    	for (restaurant.Table myTable : ((HostAgent) agent.getHost()).getTables()){
     		if (myTable.getTableNumber() == tableNumber){
     			xTable = myTable.getPosX();
     			yTable = myTable.getPosY();
@@ -104,8 +105,8 @@ public class WaiterGui implements Gui {
     }
     
     public void DoIdle(){
-    	xDestination = 300; //Idle destination
-    	yDestination = 100; //Idle destination
+    	xDestination = 200 + 25 * (agent.getWaiterNumber() % 10); //Idle destination
+    	yDestination = 50 + 25 * (agent.getWaiterNumber() / 10); //Idle destination
     	receivedAction = true;
     	doingIdle = true;
     }
@@ -118,8 +119,8 @@ public class WaiterGui implements Gui {
     }
     
     public void DoGetCustomer(){
-    	xDestination = -20; //Host destination
-    	yDestination = -20; // Host Destination
+    	xDestination = 20; //Host destination
+    	yDestination = 20; // Host Destination
     	receivedAction = true;
     	doingIdle = false;
     }
@@ -130,8 +131,8 @@ public class WaiterGui implements Gui {
     }
     
     public void DoGiveOrderToCook(){
-    	xDestination = 601; //Destination of cook
-    	yDestination = 100; //Destination of cook
+    	xDestination = 510; //Destination of cook
+    	yDestination = 70; //Destination of cook
     	receivedAction = true;
     	doingIdle = false;
     }

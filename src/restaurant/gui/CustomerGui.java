@@ -3,12 +3,13 @@ package restaurant.gui;
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
 import restaurant.Table;
+import restaurant.interfaces.Customer;
 
 import java.awt.*;
 
 public class CustomerGui implements Gui{
 
-	private CustomerAgent agent = null;
+	private Customer agent = null;
 	private boolean isPresent = false;
 	private boolean isHungry = false;
 
@@ -32,7 +33,7 @@ public class CustomerGui implements Gui{
 	//Cache the host so we have access to table locations.
 	HostAgent host; //We only cache the host so that we can ask for the table location.
 
-	public CustomerGui(CustomerAgent c, RestaurantGui gui, HostAgent host){ //HostAgent m) {
+	public CustomerGui(Customer c, RestaurantGui gui, HostAgent host){ //HostAgent m) {
 		agent = c;
 		xPos = -40;
 		yPos = -40;
@@ -59,10 +60,12 @@ public class CustomerGui implements Gui{
 	
 			if (xPos == xDestination && yPos == yDestination) {
 				if (command==Command.GoToSeat) {
-					agent.msgAnimationFinishedGoToSeat();
+					if (agent instanceof CustomerAgent)
+					((CustomerAgent) agent).msgAnimationFinishedGoToSeat();
 				}
 				else if (command==Command.LeaveRestaurant) {
-					agent.msgAnimationFinishedLeaveRestaurant();
+					if (agent instanceof CustomerAgent)
+					((CustomerAgent) agent).msgAnimationFinishedLeaveRestaurant();
 					isHungry = false;
 					gui.setCustomerEnabled(agent);
 				}
@@ -78,6 +81,14 @@ public class CustomerGui implements Gui{
 		xDestination = -20; //home base
 		yDestination = -20; //home base
 		receivedCoordinates = true;
+	}
+	
+	public void DoGoToWaitingArea(){
+		xDestination = 15;
+		yDestination = 15;
+		
+		receivedCoordinates = true;
+	
 	}
 	
 	public void DoGoToDeadLocation(){

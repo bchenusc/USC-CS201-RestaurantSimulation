@@ -6,6 +6,7 @@ import restaurant.CustomerAgent;
 import restaurant.HostAgent;
 import restaurant.WaiterAgent;
 import restaurant.MarketAgent;
+import restaurant.interfaces.Host;
 
 import javax.swing.*;
 
@@ -32,6 +33,9 @@ public class RestaurantPanel extends JPanel {
     
     //List of Waiting customers.
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
+    int numberOfWaiters = 0;
+    
+    CookGui cookgui;
 
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel;
@@ -48,11 +52,15 @@ public class RestaurantPanel extends JPanel {
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
         
+        cookgui = new CookGui(cook, gui);
+        gui.animationPanel.addGui(cookgui);
+        cook.setGUI(cookgui);
+        
         customerPanel = new ListPanel(this, "Customers", true);
         waiterListPanel = new ListPanel(this,"Waiters", false);
         
         for (int i=0; i<3; i++){
-        	markets.add(new MarketAgent(i+". Market"));
+        	markets.add(new MarketAgent(i+". Market", cashier));
         	markets.get(i).startThread();
         	agents.add(markets.get(i));
         	cook.addMarket(markets.get(i));
@@ -102,16 +110,17 @@ public class RestaurantPanel extends JPanel {
     }
     
     public void addWaiter(String waiterName){
-    	WaiterAgent w = new WaiterAgent(waiterName, host, cook, cashier);
+    	WaiterAgent w = new WaiterAgent(waiterName, host, cook, cashier, numberOfWaiters);
     	WaiterGui waitergui = new WaiterGui(w, gui);
     	w.setGUI(waitergui);
     	gui.animationPanel.addGui(waitergui);
     	host.addWaiter(w);
     	agents.add(w);
     	w.startThread();
+    	numberOfWaiters++;
     }
     
-    public HostAgent getHost(){
+    public Host getHost(){
     	return host;
     }
 
@@ -177,7 +186,6 @@ public class RestaurantPanel extends JPanel {
                 		gui.updateInfoPanel(w);
                 	}
                 }
-                   
             }
         }
     }
