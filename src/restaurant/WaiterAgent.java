@@ -21,6 +21,11 @@ public class WaiterAgent extends Agent implements Waiter {
 	Host host;
 	CashierAgent cashier;
 	
+	int waiterNumber = 0;
+	public int getWaiterNumber(){
+		return waiterNumber;
+	}
+	
 	private enum WaiterState {none, wantABreak, askedBreak, goingOnBreak, onBreak};
 	private WaiterState state = WaiterState.none;
 	
@@ -46,11 +51,12 @@ public class WaiterAgent extends Agent implements Waiter {
 
 	
 	
-	public WaiterAgent(String name, Host h, Cook c, CashierAgent cash) {
+	public WaiterAgent(String name, Host h, Cook c, CashierAgent cash, int number) {
 		this.name = name;
 		host = h;
 		cook = c;
 		cashier = cash;
+		waiterNumber = number;
 		
 		breakTimer = new Timer(breakLength*1000, new ActionListener() {
 			   public void actionPerformed(ActionEvent e){
@@ -244,18 +250,19 @@ public class WaiterAgent extends Agent implements Waiter {
 			return true;
 			}
 		
-		if (state == WaiterState.wantABreak){
-			IWantABreak();
-			return true;
-		}
-		
-		if (state == WaiterState.goingOnBreak && numberOfCustomers == 0){
-			TakeABreak();
-			return true;
-		}
+			if (state == WaiterState.wantABreak){
+				IWantABreak();
+				return true;
+			}
+			
+			if (state == WaiterState.goingOnBreak && numberOfCustomers == 0){
+				TakeABreak();
+				return true;
+			}
 		}
 	
 		catch(ConcurrentModificationException e){
+			DoIdle();
 			return false;
 		}
 		
@@ -320,6 +327,8 @@ public class WaiterAgent extends Agent implements Waiter {
 
 	private void GiveFoodToCustomer(MyCustomer mc){
 		DoGiveOrderToCook();
+		if (cook instanceof CookAgent)
+			((CookAgent) cook).DoRemovePlate(mc.choice);
 		DoWalkToCustomer(mc, mc.choice);
 		Do("is giving food to " + ((CustomerAgent) mc.customer).getName());	
 		mc.state = MyCustomerState.eating;
@@ -371,6 +380,7 @@ public class WaiterAgent extends Agent implements Waiter {
 	private void DoSeatCustomer(int tableNum, MyCustomer mc){
 		gui.setText("Seating Customer");
 		gui.DoBringToTable(mc.customer, tableNum);
+		if (mc.customer instanceof CustomerAgent)
 		((CustomerAgent) mc.customer).getGui().DoGoToSeat(tableNum);
 		atLocAcquire();
 	}
@@ -418,8 +428,9 @@ public class WaiterAgent extends Agent implements Waiter {
 	}
 	
 	private void DoIdle(){
+		//System.out.println("Do idle");
 		gui.DoIdle();
-		gui.setText("Idle");
+		//gui.setText("Idle");
 		idle = false;
 	}
 

@@ -126,6 +126,8 @@ public class CookAgent extends Agent implements Cook {
 		
 //########## Actions ###############
 	private void CookOrder(Order o){
+		gui.DoGoToGrills(o.choice);
+		DoGoToGrill();
 		o.state = OrderState.checkingAmount;
 		Food temp = foodDictionary.get(o.choice);
 		if (temp.amount == 0){
@@ -162,11 +164,30 @@ public class CookAgent extends Agent implements Cook {
 	}
 	
 	private void tellWaiterOrderIsReady(Order o, int index){
+		DoGoToGrill();
+		gui.DoRemoveFromGrill(o.choice);
+		DoGoToPlates();
+		gui.DoGoToPlates(o.choice);
+		
 		o.waiter.msgOrderIsReady(o.choice, o.tableNumber);
 		o.setState(OrderState.notified);
 		orders.remove(index);
 	}
 	
+	private void DoGoToGrill(){
+		gui.DoGoToGrills();
+		atLocAcquire();
+	}
+	
+	private void DoGoToPlates(){
+		gui.DoGoToPlates();
+		atLocAcquire();
+	}
+	
+	
+	public void DoRemovePlate(String choice){
+		gui.DoRemovePlate(choice);
+	}
 //################    Utility     ##################
 	public String toString(){
 		return "Cook " + name;
@@ -236,6 +257,7 @@ public class CookAgent extends Agent implements Cook {
 			  timer = new Timer(time, new ActionListener() {
 				   public void actionPerformed(ActionEvent e){
 				      state = OrderState.cooked;
+				      
 				      timer.stop();
 				      stateChanged();
 				   }

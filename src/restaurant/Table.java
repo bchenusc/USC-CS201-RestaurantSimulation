@@ -1,7 +1,9 @@
 package restaurant;
 
+import restaurant.interfaces.Customer;
+
 public class Table {
-	CustomerAgent occupiedBy;
+	Customer occupiedBy;
 	int tableNumber;
 	int guiPosX;
 	int guiPosY;
@@ -18,7 +20,7 @@ public class Table {
 		guiPosY = posY;
 	}
 
-	void setOccupant(CustomerAgent cust) {
+	void setOccupant(Customer cust) {
 		occupiedBy = cust;
 	}
 	
@@ -39,7 +41,7 @@ public class Table {
 		occupiedBy = null;
 	}
 
-	CustomerAgent getOccupant() {
+	Customer getOccupant() {
 		return occupiedBy;
 	}
 
