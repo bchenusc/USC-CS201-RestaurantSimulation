@@ -126,8 +126,8 @@ public class CookAgent extends Agent implements Cook {
 		
 //########## Actions ###############
 	private void CookOrder(Order o){
-		gui.DoGoToGrills(o.choice);
 		DoGoToGrill();
+		gui.DoGoToGrills(o.choice);
 		o.state = OrderState.checkingAmount;
 		Food temp = foodDictionary.get(o.choice);
 		if (temp.amount == 0){

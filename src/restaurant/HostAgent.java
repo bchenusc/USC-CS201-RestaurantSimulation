@@ -46,7 +46,7 @@ public class HostAgent extends Agent implements Host {
 		// make some tables
 		tables = new ArrayList<Table>(NTABLES);
 		for (int ix = 1; ix <= NTABLES; ix++) {
-			tables.add(new Table(ix, WINDOWX/NTABLES * ix, WINDOWY/2)); // animation for later
+			tables.add(new Table(ix, WINDOWX/NTABLES * ix, 9*WINDOWY/10)); // animation for later
 		}
 	}
 
@@ -118,6 +118,14 @@ public class HostAgent extends Agent implements Host {
 		 * 			then notifyWaiter(t, w);*/
 		synchronized (waiters){
 			if (!waitingCustomers.isEmpty()){
+				synchronized(waitingCustomers){
+					for (int i=0; i<waitingCustomers.size(); i++){
+						if (waitingCustomers.get(i).customerNumber < 0){
+							ChangeCustomerNumber(waitingCustomers.get(i), i);
+						}
+					}
+				}
+				
 				if (waiters.size() > 0){
 					for (Table t : tables){
 						if (t.occupiedBy == null){
@@ -214,6 +222,10 @@ public class HostAgent extends Agent implements Host {
 		
 	}
 	
+	public void ChangeCustomerNumber(WaitingCustomer c, int number){
+		c.changeCustNumber(number);
+	}
+	
 	public void addWaiter(WaiterAgent w){
 		waiters.add(new MyWaiter(w));
 		workingWaiters++;
@@ -227,9 +239,16 @@ public class HostAgent extends Agent implements Host {
 	private class WaitingCustomer{
 		WaitingCustomerState state = WaitingCustomerState.none;
 		Customer customer;
+		int customerNumber = -1;
 		
 		public WaitingCustomer(Customer c){
 			customer = c;
+		}
+		
+		public void changeCustNumber(int num){
+			customerNumber = num;
+			customer.getGui().setCustNumber(num);
+			customer.getGui().DoGoToWaitingArea();
 		}
 	
 	};

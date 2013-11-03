@@ -401,7 +401,7 @@ public class WaiterAgent extends Agent implements Waiter {
 	
 	public void DoGetCheck(){
 		gui.setText("Get Check");
-		gui.DoGetCustomer();
+		gui.DoGoToCashier();
 		atLocAcquire();
 	}
 	

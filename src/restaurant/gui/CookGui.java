@@ -26,7 +26,7 @@ public class CookGui implements Gui {
     private String displayText = "";
     private List<String> foods = new ArrayList<String>();
     private List<String> grilling = new ArrayList<String>();
-
+    
     public CookGui(CookAgent agent, RestaurantGui r) {
         this.agent = agent;
         receivedAction = false;
@@ -117,6 +117,7 @@ public class CookGui implements Gui {
     	yDestination = 50;
     	receivedAction = true;
     }
+    
     
 
     public boolean isPresent() {

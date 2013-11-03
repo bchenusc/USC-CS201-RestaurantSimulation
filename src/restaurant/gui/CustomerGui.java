@@ -16,6 +16,8 @@ public class CustomerGui implements Gui{
 	//private HostAgent host;
 	RestaurantGui gui;
 	
+	int customerNumber = -1;
+	
 	//GUI Customer Stats
 	private final int sizeX = 20;
 	private final int sizeY = 20;
@@ -84,11 +86,9 @@ public class CustomerGui implements Gui{
 	}
 	
 	public void DoGoToWaitingArea(){
-		xDestination = 15;
-		yDestination = 15;
-		
+		xDestination = 20+30*(customerNumber%2);
+		yDestination = 20+30*(customerNumber/2);
 		receivedCoordinates = true;
-	
 	}
 	
 	public void DoGoToDeadLocation(){
@@ -146,5 +146,10 @@ public class CustomerGui implements Gui{
 		
 		command = Command.LeaveRestaurant;
 		receivedCoordinates = true;
+	}
+	
+	//utilities
+	public void setCustNumber(int num){
+		customerNumber = num;
 	}
 }

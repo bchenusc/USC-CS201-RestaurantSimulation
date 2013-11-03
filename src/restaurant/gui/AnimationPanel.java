@@ -22,11 +22,19 @@ public class AnimationPanel extends JPanel implements ActionListener {
     
     private final int WaitingAreaX = 15;
     private final int WaitingAreaY = 15;
+    private final int WaitingWidth = 70;
+    private final int WaitingHeight = 400;
+    
     
     private final int KitchenAreaX = 520;
     private final int KitchenAreaY = 50;
     private final int KitchenWidth = 10;
     private final int KitchenHeight = 50;
+    
+    private final int CashierX = 100;
+    private final int CashierY = 15;
+    private final int CashierW = 20;
+    private final int CashierH = 20;
     
     private final int timerint = 5;
     public Timer timer;
@@ -63,10 +71,16 @@ public class AnimationPanel extends JPanel implements ActionListener {
         g2.setColor(getBackground());
         g2.fillRect(0, 0, WINDOWX, WINDOWY );
         
+        //Cashier
+        g2.setColor(Color.green);
+        g2.fillRect(CashierX, CashierY, CashierW, CashierH);
+        g2.setColor(Color.black);
+        g2.drawString("Cashier", CashierX, CashierY);
+        
         
         //Waiting Area
         g2.setColor(Color.CYAN);
-        g2.fillRect(WaitingAreaX, WaitingAreaY, TABLEWIDTH, TABLEHEIGHT);
+        g2.fillRect(WaitingAreaX, WaitingAreaY, WaitingWidth, WaitingHeight);
         g2.setColor(Color.black);
         g2.drawString("Waiting Area", WaitingAreaX, WaitingAreaY);
         

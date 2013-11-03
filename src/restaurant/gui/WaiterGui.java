@@ -137,6 +137,13 @@ public class WaiterGui implements Gui {
     	doingIdle = false;
     }
     
+    public void DoGoToCashier(){
+    	xDestination = 100; //Host destination
+    	yDestination = 30; // Host Destination
+    	receivedAction = true;
+    	doingIdle = false;
+    }
+    
     public void DoWalkToCustomer(restaurant.Table table, String text){
     	xDestination = table.getPosX() + movementOffset;
     	yDestination = table.getPosY() - movementOffset;
