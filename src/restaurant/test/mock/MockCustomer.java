@@ -4,6 +4,7 @@ package restaurant.test.mock;
 import restaurant.Menu;
 import restaurant.CustomerAgent.CustomerEvent;
 import restaurant.CustomerAgent.CustomerState;
+import restaurant.gui.CustomerGui;
 import restaurant.interfaces.Cashier;
 import restaurant.interfaces.Customer;
 
@@ -26,7 +27,7 @@ public class MockCustomer extends Mock implements Customer {
 
 	}
 	
-	EventLog log = new EventLog();
+	public EventLog log = new EventLog();
 	
 	// ##################### Messages #################
 	
@@ -68,11 +69,17 @@ public class MockCustomer extends Mock implements Customer {
 		
 		@Override
 		public void msgDie(){
+			log.add(new LoggedEvent("I died"));
 		}
 		@Override
 		public void DoGoToDeadLocation() {
 			// TODO Auto-generated method stub
 			
+		}
+		@Override
+		public CustomerGui getGui() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 /*

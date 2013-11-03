@@ -1,6 +1,7 @@
 package restaurant.interfaces;
 
 import restaurant.Menu;
+import restaurant.gui.CustomerGui;
 
 public interface Customer {
 
@@ -26,5 +27,6 @@ public interface Customer {
 
 	public abstract void DoGoToDeadLocation();
 
+	public abstract CustomerGui getGui();
 
 }

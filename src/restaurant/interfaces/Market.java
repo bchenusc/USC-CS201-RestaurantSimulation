@@ -3,7 +3,7 @@ package restaurant.interfaces;
 
 public interface Market {
 
-	String name = null;
+	String name = "";
 
 	//########## Messages  ###############
 	public abstract void msgINeedFood(String choice, int amount, Cook c);

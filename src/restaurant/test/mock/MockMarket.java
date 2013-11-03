@@ -14,12 +14,13 @@ public class MockMarket extends Mock implements Market {
 	/**
 	 * Reference to the Cashier under test that can be set by the unit test.
 	 */
+	public String name;
 	public Cashier cashier;
 	public double money = 0;
 
 	public MockMarket(String name) {
 		super(name);
-
+		this.name = name;
 	}
 	
 	public EventLog log = new EventLog();
