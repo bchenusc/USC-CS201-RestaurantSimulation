@@ -18,6 +18,7 @@ Semaphores to handle multi-threaded actions.
   + You must input a name for the Customer before adding.
   + Add new Waiters with the new Waiter Button.
   + You must input a name for the Waiter before adding.
+  + YOU MUST IMPORT YOUR OWN JUNIT TO TEST THE JUNIT FILES
   
 ###Hacks to Run Scenarios - v2.1+
  + If you name your customer Chicken, Steak, Pizza, or Salad. He will ONLY order that item every single time. Please do not abuse.
