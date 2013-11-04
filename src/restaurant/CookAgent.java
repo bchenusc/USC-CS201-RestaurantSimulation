@@ -126,8 +126,6 @@ public class CookAgent extends Agent implements Cook {
 		
 //########## Actions ###############
 	private void CookOrder(Order o){
-		DoGoToGrill();
-		gui.DoGoToGrills(o.choice);
 		o.state = OrderState.checkingAmount;
 		Food temp = foodDictionary.get(o.choice);
 		if (temp.amount == 0){
@@ -138,6 +136,8 @@ public class CookAgent extends Agent implements Cook {
 			markets.get(temp.orderFromIndex).msgINeedFood(temp.choice, max_Capacity - temp.amount , this);
 			return;
 		}
+		DoGoToGrill();
+		gui.DoGoToGrills(o.choice);
 		if (temp.amount == 1){
 			//order more for the restaurant;
 			Do("Last "+ o.choice+". Ordering more.");
