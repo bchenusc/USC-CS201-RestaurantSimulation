@@ -121,7 +121,7 @@ public class HostAgent extends Agent implements Host {
 				synchronized(waitingCustomers){
 					for (int i=0; i<waitingCustomers.size(); i++){
 						if (waitingCustomers.get(i).customerNumber < 0){
-							ChangeCustomerNumber(waitingCustomers.get(i), i);
+							ChangeCustomerNumber(waitingCustomers.get(i), 0);
 						}
 					}
 				}
@@ -191,6 +191,7 @@ public class HostAgent extends Agent implements Host {
 		Do("Notifying customer Restaurant full.");
 		c.state = WaitingCustomerState.full;
 		c.customer.msgFullHouse();
+		
 	}
 
 	//utilities
@@ -223,7 +224,15 @@ public class HostAgent extends Agent implements Host {
 	}
 	
 	public void ChangeCustomerNumber(WaitingCustomer c, int number){
-		c.changeCustNumber(number);
+		synchronized (waitingCustomers){
+			for (int i=0; i<waitingCustomers.size(); i++){
+				if (waitingCustomers.get(i).customerNumber == number){
+					number++;
+					i = 0;
+				}
+			}
+			c.changeCustNumber(number);
+		}
 	}
 	
 	public void addWaiter(WaiterAgent w){

@@ -153,7 +153,7 @@ public abstract class Agent {
                 } catch (InterruptedException e) {
                     // no action - expected when stopping or when deadline changed
                 } catch (Exception e) {
-                    print("Unexpected exception caught in Agent thread:", e);
+                    //print("Unexpected exception caught in Agent thread:", e);
                 }
             }
         }
