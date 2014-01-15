@@ -1,9 +1,12 @@
-##Restaurant Project Repository
+##Java Restaurant Simulation (Multithreaded) for CSCI 201
+
+###Viewer Notice
+This project was created for my Computer Science 201 Principles of Software development.
+This is a multi-threaded project in Java.
 
 ###Student Information
   + Name: Brian Chen
   + USC Email: brianych@usc.edu
-  + USC ID: 8964066866
   
 ### Screenshot
 ![alt text](DesignDoc/screenshot.png "Screenshot")
