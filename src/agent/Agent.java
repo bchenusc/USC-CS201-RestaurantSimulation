@@ -1,13 +1,13 @@
 package agent;
 
-import java.io.*;
-import java.util.*;
 import java.util.concurrent.*;
+
+import SimCity.Base.SimObject;
 
 /**
  * Base class for simple agents
  */
-public abstract class Agent {
+public abstract class Agent extends SimObject{
     Semaphore stateChange = new Semaphore(1, true);//binary semaphore, fair
     
     private AgentThread agentThread;
