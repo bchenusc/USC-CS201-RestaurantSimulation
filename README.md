@@ -1,4 +1,4 @@
-## Java Restaurant Simulation (Multithreaded) for CSCI 201
+## Java Restaurant Simulation (Multi-threaded) for CSCI 201 ![status](https://img.shields.io/badge/status-inactive-red.svg)
 
 ### Viewer Notice
 This project was created for my Computer Science 201 Principles of Software development.
